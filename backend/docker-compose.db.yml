@@ -1,0 +1,139 @@
+version: '3.8'
+
+services:
+  # PostgreSQL 16 with Extensions
+  postgres:
+    image: postgres:16-alpine
+    container_name: irib-postgres
+    restart: unless-stopped
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: irib_dwp
+      POSTGRES_USER: irib_admin
+      POSTGRES_PASSWORD: irib_secret_2024
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+    command: >
+      postgres
+        -c shared_preload_libraries='pg_stat_statements,pg_cron,pg_partman_bgw'
+        -c pg_stat_statements.track=all
+        -c pg_stat_statements.max=10000
+        -c cron.database_name='irib_dwp'
+        -c shared_buffers=256MB
+        -c effective_cache_size=1GB
+        -c work_mem=16MB
+        -c maintenance_work_mem=128MB
+        -c max_connections=100
+        -c log_min_duration_statement=1000
+        -c log_statement='ddl'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U irib_admin -d irib_dwp']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PgBouncer (Connection Pooler)
+  pgbouncer:
+    image: edoburu/pgbouncer:latest
+    container_name: irib-pgbouncer
+    restart: unless-stopped
+    ports:
+      - '6432:6432'
+    environment:
+      DATABASE_URL: postgres://irib_admin:irib_secret_2024@postgres:5432/irib_dwp
+      POOL_MODE: transaction
+      DEFAULT_POOL_SIZE: 20
+      MAX_CLIENT_CONN: 100
+      SERVER_IDLE_TIMEOUT: 600
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Redis (Cache + Session + Pub/Sub)
+  redis:
+    image: redis:7-alpine
+    container_name: irib-redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    command: >
+      redis-server
+        --appendonly yes
+        --requirepass irib_redis_2024
+        --maxmemory 256mb
+        --maxmemory-policy allkeys-lru
+        --save 60 1000
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', '-a', 'irib_redis_2024', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # MinIO (S3 Compatible Object Storage)
+  minio:
+    image: minio/minio:latest
+    container_name: irib-minio
+    restart: unless-stopped
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    environment:
+      MINIO_ROOT_USER: irib_minio_admin
+      MINIO_ROOT_PASSWORD: irib_minio_2024
+    command: server /data --console-address ':9001'
+    volumes:
+      - minio_data:/data
+
+  # OpenSearch (Search & Analytics)
+  opensearch:
+    image: opensearchproject/opensearch:2.11.0
+    container_name: irib-opensearch
+    restart: unless-stopped
+    ports:
+      - '9200:9200'
+    environment:
+      - discovery.type=single-node
+      - plugins.security.disabled=true
+      - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
+      - index.max_result_window=10000
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+
+  # Keycloak (IAM)
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    container_name: irib-keycloak
+    restart: unless-stopped
+    ports:
+      - '8080:8080'
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/irib_dwp
+      KC_DB_USERNAME: irib_admin
+      KC_DB_PASSWORD: irib_secret_2024
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    command: start-dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Mailhog (Email Testing)
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: irib-mailhog
+    restart: unless-stopped
+    ports:
+      - '1025:1025'
+      - '8025:8025'
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
+  opensearch_data:

@@ -1,0 +1,101 @@
+---
+# ============================================================
+# IRIB DWP — ArgoCD ApplicationSet (Root)
+# App-of-Apps Pattern
+# ============================================================
+
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: irib-dwp-platform
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          # Bootstrap (Phase 0-1)
+          - path: bootstrap
+            namespace: argocd
+          # Platform Services (Phase 2)
+          - path: platform
+            namespace: infra
+          # Data Services (Phase 1)
+          - path: data-services
+            namespace: data
+  template:
+    metadata:
+      name: '{{path}}'
+      annotations:
+        argocd.argoproj.io/sync-wave: '10'
+    spec:
+      project: default
+      source:
+        repoURL: https://git.iribtabriz.ir/infra/gitops.git
+        targetRevision: HEAD
+        path: '{{path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{namespace}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - PrunePropagationPolicy=foreground
+        retry:
+          limit: 5
+          backoff:
+            duration: 5s
+            factor: 2
+            maxDuration: 3m
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: irib-dwp-applications
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - name: dwp-backend
+            path: applications/base/dwp-backend
+            namespace: dwp
+            values: overlays/prod
+          - name: dwp-frontend
+            path: applications/base/dwp-frontend
+            namespace: dwp
+            values: overlays/prod
+          - name: dwp-pdf-generator
+            path: applications/base/dwp-pdf-generator
+            namespace: dwp
+            values: overlays/prod
+  template:
+    metadata:
+      name: '{{name}}'
+      annotations:
+        argocd.argoproj.io/sync-wave: '20'
+    spec:
+      project: default
+      source:
+        repoURL: https://git.iribtabriz.ir/infra/gitops.git
+        targetRevision: HEAD
+        path: '{{path}}'
+        kustomize:
+          namePrefix: '{{name}}-'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{namespace}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+        retry:
+          limit: 3
+          backoff:
+            duration: 10s
+            factor: 2
+            maxDuration: 5m

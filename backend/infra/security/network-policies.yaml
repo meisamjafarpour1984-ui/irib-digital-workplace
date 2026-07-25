@@ -1,0 +1,174 @@
+---
+# ============================================================
+# IRIB DWP — Network Policies (Default Deny + Explicit Allow)
+# ============================================================
+
+# Default Deny All Ingress
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: dwp
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+
+# Default Deny All Egress
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-egress
+  namespace: dwp
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+
+# Backend: Allow Ingress from Ingress Controller
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: backend-allow-ingress
+  namespace: dwp
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: dwp-backend
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - port: 3001
+          protocol: TCP
+
+# Backend: Allow Egress to Data Services
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: backend-allow-egress-data
+  namespace: dwp
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: dwp-backend
+  policyTypes:
+    - Egress
+  egress:
+    # PostgreSQL
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: data
+      ports:
+        - port: 5432
+          protocol: TCP
+    # Redis
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: data
+      ports:
+        - port: 6379
+          protocol: TCP
+    # Kafka
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: data
+      ports:
+        - port: 9092
+          protocol: TCP
+    # MinIO
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: data
+      ports:
+        - port: 9000
+          protocol: TCP
+    # OpenSearch
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: data
+      ports:
+        - port: 9200
+          protocol: TCP
+    # Keycloak
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: infra
+      ports:
+        - port: 8080
+          protocol: TCP
+    # Vault
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: infra
+      ports:
+        - port: 8200
+          protocol: TCP
+    # DNS
+    - to: []
+      ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+
+# Frontend: Allow Ingress from Ingress Controller
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: frontend-allow-ingress
+  namespace: dwp
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: dwp-frontend
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - port: 3000
+          protocol: TCP
+
+# Frontend: Allow Egress to Backend
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: frontend-allow-egress
+  namespace: dwp
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: dwp-frontend
+  policyTypes:
+    - Egress
+  egress:
+    # Backend
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: dwp-backend
+      ports:
+        - port: 3001
+          protocol: TCP
+    # DNS
+    - to: []
+      ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP

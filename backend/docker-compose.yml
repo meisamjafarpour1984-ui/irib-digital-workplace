@@ -1,0 +1,117 @@
+version: '3.8'
+
+services:
+  # PostgreSQL 16
+  postgres:
+    image: postgres:16-alpine
+    container_name: irib-postgres
+    restart: unless-stopped
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: irib_dwp
+      POSTGRES_USER: irib_admin
+      POSTGRES_PASSWORD: irib_secret_2024
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U irib_admin -d irib_dwp']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cluster
+  redis:
+    image: redis:7-alpine
+    container_name: irib-redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    command: redis-server --appendonly yes --requirepass irib_redis_2024
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', '-a', 'irib_redis_2024', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # MinIO (S3 Compatible)
+  minio:
+    image: minio/minio:latest
+    container_name: irib-minio
+    restart: unless-stopped
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    environment:
+      MINIO_ROOT_USER: irib_minio_admin
+      MINIO_ROOT_PASSWORD: irib_minio_2024
+    command: server /data --console-address ':9001'
+    volumes:
+      - minio_data:/data
+
+  # OpenSearch
+  opensearch:
+    image: opensearchproject/opensearch:2.11.0
+    container_name: irib-opensearch
+    restart: unless-stopped
+    ports:
+      - '9200:9200'
+    environment:
+      - discovery.type=single-node
+      - plugins.security.disabled=true
+      - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+
+  # Keycloak
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    container_name: irib-keycloak
+    restart: unless-stopped
+    ports:
+      - '8080:8080'
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/irib_dwp
+      KC_DB_USERNAME: irib_admin
+      KC_DB_PASSWORD: irib_secret_2024
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    command: start-dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: irib-app
+    restart: unless-stopped
+    ports:
+      - '3001:3001'
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://irib_admin:irib_secret_2024@postgres:5432/irib_dwp
+      REDIS_URL: redis://:irib_redis_2024@redis:6379
+      MINIO_ENDPOINT: minio:9000
+      MINIO_ACCESS_KEY: irib_minio_admin
+      MINIO_SECRET_KEY: irib_minio_2024
+      OPENSEARCH_ENDPOINT: opensearch:9200
+      KEYCLOAK_URL: http://keycloak:8080
+      JWT_SECRET: your-super-secret-jwt-key-change-in-production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
+  opensearch_data:

@@ -1,0 +1,589 @@
+openapi: 3.1.0
+info:
+  title: IRIB DWP API
+  description: IRIB East Azerbaijan Digital Workplace Platform API
+  version: 1.0.0
+  contact:
+    name: IRIB IT Department
+
+servers:
+  - url: http://localhost:3001/api/v1
+    description: Local Development
+  - url: https://dwp-api.irib.ir/api/v1
+    description: Production
+
+security:
+  - BearerAuth: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ContentItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        contentType:
+          type: string
+          enum: [NEWS, ANNOUNCEMENT, EVENT, GALLERY, BANNER, FILE, SOFTWARE, EXPERT, LEGEND, FORM, AFISH, DOCUMENT, SURVEY, FAQ, LINK]
+        status:
+          type: string
+          enum: [DRAFT, UNDER_REVIEW, APPROVED, PUBLISHED, SCHEDULED, ARCHIVED, REJECTED, DELETED]
+        version:
+          type: integer
+        title:
+          type: object
+          properties:
+            fa:
+              type: string
+        slug:
+          type: string
+        excerpt:
+          type: object
+        body:
+          type: object
+        metadata:
+          type: object
+        authorId:
+          type: string
+          format: uuid
+        publishedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    PaginatedResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContentItem'
+        pagination:
+          type: object
+          properties:
+            page:
+              type: integer
+            limit:
+              type: integer
+            total:
+              type: integer
+            totalPages:
+              type: integer
+
+    WidgetDataEnvelope:
+      type: object
+      properties:
+        widgetKey:
+          type: string
+        config:
+          type: object
+        data:
+          type: object
+        ssr:
+          type: boolean
+        errors:
+          type: array
+          items:
+            type: string
+        cacheMeta:
+          type: object
+          properties:
+            tags:
+              type: array
+              items:
+                type: string
+            ttl:
+              type: integer
+
+    FormSubmission:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        formDefinitionId:
+          type: string
+          format: uuid
+        data:
+          type: object
+        status:
+          type: string
+          enum: [DRAFT, SUBMITTED, UNDER_REVIEW, APPROVED, REJECTED, ARCHIVED]
+        submitterId:
+          type: string
+          format: uuid
+        conversationId:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+
+    Conversation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        subject:
+          type: string
+        entityType:
+          type: string
+        entityId:
+          type: string
+        status:
+          type: string
+          enum: [OPEN, CLOSED, PENDING, ARCHIVED]
+        priority:
+          type: string
+          enum: [LOW, NORMAL, HIGH, CRITICAL]
+        participants:
+          type: array
+          items:
+            $ref: '#/components/schemas/Participant'
+        lastMessage:
+          $ref: '#/components/schemas/Message'
+
+    Participant:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        role:
+          type: string
+          enum: [OWNER, ASSIGNEE, FOLLOWER, APPROVER]
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        senderId:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum: [USER, SYSTEM, FORM_SUBMISSION, FILE, MENTION]
+        content:
+          type: object
+        createdAt:
+          type: string
+          format: date-time
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        personnelCode:
+          type: string
+        name:
+          type: string
+        mobile:
+          type: string
+        email:
+          type: string
+        departments:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: object
+
+    Role:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        name:
+          type: object
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Permission'
+
+    Permission:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        entity:
+          type: string
+        action:
+          type: string
+
+    Department:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: object
+        slug:
+          type: string
+        type:
+          type: string
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Department'
+
+  parameters:
+    PageKeyPath:
+      name: pageKey
+      in: path
+      required: true
+      schema:
+        type: string
+      description: "Page key (e.g., 'homepage', 'microsite-it')"
+
+    DepartmentIdQuery:
+      name: departmentId
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: "Filter by department scope"
+
+    ContentTypeQuery:
+      name: type
+      in: query
+      schema:
+        type: string
+        enum: [NEWS, ANNOUNCEMENT, EVENT, GALLERY, BANNER]
+
+    StatusQuery:
+      name: status
+      in: query
+      schema:
+        type: string
+        enum: [DRAFT, PUBLISHED, ARCHIVED]
+
+paths:
+  # Widget Engine
+  /widget-engine/pages/{pageKey}/render-data:
+    get:
+      operationId: getPageRenderData
+      summary: "Get aggregated data for all widgets in a layout"
+      tags: [Widgets]
+      parameters:
+        - $ref: '#/components/parameters/PageKeyPath'
+        - name: X-Current-Scopes
+          in: header
+          schema:
+            type: string
+          description: "Comma-separated Department IDs"
+      responses:
+        '200':
+          description: "Widget Data Map"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WidgetDataEnvelope'
+
+  # Content
+  /contents:
+    get:
+      operationId: listContents
+      summary: "List content items"
+      tags: [Content]
+      parameters:
+        - $ref: '#/components/parameters/ContentTypeQuery'
+        - $ref: '#/components/parameters/StatusQuery'
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: "Paginated content list"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+    post:
+      operationId: createContent
+      summary: "Create new content"
+      tags: [Content]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [contentType, title]
+              properties:
+                contentType:
+                  type: string
+                title:
+                  type: object
+                excerpt:
+                  type: object
+                body:
+                  type: object
+                scopeIds:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '201':
+          description: "Content created"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentItem'
+
+  /contents/{id}:
+    get:
+      operationId: getContent
+      summary: "Get content by ID"
+      tags: [Content]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: "Content item"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentItem'
+
+  /contents/{id}/publish:
+    post:
+      operationId: publishContent
+      summary: "Publish content"
+      tags: [Content]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: "Content published"
+
+  # Forms
+  /forms/{slug}/submit:
+    post:
+      operationId: submitForm
+      summary: "Submit form data"
+      tags: [Forms]
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [data]
+              properties:
+                data:
+                  type: string
+                  format: binary
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '201':
+          description: "Submission created"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormSubmission'
+
+  # Communication
+  /conversations:
+    get:
+      operationId: listConversations
+      summary: "List conversations"
+      tags: [Communication]
+      parameters:
+        - name: filter
+          in: query
+          schema:
+            type: string
+            enum: [assigned, created, following, all]
+      responses:
+        '200':
+          description: "Conversation list"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Conversation'
+
+  /conversations/{id}/messages:
+    get:
+      operationId: getMessages
+      summary: "Get messages in conversation"
+      tags: [Communication]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: "Message list"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+
+    post:
+      operationId: sendMessage
+      summary: "Send message in conversation"
+      tags: [Communication]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                content:
+                  type: object
+                attachments:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '201':
+          description: "Message sent"
+
+  # Users
+  /users/me:
+    get:
+      operationId: getCurrentUser
+      summary: "Get current user profile"
+      tags: [IAM]
+      responses:
+        '200':
+          description: "User profile"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  # Organization
+  /org/tree:
+    get:
+      operationId: getOrgTree
+      summary: "Get organization tree"
+      tags: [Organization]
+      responses:
+        '200':
+          description: "Organization tree"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Department'
+
+  # Search
+  /search/unified:
+    get:
+      operationId: unifiedSearch
+      summary: "Unified search across all content"
+      tags: [Search]
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Search results"
+
+  # Software
+  /software:
+    get:
+      operationId: listSoftware
+      summary: "List available software"
+      tags: [Software]
+      responses:
+        '200':
+          description: "Software list"
+
+  # Theme
+  /theme/tokens:
+    get:
+      operationId: getThemeTokens
+      summary: "Get design tokens"
+      tags: [Widgets]
+      responses:
+        '200':
+          description: "Theme tokens"
+          content:
+            application/json:
+              schema:
+                type: object

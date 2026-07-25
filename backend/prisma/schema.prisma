@@ -1,0 +1,934 @@
+// ============================================================
+// IRIB East Azerbaijan DWP — Prisma Schema (PostgreSQL 16)
+// SRS v1.0 Baseline
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // Extensions for advanced features
+  extensions = [ltree, pgcrypto]
+}
+
+// ============================================================
+// Enums
+// ============================================================
+
+enum ContentType {
+  NEWS
+  ANNOUNCEMENT
+  EVENT
+  GALLERY
+  BANNER
+  FILE
+  SOFTWARE
+  EXPERT
+  LEGEND
+  FORM
+  AFISH
+  DOCUMENT
+  SURVEY
+  FAQ
+  LINK
+}
+
+enum ContentStatus {
+  DRAFT
+  UNDER_REVIEW
+  APPROVED
+  PUBLISHED
+  SCHEDULED
+  ARCHIVED
+  REJECTED
+  DELETED
+}
+
+enum FormType {
+  DATA_COLLECTION
+  AFISH_STRUCTURED
+}
+
+enum FormStatus {
+  DRAFT
+  ACTIVE
+  CLOSED
+  ARCHIVED
+}
+
+enum SubmissionStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  ARCHIVED
+}
+
+enum AfishStatus {
+  DRAFT
+  LOCKED
+  PRINTED
+  ARCHIVED
+}
+
+enum ParticipantRole {
+  OWNER
+  ASSIGNEE
+  FOLLOWER
+  APPROVER
+}
+
+enum MessageType {
+  USER
+  SYSTEM
+  FORM_SUBMISSION
+  FILE
+  MENTION
+}
+
+enum ConversationStatus {
+  OPEN
+  CLOSED
+  PENDING
+  ARCHIVED
+}
+
+enum Priority {
+  LOW
+  NORMAL
+  HIGH
+  CRITICAL
+}
+
+enum ScopeType {
+  GLOBAL
+  DEPARTMENT
+  UNIT
+  OWNERSHIP
+}
+
+enum Platform {
+  IOS
+  ANDROID
+  WEB_PWA
+}
+
+enum DeviceStatus {
+  ACTIVE
+  BLOCKED
+  EXPIRED
+}
+
+enum QrStatus {
+  PENDING
+  SCANNED
+  AUTHORIZED
+  EXPIRED
+  REVOKED
+}
+
+enum TicketStatus {
+  NEW
+  IN_PROGRESS
+  WAITING
+  RESOLVED
+  CLOSED
+}
+
+enum TicketCategory {
+  HARDWARE
+  SOFTWARE
+  NETWORK
+  ACCESS
+  OTHER
+}
+
+// ============================================================
+// Core: User & Authentication (IAM Module)
+// ============================================================
+
+model User {
+  id            String   @id @default(uuid()) @db.Uuid
+  personnelCode String   @unique
+  nationalCode  String?  @unique @db.VarChar(10)
+  mobile        String?  @db.VarChar(11)
+  email         String?  @unique
+  name          String
+  nameFa        String?
+  passwordHash  String?
+  status        String   @default("ACTIVE") // ACTIVE, PENDING, DISABLED
+  lastLoginAt   DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+
+  // Relations
+  roles         UserRoleAssignment[]
+  authoredContent    Content[]         @relation("ContentAuthor")
+  publishedContent   Content[]         @relation("ContentPublisher")
+  departments        UserDepartmentScope[]
+  devices            DeviceRegistration[]
+  messages           Message[]         @relation("MessageSender")
+  participations     ConversationParticipant[]
+  formSubmissions    FormSubmission[]
+  afishRecords       AfishRecord[]     @relation("AfishCreator")
+  afishApprovals     AfishRecord[]     @relation("AfishApprover")
+  softwareDownloads  DownloadLog[]
+  tickets            Ticket[]          @relation("TicketCreator")
+  ticketAssignments  Ticket[]          @relation("TicketAssignee")
+  pushSubscriptions  PushSubscription[]
+  auditLogs          AuditLogEntry[]
+  notifications      Notification[]
+
+  @@index([personnelCode])
+  @@index([mobile])
+  @@index([status])
+}
+
+model UserDepartmentScope {
+  id           String @id @default(uuid()) @db.Uuid
+  userId       String @db.Uuid
+  departmentId String @db.Uuid
+  isPrimary    Boolean @default(false)
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, departmentId])
+}
+
+// ============================================================
+// Access Control (RBAC + ABAC)
+// ============================================================
+
+model Role {
+  id          String   @id @default(uuid()) @db.Uuid
+  code        String   @unique
+  name        Json     // { "fa": "نام فارسی", "en": "English Name" }
+  description String?
+  isSystem    Boolean  @default(false) // System roles can't be deleted
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  permissions AtomicPermission[] @relation("RolePermissions")
+  users       UserRoleAssignment[]
+
+  @@index([code])
+}
+
+model AtomicPermission {
+  id          String @id @default(uuid()) @db.Uuid
+  entity      String // "Content", "Form", "User", "Widget", "Media", etc.
+  action      String // "CREATE", "READ", "UPDATE", "DELETE", "PUBLISH", etc.
+  description String?
+
+  roles Role[] @relation("RolePermissions")
+
+  @@unique([entity, action])
+  @@index([entity])
+}
+
+model UserRoleAssignment {
+  id                 String   @id @default(uuid()) @db.Uuid
+  userId             String   @db.Uuid
+  roleId             String   @db.Uuid
+  scopeType          ScopeType @default(GLOBAL)
+  scopeIds           String[] @default([]) // Array of DepartmentUnit IDs
+  deniedPermissions  String[] @default([]) // Permission IDs explicitly denied
+  grantedPermissions String[] @default([]) // Permission IDs explicitly granted
+  assignedAt         DateTime @default(now())
+  assignedBy         String?  @db.Uuid
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId, scopeType])
+  @@index([userId])
+  @@index([roleId])
+}
+
+// ============================================================
+// Organization Structure (ltree for Hierarchy)
+// ============================================================
+
+model Department {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        Json     // { "fa": "نام فارسی", "en": "English Name" }
+  slug        String   @unique
+  type        String   @default("UNIT") // DEPARTMENT, UNIT, TEAM
+  path        String?  @db.VarChar(255) // ltree path: "root.deputy-it.network"
+  depth       Int      @default(0)
+  parentId    String?  @db.Uuid
+  managerId   String?  @db.Uuid
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  parent       Department?            @relation("DepartmentTree", fields: [parentId], references: [id])
+  children     Department[]           @relation("DepartmentTree")
+  members      UserDepartmentScope[]
+  contents     ContentScope[]
+  microsite    MicrositeConfig?
+  tickets      Ticket[]
+
+  @@index([parentId])
+  @@index([slug])
+  @@index([path])
+}
+
+model MicrositeConfig {
+  id            String   @id @default(uuid()) @db.Uuid
+  departmentId  String   @unique @db.Uuid
+  heroImage     String?
+  heroTitle     Json?
+  heroSubtitle  Json?
+  themeOverrides Json?   // Department-specific token overrides
+  navItems      Json     @default("[]") // Array of nav items
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+}
+
+// ============================================================
+// Content Management (SCM — Single Content Model)
+// ============================================================
+
+model Content {
+  id            String        @id @default(uuid()) @db.Uuid
+  contentType   ContentType
+  status        ContentStatus @default(DRAFT)
+  version       Int           @default(1)
+
+  title         Json          // { "fa": "عنوان" }
+  slug          String        @unique
+  excerpt       Json?
+  body          Json?         // TipTap JSON or HTML
+
+  metadata      Json          @default("{}") // Dynamic fields per ContentType
+
+  authorId      String        @db.Uuid
+  publisherId   String?       @db.Uuid
+  publishedAt   DateTime?
+  scheduledAt   DateTime?
+  archivedAt    DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  deletedAt     DateTime?
+
+  // Relations
+  author    User @relation("ContentAuthor", fields: [authorId], references: [id])
+  publisher User? @relation("ContentPublisher", fields: [publisherId], references: [id])
+
+  scopes       ContentScope[]
+  tags         ContentTag[]
+  categories   ContentCategory[]
+  versions     ContentVersion[]
+  media        ContentMedia[]
+  formDefinitions FormDefinition[]
+  formSubmissions FormSubmission[]
+  afishRecords    AfishRecord[]
+  conversations   Conversation[]
+
+  @@index([contentType, status, publishedAt])
+  @@index([authorId])
+  @@index([slug])
+  @@index([createdAt])
+}
+
+model ContentScope {
+  id           String @id @default(uuid()) @db.Uuid
+  contentId    String @db.Uuid
+  departmentId String @db.Uuid
+
+  content    Content    @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+
+  @@unique([contentId, departmentId])
+}
+
+model ContentVersion {
+  id        String   @id @default(uuid()) @db.Uuid
+  contentId String   @db.Uuid
+  version   Int
+  data      Json     // Snapshot of content at this version
+  changedBy String?  @db.Uuid
+  createdAt DateTime @default(now())
+
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@unique([contentId, version])
+}
+
+model ContentTag {
+  id        String @id @default(uuid()) @db.Uuid
+  contentId String @db.Uuid
+  tagId     String @db.Uuid
+
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([contentId, tagId])
+}
+
+model Tag {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @unique
+  slug      String   @unique
+  createdAt DateTime @default(now())
+
+  contents ContentTag[]
+}
+
+model ContentCategory {
+  id         String @id @default(uuid()) @db.Uuid
+  contentId  String @db.Uuid
+  categoryId String @db.Uuid
+
+  content  Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([contentId, categoryId])
+}
+
+model Category {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      Json
+  slug      String   @unique
+  parentId  String?  @db.Uuid
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  parent   Category?          @relation("CategoryTree", fields: [parentId], references: [id])
+  children Category[]         @relation("CategoryTree")
+  contents ContentCategory[]
+
+  @@index([parentId])
+}
+
+// ============================================================
+// Media & Storage
+// ============================================================
+
+model MediaAsset {
+  id            String   @id @default(uuid()) @db.Uuid
+  filename      String
+  originalName  String
+  mimeType      String
+  size          BigInt
+  hash          String   @unique // SHA-256 for deduplication
+  storageKey    String   // S3/NFS key
+  storageProvider String @default("local") // local, s3, minio
+  width         Int?
+  height        Int?
+  duration      Int?     // For video/audio
+  metadata      Json     @default("{}")
+  uploadedById  String?  @db.Uuid
+  createdAt     DateTime @default(now())
+
+  contents    ContentMedia[]
+  formFiles   FormSubmissionMedia[]
+  messages    MessageAttachment[]
+
+  @@index([hash])
+  @@index([mimeType])
+}
+
+model ContentMedia {
+  id        String @id @default(uuid()) @db.Uuid
+  contentId String @db.Uuid
+  mediaId   String @db.Uuid
+  sortOrder Int    @default(0)
+  isPrimary Boolean @default(false)
+
+  content Content    @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  media   MediaAsset @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  @@unique([contentId, mediaId])
+}
+
+// ============================================================
+// Widget Engine & Page Layouts
+// ============================================================
+
+model WidgetManifest {
+  widgetKey          String @id
+  name               Json
+  category           String
+  defaultSize        Json   // { cols, rows }
+  resizable          Boolean @default(true)
+  draggable          Boolean @default(true)
+  ssr                Boolean @default(true)
+  configSchema       Json   // Zod/JSON Schema for Admin Config
+  requiredPermissions String[] @default([])
+  componentPath      String // Frontend component import path
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  pageWidgets PageWidget[]
+}
+
+model PageLayout {
+  id            String   @id @default(uuid()) @db.Uuid
+  pageKey       String   // "homepage", "microsite-it", "dashboard-personal"
+  version       Int      @default(1)
+  isDraft       Boolean  @default(true)
+  layoutConfig  Json     // Array<WidgetInstanceConfig>
+  themeOverrides Json?   // Department-specific tokens
+  createdBy     String?  @db.Uuid
+  publishedAt   DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  widgets PageWidget[]
+
+  @@unique([pageKey, version])
+  @@index([pageKey])
+}
+
+model PageWidget {
+  id            String @id @default(uuid()) @db.Uuid
+  pageLayoutId  String @db.Uuid
+  widgetKey     String
+  instanceId    String // Unique within page
+  config        Json   @default("{}")
+  gridPosition  Json   // { x, y, w, h, breakpoints }
+
+  pageLayout PageLayout     @relation(fields: [pageLayoutId], references: [id], onDelete: Cascade)
+  widget     WidgetManifest @relation(fields: [widgetKey], references: [widgetKey], onDelete: Cascade)
+
+  @@unique([pageLayoutId, instanceId])
+}
+
+// ============================================================
+// Theme & Design Tokens
+// ============================================================
+
+model ThemeToken {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
+  category    String   // "brand", "semantic", "surface", "typography"
+  tokens      Json     // The actual token values
+  isDefault   Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  scheduledAt DateTime? // For occasion themes
+  expiresAt   DateTime?
+  createdBy   String?  @db.Uuid
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([isActive])
+}
+
+// ============================================================
+// Forms & Workflow (Dual Mode)
+// ============================================================
+
+model FormDefinition {
+  id              String     @id @default(uuid()) @db.Uuid
+  slug            String     @unique
+  title           Json
+  description     Json?
+  formType        FormType   @default(DATA_COLLECTION)
+  jsonSchema      Json       // Zod/JSON Schema (Validation)
+  uiSchema        Json       // Layout, Logic (Visibility, RequiredIf)
+  workflowConfig  Json       // States, Transitions, Assignee Rules
+  status          FormStatus @default(DRAFT)
+  createdBy       String?    @db.Uuid
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  // Afish Specific
+  printTemplate   String?
+  watermarkConfig Json?
+
+  // Relations
+  contentId       String? @db.Uuid
+  content         Content? @relation(fields: [contentId], references: [id])
+  submissions     FormSubmission[]
+
+  @@index([slug])
+  @@index([formType])
+}
+
+model FormSubmission {
+  id                String           @id @default(uuid()) @db.Uuid
+  formDefinitionId  String           @db.Uuid
+  data              Json             // Validated against jsonSchema
+  status            SubmissionStatus @default(DRAFT)
+  currentAssigneeId String?          @db.Uuid
+  submitterId       String           @db.Uuid
+  conversationId    String?          @db.Uuid
+  submittedAt       DateTime?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  formDefinition FormDefinition @relation(fields: [formDefinitionId], references: [id])
+  submitter      User           @relation(fields: [submitterId], references: [id])
+  files          FormSubmissionMedia[]
+
+  @@index([formDefinitionId])
+  @@index([submitterId])
+  @@index([status])
+}
+
+model FormSubmissionMedia {
+  id             String @id @default(uuid()) @db.Uuid
+  submissionId   String @db.Uuid
+  mediaId        String @db.Uuid
+  fieldName      String // Which form field this file belongs to
+
+  submission FormSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  media      MediaAsset     @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  @@unique([submissionId, mediaId])
+}
+
+model AfishRecord {
+  id              String      @id @default(uuid()) @db.Uuid
+  formDefinitionId String     @db.Uuid
+  recordNumber    String      @unique // Auto-gen: AFISH-YYYY-0001
+  title           Json?
+  rowData         Json        // Array of Rows (Spreadsheet data)
+  pdfUrl          String?
+  status          AfishStatus @default(DRAFT)
+  createdById     String      @db.Uuid
+  approvedById    String?     @db.Uuid
+  lockedAt        DateTime?
+  printedAt       DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  formDefinition FormDefinition @relation(fields: [formDefinitionId], references: [id])
+  creator        User           @relation("AfishCreator", fields: [createdById], references: [id])
+  approver       User?          @relation("AfishApprover", fields: [approvedById], references: [id])
+
+  @@index([formDefinitionId])
+  @@index([createdById])
+  @@index([recordNumber])
+}
+
+// ============================================================
+// Knowledge & Identity (Experts, Legends)
+// ============================================================
+
+model ExpertProfile {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @unique @db.Uuid
+  bio         Json?
+  skills      Json     @default("[]") // Array of skill strings
+  departmentId String? @db.Uuid
+  title       String?
+  isLegend    Boolean  @default(false)
+
+  // Legend-specific fields
+  awards      Json?    @default("[]")
+  festivals   Json?    @default("[]")
+  keyWorks    Json?    @default("[]")
+  interviewVideo String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  department Department? @relation(fields: [departmentId], references: [id])
+
+  @@index([isLegend])
+  @@index([departmentId])
+}
+
+// ============================================================
+// Software Center & IT Support
+// ============================================================
+
+model SoftwareEntry {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  description Json?
+  icon        String?
+  category    String?  // "security", "office", "development", etc.
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  versions SoftwareVersion[]
+}
+
+model SoftwareVersion {
+  id            String   @id @default(uuid()) @db.Uuid
+  softwareId    String   @db.Uuid
+  version       String
+  size          BigInt
+  filename      String
+  storageKey    String
+  changelog     Json?
+  sha256        String
+  downloadCount Int      @default(0)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  software   SoftwareEntry  @relation(fields: [softwareId], references: [id], onDelete: Cascade)
+  downloads  DownloadLog[]
+
+  @@unique([softwareId, version])
+}
+
+model DownloadLog {
+  id              String   @id @default(uuid()) @db.Uuid
+  softwareVersionId String @db.Uuid
+  userId          String?  @db.Uuid
+  ip              String?
+  userAgent       String?
+  downloadedAt    DateTime @default(now())
+
+  softwareVersion SoftwareVersion @relation(fields: [softwareVersionId], references: [id])
+  user            User?           @relation(fields: [userId], references: [id])
+
+  @@index([softwareVersionId])
+  @@index([downloadedAt])
+}
+
+model Ticket {
+  id            String       @id @default(uuid()) @db.Uuid
+  title         String
+  description   String?
+  status        TicketStatus @default(NEW)
+  priority      Priority     @default(NORMAL)
+  category      TicketCategory @default(OTHER)
+  creatorId     String       @db.Uuid
+  assigneeId    String?      @db.Uuid
+  departmentId  String?      @db.Uuid
+  conversationId String?
+  slaDueAt      DateTime?
+  resolvedAt    DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  creator    User?       @relation("TicketCreator", fields: [creatorId], references: [id])
+  assignee   User?       @relation("TicketAssignee", fields: [assigneeId], references: [id])
+  department Department? @relation(fields: [departmentId], references: [id])
+
+  @@index([status])
+  @@index([creatorId])
+  @@index([assigneeId])
+}
+
+// ============================================================
+// Communication (Thread-Based Inbox)
+// ============================================================
+
+model Conversation {
+  id            String             @id @default(uuid()) @db.Uuid
+  subject       String
+  entityType    String             // "FormSubmission", "Content", "Ticket", "Afish", "Custom"
+  entityId      String
+  status        ConversationStatus @default(OPEN)
+  priority      Priority           @default(NORMAL)
+  slaDueAt      DateTime?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  participants ConversationParticipant[]
+  messages     Message[]
+
+  @@index([entityType, entityId])
+  @@index([status, updatedAt])
+}
+
+model ConversationParticipant {
+  id             String          @id @default(uuid()) @db.Uuid
+  conversationId String          @db.Uuid
+  userId         String          @db.Uuid
+  role           ParticipantRole @default(FOLLOWER)
+  joinedAt       DateTime        @default(now())
+  lastReadAt     DateTime?
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+}
+
+model Message {
+  id             String      @id @default(uuid()) @db.Uuid
+  conversationId String      @db.Uuid
+  senderId       String?     @db.Uuid
+  type           MessageType @default(USER)
+  content        Json        // TipTap JSON or Structured System Event
+  metadata       Json?
+  createdAt      DateTime    @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User?        @relation("MessageSender", fields: [senderId], references: [id])
+  attachments  MessageAttachment[]
+
+  @@index([conversationId, createdAt])
+}
+
+model MessageAttachment {
+  id        String @id @default(uuid()) @db.Uuid
+  messageId String @db.Uuid
+  mediaId   String @db.Uuid
+
+  message Message    @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  media   MediaAsset @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, mediaId])
+}
+
+model Notification {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  type      String   // "message", "ticket", "content", "system"
+  title     String
+  body      String?
+  href      String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([createdAt])
+}
+
+// ============================================================
+// Mobile Identity
+// ============================================================
+
+model DeviceRegistration {
+  id           String       @id @default(uuid()) @db.Uuid
+  userId       String       @db.Uuid
+  deviceId     String       @unique
+  platform     Platform
+  pushToken    String?
+  publicKey    String?
+  status       DeviceStatus @default(ACTIVE)
+  lastActiveAt DateTime     @default(now())
+  registeredAt DateTime     @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([deviceId])
+}
+
+model QrLinkToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  token     String   @unique
+  userId    String   @db.Uuid
+  nonce     String
+  status    QrStatus @default(PENDING)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([expiresAt])
+}
+
+model PushSubscription {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  endpoint  String
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, endpoint])
+}
+
+// ============================================================
+// Analytics & Audit
+// ============================================================
+
+model AuditLogEntry {
+  id         String   @id @default(uuid()) @db.Uuid
+  actorId    String?  @db.Uuid
+  actorName  String
+  action     String   // "CREATE", "UPDATE", "DELETE", "LOGIN", etc.
+  entityType String   // "Content", "User", "Form", etc.
+  entityId   String?
+  entityTitle String?
+  oldData    Json?
+  newData    Json?
+  ip         String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  actor User? @relation(fields: [actorId], references: [id])
+
+  @@index([actorId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}
+
+model PageView {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String?  @db.Uuid
+  path      String
+  referrer  String?
+  userAgent String?
+  ip        String?
+  sessionId String?
+  duration  Int?     // milliseconds
+  createdAt DateTime @default(now())
+
+  @@index([path, createdAt])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// ============================================================
+// Outbox Pattern (Reliability)
+// ============================================================
+
+model OutboxEvent {
+  id            String   @id @default(uuid()) @db.Uuid
+  aggregateId   String
+  aggregateType String
+  eventType     String
+  payload       Json
+  metadata      Json     @default("{}")
+  processedAt   DateTime?
+  retryCount    Int      @default(0)
+  maxRetries    Int      @default(3)
+  createdAt     DateTime @default(now())
+
+  @@index([processedAt])
+  @@index([aggregateType, eventType])
+}
+
+// ============================================================
+// Integration (Legacy Connectors)
+// ============================================================
+
+model LegacyConnector {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
+  type        String   // "REST", "SOAP", "FTP"
+  baseUrl     String?
+  config      Json     @default("{}") // Endpoint-specific config
+  isActive    Boolean  @default(true)
+  lastSyncAt  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model WebhookEndpoint {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  url         String
+  events      String[] // Events to subscribe to
+  secret      String?  // HMAC secret for signing
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
