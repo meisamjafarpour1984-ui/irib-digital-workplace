@@ -26,7 +26,13 @@
     "src/main.ts",
     "src/app.module.ts",
     "src/prisma/**/*.ts",
-    "src/modules/health/**/*.ts"
+    "src/modules/health/**/*.ts",
+    "src/modules/iam/**/*.ts"
   ],
-  "exclude": ["node_modules", "dist"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/modules/iam/user-management.controller.ts",
+    "src/modules/iam/user-management.service.ts"
+  ]
 }

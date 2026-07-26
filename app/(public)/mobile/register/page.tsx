@@ -5,10 +5,14 @@ import { Container } from '@/components/layout/container'
 import { Section } from '@/components/layout/section'
 import { PortalLogo } from '@/components/portal/portal-logo'
 import { Shield, Smartphone, KeyRound, CheckCircle, ArrowLeft, RefreshCw } from 'lucide-react'
+import { apiClient } from '@/lib/api-client'
+import { authApi } from '@/lib/services/auth'
+import { useAuthStore } from '@/lib/stores/auth-store'
 
 type Step = 'register' | 'otp' | 'pin' | 'success'
 
 export default function MobileRegisterPage() {
+  const setSession = useAuthStore((state) => state.setSession)
   const [step, setStep] = useState<Step>('register')
   const [personnelCode, setPersonnelCode] = useState('')
   const [mobile, setMobile] = useState('')
@@ -16,40 +20,65 @@ export default function MobileRegisterPage() {
   const [pin, setPin] = useState(['', '', '', '', '', ''])
   const [loading, setLoading] = useState(false)
   const [countdown, setCountdown] = useState(0)
+  const [challengeId, setChallengeId] = useState('')
+  const [error, setError] = useState('')
 
-  const sendOTP = () => {
+  const startCountdown = () => {
+    setCountdown(120)
+    const timer = window.setInterval(() => {
+      setCountdown((previous) => {
+        if (previous <= 1) {
+          window.clearInterval(timer)
+          return 0
+        }
+        return previous - 1
+      })
+    }, 1000)
+  }
+
+  const sendOTP = async () => {
     setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
+    setError('')
+    try {
+      const challenge = await authApi.register({ personnelCode, mobile })
+      setChallengeId(challenge.challengeId)
       setStep('otp')
-      setCountdown(120)
-      // Start countdown
-      const timer = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer)
-            return 0
-          }
-          return prev - 1
-        })
-      }, 1000)
-    }, 1500)
+      startCountdown()
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'ثبت‌نام ناموفق بود')
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const verifyOTP = () => {
+  const verifyOTP = async (code: string) => {
     setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
+    setError('')
+    try {
+      const session = await authApi.verifyOtp({ challengeId, code })
+      apiClient.setToken(session.accessToken)
+      setSession(session.user, session.accessToken)
       setStep('pin')
-    }, 1000)
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'کد تأیید معتبر نیست')
+      setOtp(['', '', '', '', '', ''])
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const setPinValue = () => {
+  const setPinValue = async (value: string) => {
     setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
+    setError('')
+    try {
+      await authApi.setPin(value)
       setStep('success')
-    }, 1000)
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'ثبت PIN ناموفق بود')
+      setPin(['', '', '', '', '', ''])
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleOTPInput = (index: number, value: string) => {
@@ -64,7 +93,7 @@ export default function MobileRegisterPage() {
     }
     // Auto-submit when complete
     if (newOtp.every((v) => v) && index === 5) {
-      verifyOTP()
+      void verifyOTP(newOtp.join(''))
     }
   }
 
@@ -78,7 +107,7 @@ export default function MobileRegisterPage() {
       next?.focus()
     }
     if (newPin.every((v) => v) && index === 5) {
-      setPinValue()
+      void setPinValue(newPin.join(''))
     }
   }
 
@@ -139,6 +168,11 @@ export default function MobileRegisterPage() {
                 </div>
 
                 <div className="space-y-4">
+                  {error && (
+                    <p role="alert" className="rounded-lg bg-error/10 p-3 text-sm text-error">
+                      {error}
+                    </p>
+                  )}
                   <div>
                     <label className="mb-1.5 block text-sm font-medium text-foreground">
                       کد پرسنلی
@@ -166,7 +200,7 @@ export default function MobileRegisterPage() {
                   </div>
                   <button
                     type="button"
-                    onClick={sendOTP}
+                    onClick={() => void sendOTP()}
                     disabled={!personnelCode || !mobile || loading}
                     className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-brand-hover disabled:opacity-50"
                   >
@@ -184,6 +218,11 @@ export default function MobileRegisterPage() {
             {/* OTP Step */}
             {step === 'otp' && (
               <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+                {error && (
+                  <p role="alert" className="mb-4 rounded-lg bg-error/10 p-3 text-sm text-error">
+                    {error}
+                  </p>
+                )}
                 <div className="mb-6 text-center">
                   <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-brand/10">
                     <KeyRound className="size-7 text-brand" aria-hidden />
@@ -219,7 +258,7 @@ export default function MobileRegisterPage() {
                   ) : (
                     <button
                       type="button"
-                      onClick={sendOTP}
+                      onClick={() => void sendOTP()}
                       className="text-sm font-medium text-brand hover:underline"
                     >
                       ارسال مجدد کد
@@ -241,6 +280,11 @@ export default function MobileRegisterPage() {
             {/* PIN Step */}
             {step === 'pin' && (
               <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+                {error && (
+                  <p role="alert" className="mb-4 rounded-lg bg-error/10 p-3 text-sm text-error">
+                    {error}
+                  </p>
+                )}
                 <div className="mb-6 text-center">
                   <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-brand/10">
                     <Shield className="size-7 text-brand" aria-hidden />

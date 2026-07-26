@@ -185,10 +185,43 @@ model User {
   auditLogs          AuditLogEntry[]
   notifications      Notification[]
   expertProfile      ExpertProfile?
+  authSessions       AuthSession[]
+  otpChallenges      OtpChallenge[]
 
   @@index([personnelCode])
   @@index([mobile])
   @@index([status])
+}
+
+model AuthSession {
+  id               String    @id @default(uuid()) @db.Uuid
+  userId           String    @db.Uuid
+  refreshTokenHash String    @unique
+  expiresAt        DateTime
+  revokedAt        DateTime?
+  createdAt        DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model OtpChallenge {
+  id         String    @id @default(uuid()) @db.Uuid
+  userId     String    @db.Uuid
+  purpose    String
+  codeHash   String
+  attempts   Int       @default(0)
+  maxAttempts Int      @default(5)
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, purpose])
+  @@index([expiresAt])
 }
 
 model UserDepartmentScope {

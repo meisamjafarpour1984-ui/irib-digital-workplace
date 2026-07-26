@@ -1,12 +1,18 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { PortalLogo } from '@/components/portal/portal-logo'
 import { User, KeyRound, LogIn, Shield, Eye, EyeOff, RefreshCw } from 'lucide-react'
+import { apiClient } from '@/lib/api-client'
+import { authApi } from '@/lib/services/auth'
+import { useAuthStore } from '@/lib/stores/auth-store'
 
 type Step = 'credentials' | 'otp' | 'success'
 
 export default function LoginPage() {
+  const router = useRouter()
+  const setSession = useAuthStore((state) => state.setSession)
   const [step, setStep] = useState<Step>('credentials')
   const [personnelCode, setPersonnelCode] = useState('')
   const [password, setPassword] = useState('')
@@ -14,32 +20,52 @@ export default function LoginPage() {
   const [otp, setOtp] = useState(['', '', '', '', '', ''])
   const [loading, setLoading] = useState(false)
   const [countdown, setCountdown] = useState(0)
+  const [challengeId, setChallengeId] = useState('')
+  const [error, setError] = useState('')
 
-  const handleLogin = () => {
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-      setStep('otp')
-      setCountdown(120)
-      const timer = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer)
-            return 0
-          }
-          return prev - 1
-        })
-      }, 1000)
-    }, 1500)
+  const startCountdown = () => {
+    setCountdown(120)
+    const timer = window.setInterval(() => {
+      setCountdown((previous) => {
+        if (previous <= 1) {
+          window.clearInterval(timer)
+          return 0
+        }
+        return previous - 1
+      })
+    }, 1000)
   }
 
-  const verifyOTP = () => {
+  const handleLogin = async () => {
     setLoading(true)
-    setTimeout(() => {
+    setError('')
+    try {
+      const challenge = await authApi.login({ personnelCode, password })
+      setChallengeId(challenge.challengeId)
+      setStep('otp')
+      startCountdown()
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'ورود ناموفق بود')
+    } finally {
       setLoading(false)
+    }
+  }
+
+  const verifyOTP = async (code: string) => {
+    setLoading(true)
+    setError('')
+    try {
+      const session = await authApi.verifyOtp({ challengeId, code })
+      apiClient.setToken(session.accessToken)
+      setSession(session.user, session.accessToken)
       setStep('success')
-      window.location.href = '/dashboard'
-    }, 1000)
+      router.replace('/dashboard')
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'کد تأیید معتبر نیست')
+      setOtp(['', '', '', '', '', ''])
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleOTPInput = (index: number, value: string) => {
@@ -51,7 +77,7 @@ export default function LoginPage() {
       document.getElementById(`otp-${index + 1}`)?.focus()
     }
     if (newOtp.every((v) => v) && index === 5) {
-      verifyOTP()
+      void verifyOTP(newOtp.join(''))
     }
   }
 
@@ -82,6 +108,11 @@ export default function LoginPage() {
               </div>
 
               <div className="space-y-4">
+                {error && (
+                  <p role="alert" className="rounded-lg bg-error/10 p-3 text-sm text-error">
+                    {error}
+                  </p>
+                )}
                 <div>
                   <label className="mb-1.5 block text-sm font-medium text-foreground">
                     کد پرسنلی
@@ -128,7 +159,7 @@ export default function LoginPage() {
                 </div>
                 <button
                   type="button"
-                  onClick={handleLogin}
+                  onClick={() => void handleLogin()}
                   disabled={!personnelCode || !password || loading}
                   className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-brand-hover disabled:opacity-50"
                 >
@@ -179,6 +210,12 @@ export default function LoginPage() {
                 ))}
               </div>
 
+              {error && (
+                <p role="alert" className="mt-4 text-center text-sm text-error">
+                  {error}
+                </p>
+              )}
+
               <div className="mt-6 text-center">
                 {countdown > 0 ? (
                   <p className="text-sm text-muted-foreground">
@@ -190,7 +227,7 @@ export default function LoginPage() {
                 ) : (
                   <button
                     type="button"
-                    onClick={handleLogin}
+                    onClick={() => void handleLogin()}
                     className="text-sm font-medium text-brand hover:underline"
                   >
                     ارسال مجدد کد

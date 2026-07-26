@@ -7,15 +7,22 @@ interface RequestOptions extends Omit<RequestInit, 'method' | 'body'> {
   params?: Record<string, string | number | boolean | undefined>
 }
 
-interface ApiError {
+class ApiError extends Error {
   status: number
-  message: string
   errors?: Record<string, string[]>
+
+  constructor(status: number, message: string, errors?: Record<string, string[]>) {
+    super(message)
+    this.name = 'ApiError'
+    this.status = status
+    this.errors = errors
+  }
 }
 
 class ApiClient {
   private baseUrl: string
   private token: string | null = null
+  private refreshPromise: Promise<string | null> | null = null
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl
@@ -25,7 +32,11 @@ class ApiClient {
     this.token = token
   }
 
-  private async request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
+  private async request<T>(
+    endpoint: string,
+    options: RequestOptions = {},
+    retryAfterRefresh = true
+  ): Promise<T> {
     const { method = 'GET', body, params, headers: customHeaders, ...rest } = options
 
     // Build URL with params
@@ -53,23 +64,29 @@ class ApiClient {
       method,
       headers,
       body: body ? JSON.stringify(body) : undefined,
+      credentials: 'include',
       ...rest,
     })
 
     // Handle errors
-    if (!response.ok) {
-      const error: ApiError = {
-        status: response.status,
-        message: `Request failed: ${response.statusText}`,
+    if (response.status === 401 && retryAfterRefresh && endpoint !== '/auth/refresh') {
+      const refreshedToken = await this.refreshAccessToken()
+      if (refreshedToken) {
+        return this.request<T>(endpoint, options, false)
       }
+    }
+
+    if (!response.ok) {
+      let message = `Request failed: ${response.statusText}`
+      let errors: Record<string, string[]> | undefined
       try {
         const data = await response.json()
-        error.message = data.message || error.message
-        error.errors = data.errors
+        message = Array.isArray(data.message) ? data.message.join('، ') : data.message || message
+        errors = data.errors
       } catch {
         // Response is not JSON
       }
-      throw error
+      throw new ApiError(response.status, message, errors)
     }
 
     // Handle 204 No Content
@@ -78,6 +95,26 @@ class ApiClient {
     }
 
     return response.json()
+  }
+
+  private refreshAccessToken() {
+    if (!this.refreshPromise) {
+      this.refreshPromise = fetch(`${this.baseUrl}/auth/refresh`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+      })
+        .then(async (response) => {
+          if (!response.ok) return null
+          const session = (await response.json()) as { accessToken?: string }
+          this.setToken(session.accessToken ?? null)
+          return session.accessToken ?? null
+        })
+        .finally(() => {
+          this.refreshPromise = null
+        })
+    }
+    return this.refreshPromise
   }
 
   get<T>(endpoint: string, options?: RequestOptions) {

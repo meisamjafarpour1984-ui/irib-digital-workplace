@@ -6,6 +6,7 @@ import {
   PermissionProvider,
   ToasterProvider,
   QueryProvider,
+  AuthProvider,
 } from '@/components/providers'
 import './globals.css'
 
@@ -52,10 +53,12 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <ThemeProvider>
           <QueryProvider>
-            <PermissionProvider>
-              {children}
-              <ToasterProvider />
-            </PermissionProvider>
+            <AuthProvider>
+              <PermissionProvider>
+                {children}
+                <ToasterProvider />
+              </PermissionProvider>
+            </AuthProvider>
           </QueryProvider>
         </ThemeProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}

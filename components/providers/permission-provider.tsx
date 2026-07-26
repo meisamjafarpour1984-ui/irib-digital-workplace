@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useMemo } from 'react'
+import { useAuthStore } from '@/lib/stores/auth-store'
 
 type Permission = string
 type Scope = string
@@ -20,29 +21,29 @@ interface PermissionProviderProps {
   scopes?: Scope[]
 }
 
-export function PermissionProvider({
-  children,
-  permissions = [],
-  scopes = [],
-}: PermissionProviderProps) {
+export function PermissionProvider({ children, permissions, scopes }: PermissionProviderProps) {
+  const user = useAuthStore((state) => state.user)
+  const resolvedPermissions = permissions ?? user?.permissions ?? []
+  const resolvedScopes = scopes ?? user?.departments.map(({ id }) => id) ?? []
   const value = useMemo(
     () => ({
-      permissions,
-      scopes,
+      permissions: resolvedPermissions,
+      scopes: resolvedScopes,
       hasPermission: (permission: Permission, scope?: Scope) => {
-        const hasPerm = permissions.includes(permission) || permissions.includes('*')
+        const hasPerm =
+          resolvedPermissions.includes(permission) || resolvedPermissions.includes('*')
         if (!scope) return hasPerm
-        return hasPerm && (scopes.includes(scope) || scopes.includes('*'))
+        return hasPerm && (resolvedScopes.includes(scope) || resolvedScopes.includes('*'))
       },
       hasAnyPermission: (perms: Permission[], scope?: Scope) => {
         return perms.some((p) => {
-          const hasPerm = permissions.includes(p) || permissions.includes('*')
+          const hasPerm = resolvedPermissions.includes(p) || resolvedPermissions.includes('*')
           if (!scope) return hasPerm
-          return hasPerm && (scopes.includes(scope) || scopes.includes('*'))
+          return hasPerm && (resolvedScopes.includes(scope) || resolvedScopes.includes('*'))
         })
       },
     }),
-    [permissions, scopes]
+    [resolvedPermissions, resolvedScopes]
   )
 
   return <PermissionContext.Provider value={value}>{children}</PermissionContext.Provider>
