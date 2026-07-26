@@ -22,7 +22,6 @@ module.exports = {
     'src/modules/media/',
     'src/modules/mobile-identity/',
     'src/modules/organization/',
-    'src/modules/search/',
     'src/modules/software/',
     'src/modules/widget-engine/',
   ],

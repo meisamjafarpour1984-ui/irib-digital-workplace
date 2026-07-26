@@ -5,6 +5,7 @@ import { HealthModule } from './modules/health/health.module'
 import { IamModule } from './modules/iam/iam.module'
 import { ContentModule } from './modules/content/content.module'
 import { FormsModule } from './modules/forms/forms.module'
+import { SearchModule } from './modules/search/search.module'
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { FormsModule } from './modules/forms/forms.module'
     IamModule,
     ContentModule,
     FormsModule,
+    SearchModule,
   ],
 })
 export class AppModule {}
