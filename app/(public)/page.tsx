@@ -32,12 +32,12 @@ export default function HomePage() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           <div className="lg:col-span-8 xl:col-span-9">
             <WidgetRenderer
-              instances={homepageWidgets.filter(w => w.widgetId === 'hero-media')}
+              instances={homepageWidgets.filter((w) => w.widgetId === 'hero-media')}
             />
           </div>
           <aside className="flex flex-col gap-5 lg:col-span-4 xl:col-span-3">
             <WidgetRenderer
-              instances={homepageWidgets.filter(w =>
+              instances={homepageWidgets.filter((w) =>
                 ['internet-login', 'quick-access'].includes(w.widgetId)
               )}
             />
@@ -46,25 +46,35 @@ export default function HomePage() {
 
         {/* Widget row */}
         <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
-          <WidgetRenderer instances={homepageWidgets.filter(w => w.widgetId === 'media-gallery')} />
-          <WidgetRenderer instances={homepageWidgets.filter(w => w.widgetId === 'news-timeline')} />
-          <WidgetRenderer instances={homepageWidgets.filter(w => w.widgetId === 'dept-announcements-basic')} />
-          <WidgetRenderer instances={homepageWidgets.filter(w => w.widgetId === 'it-services')} />
+          <WidgetRenderer
+            instances={homepageWidgets.filter((w) => w.widgetId === 'media-gallery')}
+          />
+          <WidgetRenderer
+            instances={homepageWidgets.filter((w) => w.widgetId === 'news-timeline')}
+          />
+          <WidgetRenderer
+            instances={homepageWidgets.filter((w) => w.widgetId === 'dept-announcements-basic')}
+          />
+          <WidgetRenderer instances={homepageWidgets.filter((w) => w.widgetId === 'it-services')} />
         </div>
 
         {/* Occasion banner */}
         <div className="mt-6">
-          <WidgetRenderer instances={homepageWidgets.filter(w => w.widgetId === 'occasion-banner')} />
+          <WidgetRenderer
+            instances={homepageWidgets.filter((w) => w.widgetId === 'occasion-banner')}
+          />
         </div>
 
         {/* Services */}
         <div className="mt-6">
-          <WidgetRenderer instances={homepageWidgets.filter(w => w.widgetId === 'services-grid')} />
+          <WidgetRenderer
+            instances={homepageWidgets.filter((w) => w.widgetId === 'services-grid')}
+          />
         </div>
 
         {/* Help */}
         <div className="mt-6">
-          <WidgetRenderer instances={homepageWidgets.filter(w => w.widgetId === 'help-cards')} />
+          <WidgetRenderer instances={homepageWidgets.filter((w) => w.widgetId === 'help-cards')} />
         </div>
       </main>
 

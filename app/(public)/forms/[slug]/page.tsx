@@ -6,11 +6,12 @@ import { Section } from '@/components/layout/section'
 import { UtilityBar } from '@/components/portal/utility-bar'
 import { PortalHeader } from '@/components/portal/portal-header'
 import { PortalFooter } from '@/components/portal/portal-footer'
-import { CheckCircle, ArrowLeft, ArrowRight, Printer } from 'lucide-react'
+import { CheckCircle, ArrowLeft, ArrowRight, Printer, Upload } from 'lucide-react'
 
 interface FormField {
   id: string
-  type: 'text' | 'textarea' | 'number' | 'date' | 'select' | 'checkbox' | 'toggle' | 'file' | 'table'
+  type:
+    'text' | 'textarea' | 'number' | 'date' | 'select' | 'checkbox' | 'toggle' | 'file' | 'table'
   label: string
   placeholder?: string
   required: boolean
@@ -37,17 +38,45 @@ const sampleForm: FormData = {
     { title: 'تأیید و ارسال', fieldIds: ['f7'] },
   ],
   fields: [
-    { id: 'f1', type: 'text', label: 'نام و نام خانوادگی', placeholder: 'نام کامل', required: true },
+    {
+      id: 'f1',
+      type: 'text',
+      label: 'نام و نام خانوادگی',
+      placeholder: 'نام کامل',
+      required: true,
+    },
     { id: 'f2', type: 'text', label: 'کد پرسنلی', placeholder: 'مثال: ۱۲۳۴۵', required: true },
-    { id: 'f3', type: 'select', label: 'واحد سازمانی', required: true, options: ['فناوری اطلاعات', 'تولید', 'اداری', 'پژوهش', 'روابط عمومی'] },
-    { id: 'f4', type: 'select', label: 'نرم‌افزار مورد نیاز', required: true, options: ['آنتی‌ویروس', 'آفیس', 'اتوماسیون اداری', 'حسابداری', 'سایر'] },
-    { id: 'f5', type: 'textarea', label: 'دلیل درخواست', placeholder: 'توضیح دهید چرا به این نرم‌افزار نیاز دارید...', required: true },
+    {
+      id: 'f3',
+      type: 'select',
+      label: 'واحد سازمانی',
+      required: true,
+      options: ['فناوری اطلاعات', 'تولید', 'اداری', 'پژوهش', 'روابط عمومی'],
+    },
+    {
+      id: 'f4',
+      type: 'select',
+      label: 'نرم‌افزار مورد نیاز',
+      required: true,
+      options: ['آنتی‌ویروس', 'آفیس', 'اتوماسیون اداری', 'حسابداری', 'سایر'],
+    },
+    {
+      id: 'f5',
+      type: 'textarea',
+      label: 'دلیل درخواست',
+      placeholder: 'توضیح دهید چرا به این نرم‌افزار نیاز دارید...',
+      required: true,
+    },
     { id: 'f6', type: 'file', label: 'فایل پیوست', required: false },
     { id: 'f7', type: 'checkbox', label: 'تایید می‌کنم که اطلاعات فوق صحیح است', required: true },
   ],
 }
 
-export default function FormRendererPage({ params: _params }: { params: Promise<{ slug: string }> }) {
+export default function FormRendererPage({
+  params: _params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
   const [currentStep, setCurrentStep] = useState(0)
   const [formData, setFormData] = useState<Record<string, unknown>>({})
   const [submitted, setSubmitted] = useState(false)
@@ -68,9 +97,7 @@ export default function FormRendererPage({ params: _params }: { params: Promise<
     setSubmitted(true)
   }
 
-  const canProceed = currentStepFields
-    .filter((f) => f.required)
-    .every((f) => formData[f.id])
+  const canProceed = currentStepFields.filter((f) => f.required).every((f) => formData[f.id])
 
   if (submitted) {
     return (
@@ -85,11 +112,16 @@ export default function FormRendererPage({ params: _params }: { params: Promise<
               </div>
               <h1 className="mt-4 text-heading-1 text-foreground">فرم با موفقیت ارسال شد</h1>
               <p className="mt-2 text-sm text-muted-foreground">
-                فرم شما ثبت شد و در انتظار بررسی است. نتیجه از طریق کارتابل ارتباطات اطلاع‌رسانی می‌شود.
+                فرم شما ثبت شد و در انتظار بررسی است. نتیجه از طریق کارتابل ارتباطات اطلاع‌رسانی
+                می‌شود.
               </p>
               <button
                 type="button"
-                onClick={() => { setSubmitted(false); setFormData({}); setCurrentStep(0) }}
+                onClick={() => {
+                  setSubmitted(false)
+                  setFormData({})
+                  setCurrentStep(0)
+                }}
                 className="mt-6 rounded-lg bg-brand px-6 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-brand-hover"
               >
                 تکمیل فرم جدید
@@ -121,24 +153,32 @@ export default function FormRendererPage({ params: _params }: { params: Promise<
                 <div className="flex items-center justify-between">
                   {form.steps!.map((step, i) => (
                     <div key={i} className="flex items-center gap-2">
-                      <div className={`flex size-8 items-center justify-center rounded-full text-sm font-bold ${
-                        i < currentStep
-                          ? 'bg-success text-white'
-                          : i === currentStep
-                          ? 'bg-brand text-white'
-                          : 'bg-muted text-muted-foreground'
-                      }`}>
+                      <div
+                        className={`flex size-8 items-center justify-center rounded-full text-sm font-bold ${
+                          i < currentStep
+                            ? 'bg-success text-white'
+                            : i === currentStep
+                              ? 'bg-brand text-white'
+                              : 'bg-muted text-muted-foreground'
+                        }`}
+                      >
                         {i < currentStep ? <CheckCircle className="size-4" /> : i + 1}
                       </div>
-                      <span className={`text-sm ${
-                        i === currentStep ? 'font-semibold text-foreground' : 'text-muted-foreground'
-                      }`}>
+                      <span
+                        className={`text-sm ${
+                          i === currentStep
+                            ? 'font-semibold text-foreground'
+                            : 'text-muted-foreground'
+                        }`}
+                      >
                         {step.title}
                       </span>
                       {i < form.steps!.length - 1 && (
-                        <div className={`mx-2 h-px w-8 ${
-                          i < currentStep ? 'bg-success' : 'bg-border'
-                        }`} />
+                        <div
+                          className={`mx-2 h-px w-8 ${
+                            i < currentStep ? 'bg-success' : 'bg-border'
+                          }`}
+                        />
                       )}
                     </div>
                   ))}
@@ -197,7 +237,9 @@ export default function FormRendererPage({ params: _params }: { params: Promise<
                       >
                         <option value="">انتخاب کنید...</option>
                         {field.options?.map((opt) => (
-                          <option key={opt} value={opt}>{opt}</option>
+                          <option key={opt} value={opt}>
+                            {opt}
+                          </option>
                         ))}
                       </select>
                     )}
@@ -227,7 +269,9 @@ export default function FormRendererPage({ params: _params }: { params: Promise<
                       <div className="flex w-full items-center justify-center rounded-lg border-2 border-dashed border-border p-8">
                         <div className="text-center">
                           <Upload className="mx-auto size-8 text-muted-foreground/30" aria-hidden />
-                          <p className="mt-2 text-sm text-muted-foreground">فایل را اینجا رها کنید یا کلیک کنید</p>
+                          <p className="mt-2 text-sm text-muted-foreground">
+                            فایل را اینجا رها کنید یا کلیک کنید
+                          </p>
                           <p className="mt-1 text-xs text-muted-foreground/60">حداکثر ۱۰ مگابایت</p>
                         </div>
                       </div>
@@ -251,7 +295,10 @@ export default function FormRendererPage({ params: _params }: { params: Promise<
                   )}
                 </div>
                 <div className="flex items-center gap-3">
-                  <button type="button" className="flex items-center gap-2 rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground hover:bg-muted">
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground hover:bg-muted"
+                  >
                     <Printer className="size-4" aria-hidden />
                     چاپ
                   </button>

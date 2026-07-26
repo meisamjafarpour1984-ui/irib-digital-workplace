@@ -39,7 +39,7 @@ export const createContentSchema = z.object({
   tags: z.array(z.string()).optional(),
   categories: z.array(z.string()).optional(),
   scheduledAt: z.string().datetime().optional(),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 })
 
 export const updateContentSchema = createContentSchema.partial()
@@ -47,17 +47,29 @@ export const updateContentSchema = createContentSchema.partial()
 // Form validators
 export const formFieldSchema = z.object({
   id: z.string(),
-  type: z.enum(['text', 'textarea', 'number', 'date', 'select', 'checkbox', 'toggle', 'file', 'table']),
+  type: z.enum([
+    'text',
+    'textarea',
+    'number',
+    'date',
+    'select',
+    'checkbox',
+    'toggle',
+    'file',
+    'table',
+  ]),
   label: z.string().min(1),
   placeholder: z.string().optional(),
   required: z.boolean().default(false),
   options: z.array(z.string()).optional(),
-  validation: z.object({
-    min: z.number().optional(),
-    max: z.number().optional(),
-    pattern: z.string().optional(),
-    message: z.string().optional(),
-  }).optional(),
+  validation: z
+    .object({
+      min: z.number().optional(),
+      max: z.number().optional(),
+      pattern: z.string().optional(),
+      message: z.string().optional(),
+    })
+    .optional(),
 })
 
 export const createFormSchema = z.object({
@@ -65,13 +77,17 @@ export const createFormSchema = z.object({
   description: z.string().optional(),
   fields: z.array(formFieldSchema).min(1, 'حداقل یک فیلد اضافه کنید'),
   mode: z.enum(['wizard', 'single']).default('single'),
-  steps: z.array(z.object({
-    title: z.string(),
-    fieldIds: z.array(z.string()),
-  })).optional(),
+  steps: z
+    .array(
+      z.object({
+        title: z.string(),
+        fieldIds: z.array(z.string()),
+      })
+    )
+    .optional(),
 })
 
-export const formSubmissionSchema = z.record(z.unknown())
+export const formSubmissionSchema = z.record(z.string(), z.unknown())
 
 // User validators
 export const loginSchema = z.object({

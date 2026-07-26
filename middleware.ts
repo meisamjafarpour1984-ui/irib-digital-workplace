@@ -42,8 +42,6 @@ export function middleware(request: NextRequest) {
   response.headers.set('Content-Security-Policy', csp)
   response.headers.set('X-Nonce', nonce)
 
-  // Rate limiting headers (basic implementation)
-  const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
   response.headers.set('X-RateLimit-Policy', 'default')
 
   return response

@@ -1,10 +1,10 @@
 import { CalendarHeart } from 'lucide-react'
 
 export function OccasionBanner({
-  title,
+  title = 'مناسبت ملی گرامی باد',
   cta = 'مشاهده برنامه‌ها',
 }: {
-  title: string
+  title?: string
   cta?: string
 }) {
   return (

@@ -1,7 +1,7 @@
 'use client'
 
 import { Suspense } from 'react'
-import { widgetRegistry } from './widget-registry'
+import { widgetRegistry } from './manifest'
 import { WidgetSkeleton } from './widget-skeleton'
 import type { WidgetInstance } from './types'
 
