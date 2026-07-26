@@ -17,19 +17,8 @@ import {
   List,
   CheckSquare,
   ToggleLeft,
-  Upload,
-  Table,
 } from 'lucide-react'
-
-interface FormField {
-  id: string
-  type:
-    'text' | 'textarea' | 'number' | 'date' | 'select' | 'checkbox' | 'toggle' | 'file' | 'table'
-  label: string
-  placeholder?: string
-  required: boolean
-  options?: string[]
-}
+import { formsApi, type FormField, type FormFieldType } from '@/lib/services/forms'
 
 const fieldTypes = [
   { type: 'text' as const, label: 'متن', icon: Type },
@@ -39,8 +28,6 @@ const fieldTypes = [
   { type: 'select' as const, label: 'لیست انتخاب', icon: List },
   { type: 'checkbox' as const, label: 'چک‌باکس', icon: CheckSquare },
   { type: 'toggle' as const, label: 'کلید', icon: ToggleLeft },
-  { type: 'file' as const, label: 'آپلود فایل', icon: Upload },
-  { type: 'table' as const, label: 'جدول', icon: Table },
 ]
 
 export default function FormBuilderPage() {
@@ -71,8 +58,15 @@ export default function FormBuilderPage() {
   const [selectedField, setSelectedField] = useState<string | null>(null)
   const [formTitle, setFormTitle] = useState('فرم درخواست جدید')
   const [previewMode, setPreviewMode] = useState(false)
+  const [formId, setFormId] = useState('')
+  const [formSlug, setFormSlug] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [activating, setActivating] = useState(false)
+  const [active, setActive] = useState(false)
+  const [message, setMessage] = useState('')
+  const [error, setError] = useState('')
 
-  const addField = (type: FormField['type']) => {
+  const addField = (type: FormFieldType) => {
     const newField: FormField = {
       id: `f${Date.now()}`,
       type,
@@ -94,6 +88,39 @@ export default function FormBuilderPage() {
   }
 
   const selectedFieldData = fields.find((f) => f.id === selectedField)
+
+  const saveForm = async () => {
+    if (formId) return
+    setSaving(true)
+    setError('')
+    setMessage('')
+    try {
+      const form = await formsApi.create({ title: formTitle.trim(), fields })
+      setFormId(form.id)
+      setFormSlug(form.slug)
+      setMessage('فرم به‌صورت پیش‌نویس ذخیره شد.')
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'ذخیره فرم انجام نشد')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const activateForm = async () => {
+    if (!formId) return
+    setActivating(true)
+    setError('')
+    try {
+      const form = await formsApi.activate(formId)
+      setActive(true)
+      setFormSlug(form.slug)
+      setMessage('فرم فعال شد و اکنون قابل تکمیل است.')
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'فعال‌سازی فرم انجام نشد')
+    } finally {
+      setActivating(false)
+    }
+  }
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -126,13 +153,42 @@ export default function FormBuilderPage() {
               </button>
               <button
                 type="button"
+                onClick={() => void saveForm()}
+                disabled={saving || !!formId || formTitle.trim().length < 3 || fields.length === 0}
                 className="flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-brand-hover"
               >
                 <Save className="size-4" aria-hidden />
-                ذخیره فرم
+                {saving ? 'در حال ذخیره...' : formId ? 'ذخیره شد' : 'ذخیره فرم'}
+              </button>
+              <button
+                type="button"
+                onClick={() => void activateForm()}
+                disabled={!formId || activating || active}
+                className="rounded-lg border border-brand px-4 py-2 text-sm font-semibold text-brand hover:bg-brand/5 disabled:opacity-50"
+              >
+                {activating ? 'در حال فعال‌سازی...' : active ? 'فعال' : 'فعال‌سازی'}
               </button>
             </div>
           </div>
+
+          {(message || error) && (
+            <div
+              role={error ? 'alert' : 'status'}
+              className={`mb-4 rounded-xl border p-3 text-sm ${error ? 'border-error/20 bg-error/5 text-error' : 'border-success/20 bg-success/5 text-success'}`}
+            >
+              {error || message}
+              {active && formSlug && (
+                <a
+                  className="ms-2 underline"
+                  href={`/forms/${formSlug}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  مشاهده فرم
+                </a>
+              )}
+            </div>
+          )}
 
           <div className="grid grid-cols-12 gap-4">
             {/* Field Palette (Left) */}
@@ -223,19 +279,6 @@ export default function FormBuilderPage() {
                             <input type="checkbox" className="peer sr-only" />
                             <div className="peer h-6 w-11 rounded-full bg-muted after:absolute after:start-[2px] after:top-[2px] after:size-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all peer-checked:bg-brand peer-checked:after:translate-x-full peer-checked:after:border-white" />
                           </label>
-                        )}
-                        {field.type === 'file' && (
-                          <div className="flex w-full items-center justify-center rounded-lg border-2 border-dashed border-border p-6">
-                            <div className="text-center">
-                              <Upload
-                                className="mx-auto size-8 text-muted-foreground/30"
-                                aria-hidden
-                              />
-                              <p className="mt-2 text-sm text-muted-foreground">
-                                فایل را اینجا رها کنید یا کلیک کنید
-                              </p>
-                            </div>
-                          </div>
                         )}
                       </div>
                     ))}

@@ -28,7 +28,8 @@
     "src/prisma/**/*.ts",
     "src/modules/health/**/*.ts",
     "src/modules/iam/**/*.ts",
-    "src/modules/content/**/*.ts"
+    "src/modules/content/**/*.ts",
+    "src/modules/forms/**/*.ts"
   ],
   "exclude": [
     "node_modules",
