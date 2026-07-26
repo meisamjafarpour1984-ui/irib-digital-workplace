@@ -21,5 +21,12 @@
       "@modules/*": ["src/modules/*"],
       "@packages/*": ["packages/*"]
     }
-  }
+  },
+  "include": [
+    "src/main.ts",
+    "src/app.module.ts",
+    "src/prisma/**/*.ts",
+    "src/modules/health/**/*.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
 }

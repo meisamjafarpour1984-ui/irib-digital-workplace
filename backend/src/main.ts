@@ -1,17 +1,24 @@
 import { NestFactory } from '@nestjs/core'
 import { ValidationPipe } from '@nestjs/common'
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
+import helmet from 'helmet'
 import { AppModule } from './app.module'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
+  app.enableShutdownHooks()
+  app.use(helmet())
 
   // Global prefix
   app.setGlobalPrefix('api/v1')
 
   // CORS
+  const allowedOrigins = (process.env.CORS_ORIGINS ?? 'http://localhost:3000')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean)
   app.enableCors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    origin: allowedOrigins,
     credentials: true,
   })
 
@@ -51,8 +58,8 @@ async function bootstrap() {
   // Start
   const port = process.env.PORT || 3001
   await app.listen(port)
-  console.log(`🚀 IRIB DWP Backend running on http://localhost:${port}`)
-  console.log(`📚 Swagger docs at http://localhost:${port}/api/docs`)
+  console.log(`IRIB DWP Backend running on http://localhost:${port}`)
+  console.log(`Swagger docs at http://localhost:${port}/api/docs`)
 }
 
-bootstrap()
+void bootstrap()

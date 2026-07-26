@@ -4,7 +4,8 @@
 // ============================================================
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
@@ -183,6 +184,7 @@ model User {
   pushSubscriptions  PushSubscription[]
   auditLogs          AuditLogEntry[]
   notifications      Notification[]
+  expertProfile      ExpertProfile?
 
   @@index([personnelCode])
   @@index([mobile])
@@ -275,6 +277,7 @@ model Department {
   contents     ContentScope[]
   microsite    MicrositeConfig?
   tickets      Ticket[]
+  experts      ExpertProfile[]
 
   @@index([parentId])
   @@index([slug])
@@ -332,9 +335,6 @@ model Content {
   versions     ContentVersion[]
   media        ContentMedia[]
   formDefinitions FormDefinition[]
-  formSubmissions FormSubmission[]
-  afishRecords    AfishRecord[]
-  conversations   Conversation[]
 
   @@index([contentType, status, publishedAt])
   @@index([authorId])
@@ -553,6 +553,7 @@ model FormDefinition {
   contentId       String? @db.Uuid
   content         Content? @relation(fields: [contentId], references: [id])
   submissions     FormSubmission[]
+  afishRecords    AfishRecord[]
 
   @@index([slug])
   @@index([formType])
