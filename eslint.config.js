@@ -37,6 +37,25 @@ export default [
     },
   },
   {
-    ignores: ['node_modules/', '.next/', 'dist/', 'backend/'],
+    files: ['scripts/**/*.js'],
+    languageOptions: {
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+      },
+    },
+  },
+  {
+    ignores: [
+      'node_modules/',
+      '.next/',
+      'dist/',
+      'backend/',
+      'public/sw.js',
+      'load-tests/',
+      'vitest.config.ts',
+      'playwright.config.ts',
+      '.storybook/',
+    ],
   },
 ]
