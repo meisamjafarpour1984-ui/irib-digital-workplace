@@ -1,0 +1,6 @@
+{
+  "$schema": "https://knip.dev/schema.json",
+  "entry": ["app/**/*.{ts,tsx}", "middleware.ts"],
+  "ignore": ["node_modules", ".next", "public"],
+  "ignoreDependencies": ["@storybook/react-vite"]
+}
