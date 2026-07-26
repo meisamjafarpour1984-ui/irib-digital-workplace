@@ -1,30 +1,58 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { DashboardSidebar } from '@/components/dashboard/dashboard-sidebar'
 import { DashboardTopbar } from '@/components/dashboard/dashboard-topbar'
 import { Save, Eye, ArrowRight, Tag, Trash2 } from 'lucide-react'
 import { RichTextEditor } from '@/components/molecules/rich-text-editor'
 import { FileUploader } from '@/components/molecules/file-uploader'
+import {
+  contentApi,
+  localizedText,
+  type ContentType,
+  type DepartmentOption,
+} from '@/lib/services/content'
 
 const contentTypes = [
-  { id: 'news', label: 'خبر' },
-  { id: 'announcement', label: 'اطلاعیه' },
-  { id: 'event', label: 'رویداد' },
-  { id: 'gallery', label: 'گالری' },
-  { id: 'banner', label: 'بنر' },
-]
-
-const departments = ['فناوری اطلاعات', 'روابط عمومی', 'تولید', 'اداری و مالی', 'پژوهش', 'آموزش']
+  { id: 'NEWS', label: 'خبر' },
+  { id: 'ANNOUNCEMENT', label: 'اطلاعیه' },
+  { id: 'EVENT', label: 'رویداد' },
+  { id: 'GALLERY', label: 'گالری' },
+  { id: 'BANNER', label: 'بنر' },
+] satisfies Array<{ id: ContentType; label: string }>
 
 export default function ContentEditorPage() {
   const [title, setTitle] = useState('')
   const [excerpt, setExcerpt] = useState('')
   const [body, setBody] = useState('')
-  const [contentType, setContentType] = useState('news')
+  const [contentType, setContentType] = useState<ContentType>('NEWS')
   const [department, setDepartment] = useState('')
+  const [departments, setDepartments] = useState<DepartmentOption[]>([])
   const [tags, setTags] = useState<string[]>([])
   const [tagInput, setTagInput] = useState('')
+  const [contentId, setContentId] = useState('')
+  const [savedSlug, setSavedSlug] = useState('')
+  const [savedVersion, setSavedVersion] = useState(0)
+  const [saving, setSaving] = useState(false)
+  const [publishing, setPublishing] = useState(false)
+  const [published, setPublished] = useState(false)
+  const [saveError, setSaveError] = useState('')
+  const [saveMessage, setSaveMessage] = useState('')
+
+  useEffect(() => {
+    let active = true
+    contentApi
+      .listDepartments()
+      .then((items) => {
+        if (active) setDepartments(items)
+      })
+      .catch(() => {
+        if (active) setDepartments([])
+      })
+    return () => {
+      active = false
+    }
+  }, [])
 
   const addTag = () => {
     if (tagInput.trim() && !tags.includes(tagInput.trim())) {
@@ -35,6 +63,51 @@ export default function ContentEditorPage() {
 
   const removeTag = (tag: string) => {
     setTags(tags.filter((t) => t !== tag))
+  }
+
+  const saveDraft = async () => {
+    setSaving(true)
+    setSaveError('')
+    setSaveMessage('')
+    try {
+      const input = {
+        contentType,
+        title: title.trim(),
+        excerpt: excerpt.trim() || undefined,
+        body: body || undefined,
+        tagNames: tags,
+        scopeIds: department ? [department] : [],
+      }
+      const saved = contentId
+        ? await contentApi.update(contentId, { ...input, expectedVersion: savedVersion })
+        : await contentApi.create(input)
+      setContentId(saved.id)
+      setSavedSlug(saved.slug)
+      setSavedVersion(saved.version)
+      setPublished(false)
+      setSaveMessage(`پیش‌نویس نسخه ${saved.version.toLocaleString('fa-IR')} ذخیره شد.`)
+    } catch (caught) {
+      setSaveError(caught instanceof Error ? caught.message : 'ذخیره پیش‌نویس انجام نشد')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const publishContent = async () => {
+    if (!contentId) return
+    setPublishing(true)
+    setSaveError('')
+    setSaveMessage('')
+    try {
+      const record = await contentApi.publish(contentId)
+      setPublished(true)
+      setSavedSlug(record.slug)
+      setSaveMessage('محتوا منتشر شد و اکنون در صفحه عمومی در دسترس است.')
+    } catch (caught) {
+      setSaveError(caught instanceof Error ? caught.message : 'انتشار محتوا انجام نشد')
+    } finally {
+      setPublishing(false)
+    }
   }
 
   return (
@@ -61,20 +134,54 @@ export default function ContentEditorPage() {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  className="flex items-center gap-2 rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground hover:bg-muted"
+                  onClick={() => {
+                    if (published && savedSlug) {
+                      window.open(`/news/${savedSlug}`, '_blank', 'noopener')
+                    }
+                  }}
+                  disabled={!published || !savedSlug}
+                  className="flex min-h-11 items-center gap-2 rounded-lg border border-border px-4 text-sm font-medium text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <Eye className="size-4" aria-hidden />
                   پیش‌نمایش
                 </button>
                 <button
                   type="button"
-                  className="flex items-center gap-2 rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-brand-hover"
+                  onClick={() => void saveDraft()}
+                  disabled={saving || title.trim().length < 3}
+                  className="flex min-h-11 items-center gap-2 rounded-lg bg-brand px-5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  <Save className="size-4" aria-hidden />
-                  ذخیره پیش‌نویس
+                  <Save className={`size-4 ${saving ? 'animate-pulse' : ''}`} aria-hidden />
+                  {saving ? 'در حال ذخیره...' : 'ذخیره پیش‌نویس'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void publishContent()}
+                  disabled={!contentId || saving || publishing || published}
+                  className="flex min-h-11 items-center gap-2 rounded-lg border border-brand px-4 text-sm font-semibold text-brand transition-colors hover:bg-brand/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {publishing ? 'در حال انتشار...' : published ? 'منتشر شده' : 'انتشار'}
                 </button>
               </div>
             </div>
+
+            {(saveError || saveMessage) && (
+              <div
+                role={saveError ? 'alert' : 'status'}
+                className={`rounded-xl border px-4 py-3 text-sm ${
+                  saveError
+                    ? 'border-error/20 bg-error/5 text-error'
+                    : 'border-success/20 bg-success/5 text-success'
+                }`}
+              >
+                {saveError || saveMessage}
+                {savedSlug && !saveError && (
+                  <span className="ms-2 text-muted-foreground">
+                    شناسه: {contentId.slice(0, 8)} · نسخه {savedVersion.toLocaleString('fa-IR')}
+                  </span>
+                )}
+              </div>
+            )}
 
             {/* Editor */}
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -129,21 +236,13 @@ export default function ContentEditorPage() {
                   <div className="space-y-3">
                     <div>
                       <label className="mb-1 block text-xs text-muted-foreground">وضعیت</label>
-                      <select className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm text-foreground outline-none focus:border-brand focus:ring-2 focus:ring-brand/20">
-                        <option>پیش‌نویس</option>
-                        <option>در انتظار بازبینی</option>
-                        <option>منتشر شده</option>
-                        <option>برنامه‌ریزی شده</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="mb-1 block text-xs text-muted-foreground">
-                        تاریخ انتشار
-                      </label>
-                      <input
-                        type="datetime-local"
-                        className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm text-foreground outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
-                      />
+                      <div className="rounded-xl border border-input bg-background px-3 py-2.5 text-sm text-foreground">
+                        {published
+                          ? 'منتشر شده'
+                          : contentId
+                            ? 'پیش‌نویس ذخیره‌شده'
+                            : 'پیش‌نویس جدید'}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -179,8 +278,8 @@ export default function ContentEditorPage() {
                   >
                     <option value="">انتخاب واحد...</option>
                     {departments.map((dept) => (
-                      <option key={dept} value={dept}>
-                        {dept}
+                      <option key={dept.id} value={dept.id}>
+                        {localizedText(dept.name)}
                       </option>
                     ))}
                   </select>

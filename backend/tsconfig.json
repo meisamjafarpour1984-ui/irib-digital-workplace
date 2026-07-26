@@ -27,7 +27,8 @@
     "src/app.module.ts",
     "src/prisma/**/*.ts",
     "src/modules/health/**/*.ts",
-    "src/modules/iam/**/*.ts"
+    "src/modules/iam/**/*.ts",
+    "src/modules/content/**/*.ts"
   ],
   "exclude": [
     "node_modules",

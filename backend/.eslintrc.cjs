@@ -16,7 +16,6 @@ module.exports = {
     'src/modules/access-control/',
     'src/modules/analytics/',
     'src/modules/communication/',
-    'src/modules/content/',
     'src/modules/forms/',
     'src/modules/iam/user-management.*',
     'src/modules/integration/',

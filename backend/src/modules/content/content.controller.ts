@@ -1,57 +1,99 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query } from '@nestjs/common'
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger'
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common'
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
+import type { Request } from 'express'
+import { JwtAuthGuard } from '../iam/jwt-auth.guard'
 import { ContentService } from './content.service'
+import { ContentListQueryDto, CreateContentDto, UpdateContentDto } from './dto/content.dto'
+
+type AuthenticatedRequest = Request & { user: { sub: string } }
 
 @ApiTags('Content')
-@ApiBearerAuth()
 @Controller('contents')
 export class ContentController {
   constructor(private readonly contentService: ContentService) {}
 
+  @Get('public/:slug')
+  @ApiOperation({ summary: 'Get published content by slug' })
+  findPublished(@Param('slug') slug: string) {
+    return this.contentService.findPublished(slug)
+  }
+
   @Get()
-  @ApiOperation({ summary: 'List all content items' })
-  async findAll(
-    @Query('type') type?: string,
-    @Query('status') status?: string,
-    @Query('page') page?: number,
-    @Query('limit') limit?: number
-  ) {
-    return this.contentService.findAll({ type, status, page: page || 1, limit: limit || 10 })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'List manageable content items' })
+  findAll(@Req() request: AuthenticatedRequest, @Query() query: ContentListQueryDto) {
+    return this.contentService.findAll(query, request.user.sub)
+  }
+
+  @Get('options/departments')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'List active departments for content scope selection' })
+  listDepartments(@Req() request: AuthenticatedRequest) {
+    return this.contentService.listDepartments(request.user.sub)
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get content by ID' })
-  async findOne(@Param('id') id: string) {
-    return this.contentService.findOne(id)
+  findOne(@Param('id') id: string, @Req() request: AuthenticatedRequest) {
+    return this.contentService.findOne(id, request.user.sub)
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create new content' })
-  async create(@Body() data: any) {
-    return this.contentService.create(data)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Create a content draft' })
+  create(@Req() request: AuthenticatedRequest, @Body() body: CreateContentDto) {
+    return this.contentService.create(body, request.user.sub)
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Update content' })
-  async update(@Param('id') id: string, @Body() data: any) {
-    return this.contentService.update(id, data)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update content and preserve a version snapshot' })
+  update(
+    @Param('id') id: string,
+    @Req() request: AuthenticatedRequest,
+    @Body() body: UpdateContentDto
+  ) {
+    return this.contentService.update(id, body, request.user.sub)
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete content (soft)' })
-  async remove(@Param('id') id: string) {
-    return this.contentService.remove(id)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Soft-delete content' })
+  remove(@Param('id') id: string, @Req() request: AuthenticatedRequest) {
+    return this.contentService.remove(id, request.user.sub)
   }
 
   @Post(':id/publish')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Publish content' })
-  async publish(@Param('id') id: string) {
-    return this.contentService.publish(id)
+  publish(@Param('id') id: string, @Req() request: AuthenticatedRequest) {
+    return this.contentService.publish(id, request.user.sub)
   }
 
   @Post(':id/archive')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Archive content' })
-  async archive(@Param('id') id: string) {
-    return this.contentService.archive(id)
+  archive(@Param('id') id: string, @Req() request: AuthenticatedRequest) {
+    return this.contentService.archive(id, request.user.sub)
   }
 }
