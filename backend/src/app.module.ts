@@ -6,6 +6,7 @@ import { IamModule } from './modules/iam/iam.module'
 import { ContentModule } from './modules/content/content.module'
 import { FormsModule } from './modules/forms/forms.module'
 import { SearchModule } from './modules/search/search.module'
+import { CommunicationModule } from './modules/communication/communication.module'
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { SearchModule } from './modules/search/search.module'
     ContentModule,
     FormsModule,
     SearchModule,
+    CommunicationModule,
   ],
 })
 export class AppModule {}

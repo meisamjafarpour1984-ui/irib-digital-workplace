@@ -30,7 +30,8 @@
     "src/modules/iam/**/*.ts",
     "src/modules/content/**/*.ts",
     "src/modules/forms/**/*.ts",
-    "src/modules/search/**/*.ts"
+    "src/modules/search/**/*.ts",
+    "src/modules/communication/**/*.ts"
   ],
   "exclude": [
     "node_modules",
