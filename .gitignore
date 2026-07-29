@@ -50,3 +50,11 @@ next-env.d.ts
 
 # Binary
 mimo.exe
+
+# Cosign / signing keys (never commit private keys)
+cosign.key
+*.key
+backend/infra/security/cosign.key
+
+# Public verification keys may be committed when needed:
+# backend/infra/security/cosign.pub

@@ -2,27 +2,38 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { heroSlides } from '@/lib/portal-data'
+import type { HeroSlide } from '@/lib/portal-data'
+import { useHeroSlides } from '@/hooks/use-portal-content'
 import type { WidgetProps } from './types'
 
 export function HeroMediaWidget({ config }: WidgetProps) {
   const autoPlay = (config?.autoPlay as boolean) ?? true
   const interval = (config?.interval as number) ?? 5000
+  const seededSlides = config?.slides as HeroSlide[] | undefined
+
+  const { slides: heroSlides } = useHeroSlides(
+    typeof config?.limit === 'number' ? config.limit : 5,
+    seededSlides
+  )
 
   const [index, setIndex] = useState(0)
   const [paused, setPaused] = useState(false)
-  const count = heroSlides.length
+  const count = Math.max(heroSlides.length, 1)
 
   const go = useCallback((dir: number) => setIndex((i) => (i + dir + count) % count), [count])
 
   const timer = useRef<ReturnType<typeof setInterval> | null>(null)
   useEffect(() => {
-    if (!autoPlay || paused) return
+    if (!autoPlay || paused || heroSlides.length === 0) return
     timer.current = setInterval(() => setIndex((i) => (i + 1) % count), interval)
     return () => {
       if (timer.current) clearInterval(timer.current)
     }
-  }, [paused, count, autoPlay, interval])
+  }, [paused, count, autoPlay, interval, heroSlides.length])
+
+  if (heroSlides.length === 0) {
+    return null
+  }
 
   return (
     <section

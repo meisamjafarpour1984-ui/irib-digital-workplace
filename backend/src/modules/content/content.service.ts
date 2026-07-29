@@ -103,6 +103,35 @@ export class ContentService {
     return content
   }
 
+  async listPublicFeed(params: { type?: string; limit?: number; page?: number }) {
+    const limit = Math.min(params.limit ?? 10, 50)
+    const page = params.page ?? 1
+    const skip = (page - 1) * limit
+    const contentType = params.type as Prisma.EnumContentTypeFilter['equals'] | undefined
+
+    const where: Prisma.ContentWhereInput = {
+      deletedAt: null,
+      status: ContentStatus.PUBLISHED,
+      ...(contentType ? { contentType } : {}),
+    }
+
+    const [items, total] = await Promise.all([
+      this.prisma.content.findMany({
+        where,
+        include: contentInclude,
+        orderBy: { publishedAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.content.count({ where }),
+    ])
+
+    return {
+      items,
+      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    }
+  }
+
   async listDepartments(userId: string) {
     const access = await this.permissionAccess(userId, 'create')
     if (!access.global && !access.ownership && access.scopeIds.length === 0) return []

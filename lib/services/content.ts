@@ -73,4 +73,9 @@ export const contentApi = {
   publish: (id: string) => apiClient.post<ContentRecord>(`/contents/${id}/publish`),
   listDepartments: () => apiClient.get<DepartmentOption[]>('/contents/options/departments'),
   findPublished: (slug: string) => apiClient.get<ContentRecord>(`/contents/public/${slug}`),
+  listFeed: (params?: { type?: ContentType; limit?: number; page?: number }) =>
+    apiClient.get<{
+      items: ContentRecord[]
+      pagination: { page: number; limit: number; total: number }
+    }>('/contents/feed', { params }),
 }

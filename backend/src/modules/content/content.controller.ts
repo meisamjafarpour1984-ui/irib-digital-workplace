@@ -29,6 +29,20 @@ export class ContentController {
     return this.contentService.findPublished(slug)
   }
 
+  @Get('feed')
+  @ApiOperation({ summary: 'List published content for portal widgets (public)' })
+  listPublicFeed(
+    @Query('type') type?: string,
+    @Query('limit') limit?: string,
+    @Query('page') page?: string
+  ) {
+    return this.contentService.listPublicFeed({
+      type,
+      limit: limit ? parseInt(limit, 10) : undefined,
+      page: page ? parseInt(page, 10) : undefined,
+    })
+  }
+
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
