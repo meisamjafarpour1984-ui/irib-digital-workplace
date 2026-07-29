@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-export function middleware(request: NextRequest) {
+export function proxy(_request: NextRequest) {
   const response = NextResponse.next()
 
   // Generate nonce for CSP
@@ -31,7 +31,7 @@ export function middleware(request: NextRequest) {
     "font-src 'self' https://fonts.gstatic.com data:",
     "img-src 'self' data: blob: https:",
     "media-src 'self' blob: https:",
-    "connect-src 'self' https://api.example.com wss://ws.example.com",
+    "connect-src 'self' http://localhost:3001 ws://localhost:3001",
     "frame-src 'self'",
     "frame-ancestors 'self'",
     "base-uri 'self'",

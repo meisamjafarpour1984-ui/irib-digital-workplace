@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { announcements } from '@/lib/portal-data'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { AccessibleButton } from '@/components/ui/AccessibleButton'
 
 const departments = [
   { id: 'admin', label: 'اداری' },
@@ -41,8 +42,8 @@ export function DeptAnnouncementsWidget() {
             <ul>
               {announcements.slice(0, 4).map((item) => (
                 <li key={item.id}>
-                  <a
-                    href="#"
+                  <AccessibleButton
+                    href={`/news/${item.id}`}
                     className="group flex items-start gap-2.5 border-b border-border py-3 last:border-0 last:pb-0"
                   >
                     <div className="min-w-0 flex-1">
@@ -51,7 +52,7 @@ export function DeptAnnouncementsWidget() {
                       </h3>
                       <span className="text-xs text-muted-foreground">{item.time}</span>
                     </div>
-                  </a>
+                  </AccessibleButton>
                 </li>
               ))}
             </ul>

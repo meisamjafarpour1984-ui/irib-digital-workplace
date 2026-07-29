@@ -24,7 +24,6 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:migrate:prod": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
-    "prisma:seed": "ts-node prisma/seed.ts",
     "swagger:export": "ts-node scripts/export-swagger.ts"
   },
   "dependencies": {
@@ -92,9 +91,5 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.3.3"
-  },
-  "prisma": {
-    "schema": "./prisma/schema.prisma",
-    "seed": "ts-node prisma/seed.ts"
   }
 }

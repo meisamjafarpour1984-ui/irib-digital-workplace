@@ -1,5 +1,6 @@
 import { ArrowLeft, LayoutGrid } from 'lucide-react'
 import { services } from '@/lib/portal-data'
+import { AccessibleButton } from '@/components/ui/AccessibleButton'
 
 export function ServicesGrid() {
   return (
@@ -11,16 +12,19 @@ export function ServicesGrid() {
           </span>
           <h2 className="text-base font-bold text-foreground">خدمات و سامانه‌ها</h2>
         </div>
-        <a href="#" className="text-xs font-medium text-brand hover:underline">
+        <AccessibleButton
+          href="/dashboard"
+          className="text-xs font-medium text-brand hover:underline"
+        >
           مشاهده همه
-        </a>
+        </AccessibleButton>
       </div>
 
       <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {services.map(({ label, icon: Icon, action }) => (
           <li key={label}>
-            <a
-              href="#"
+            <AccessibleButton
+              href="/dashboard"
               className="group flex h-full flex-col items-start gap-3 rounded-xl border border-border p-4 transition-all hover:border-brand/50 hover:shadow-sm"
             >
               <span className="flex size-11 items-center justify-center rounded-lg bg-brand-light text-brand transition-colors group-hover:bg-brand group-hover:text-primary-foreground">
@@ -34,7 +38,7 @@ export function ServicesGrid() {
                   aria-hidden
                 />
               </span>
-            </a>
+            </AccessibleButton>
           </li>
         ))}
       </ul>

@@ -1,4 +1,5 @@
 import { tickets, type TicketRow } from '@/lib/dashboard-data'
+import { AccessibleButton } from '@/components/ui/AccessibleButton'
 
 const statusStyles: Record<TicketRow['status'], string> = {
   'در حال بررسی': 'bg-warning/10 text-warning',
@@ -14,9 +15,12 @@ export function TicketsList() {
           <span className="h-5 w-1 rounded-full bg-gold" aria-hidden />
           <h2 className="text-sm font-bold text-foreground">آخرین تیکت‌ها</h2>
         </div>
-        <a href="#" className="text-xs font-medium text-brand hover:underline">
+        <AccessibleButton
+          href="/dashboard/tickets"
+          className="text-xs font-medium text-brand hover:underline"
+        >
           مشاهده همه
-        </a>
+        </AccessibleButton>
       </div>
       <ul className="flex flex-col">
         {tickets.map((row, i) => (

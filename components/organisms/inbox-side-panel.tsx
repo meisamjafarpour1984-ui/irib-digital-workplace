@@ -1,6 +1,7 @@
 'use client'
 
 import { FileText, Clock, Users, Tag, Link as LinkIcon, AlertCircle } from 'lucide-react'
+import { AccessibleButton } from '@/components/ui/AccessibleButton'
 
 interface EntityContext {
   type: string
@@ -149,14 +150,14 @@ export function InboxSidePanel({
           <ul className="space-y-1.5">
             {relatedItems.map((item) => (
               <li key={item.id}>
-                <a
-                  href="#"
-                  className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-foreground hover:bg-muted"
+                <AccessibleButton
+                  href={`/related/${item.id}`}
+                  className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-foreground hover:bg-muted"
                 >
                   <AlertCircle className="size-3 text-muted-foreground" aria-hidden />
                   <span className="truncate">{item.title}</span>
                   <span className="ms-auto text-[10px] text-muted-foreground">{item.type}</span>
-                </a>
+                </AccessibleButton>
               </li>
             ))}
           </ul>

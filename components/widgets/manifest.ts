@@ -1,5 +1,5 @@
 import { widgetRegistry } from './widget-registry'
-import type { WidgetManifest } from './types'
+import type { WidgetManifest, WidgetProps } from './types'
 
 // Widget imports
 import { HeroMediaWidget } from './hero-media'
@@ -26,7 +26,7 @@ import { DeptFormsCenterWidget } from './dept-forms-center'
 import { DeptExpertsDirectoryWidget } from './dept-experts-directory'
 import { DeptServiceCardsWidget } from './dept-service-cards'
 
-const manifests: { manifest: WidgetManifest; Component: React.ComponentType<any> }[] = [
+const manifests: { manifest: WidgetManifest; Component: React.ComponentType<WidgetProps> }[] = [
   {
     manifest: {
       id: 'hero-media',

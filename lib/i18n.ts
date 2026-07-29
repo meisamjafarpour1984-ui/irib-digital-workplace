@@ -141,9 +141,9 @@ export const messages = {
  */
 export function t(key: string, locale: Locale = 'fa'): string {
   const keys = key.split('.')
-  let value: any = messages[locale]
+  let value: unknown = messages[locale]
   for (const k of keys) {
-    value = value?.[k]
+    value = (value as Record<string, unknown> | undefined)?.[k]
   }
   return typeof value === 'string' ? value : key
 }

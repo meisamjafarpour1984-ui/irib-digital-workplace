@@ -1,6 +1,7 @@
 import { ChevronLeft } from 'lucide-react'
 import { PanelHeader } from '@/components/portal/panel-header'
 import { itAnnouncements } from '@/lib/microsite-data'
+import { AccessibleButton } from '@/components/ui/AccessibleButton'
 
 export function ItAnnouncements() {
   return (
@@ -14,7 +15,10 @@ export function ItAnnouncements() {
               key={item.id}
               className={i !== itAnnouncements.length - 1 ? 'border-b border-border' : ''}
             >
-              <a href="#" className="group flex items-center gap-3 py-3">
+              <AccessibleButton
+                href="/announcements/1"
+                className="group flex w-full items-center gap-3 py-3 text-right"
+              >
                 <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent text-brand">
                   <Icon className="size-4.5" aria-hidden />
                 </div>
@@ -26,7 +30,7 @@ export function ItAnnouncements() {
                   className="size-4 shrink-0 text-muted-foreground group-hover:text-brand"
                   aria-hidden
                 />
-              </a>
+              </AccessibleButton>
             </li>
           )
         })}

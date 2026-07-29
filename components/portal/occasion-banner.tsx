@@ -1,12 +1,17 @@
 import { CalendarHeart } from 'lucide-react'
+import type { WidgetInstance } from '@/components/widgets/types'
+
+interface OccasionBannerProps {
+  title?: string
+  cta?: string
+  instance?: WidgetInstance
+  config?: Record<string, unknown>
+}
 
 export function OccasionBanner({
   title = 'مناسبت ملی گرامی باد',
   cta = 'مشاهده برنامه‌ها',
-}: {
-  title?: string
-  cta?: string
-}) {
+}: OccasionBannerProps) {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-border">
       <img

@@ -1,5 +1,6 @@
 import { latestNews } from '@/lib/portal-data'
 import { PanelHeader } from './panel-header'
+import { AccessibleButton } from '@/components/ui/AccessibleButton'
 
 export function NewsTimeline() {
   return (
@@ -8,8 +9,8 @@ export function NewsTimeline() {
       <ul>
         {latestNews.map((item) => (
           <li key={item.id}>
-            <a
-              href="#"
+            <AccessibleButton
+              href={`/news/${item.id}`}
               className="group flex flex-col gap-1 border-b border-border py-3 last:border-0 last:pb-0"
             >
               <h3 className="line-clamp-2 text-sm font-medium leading-relaxed text-foreground transition-colors group-hover:text-brand">
@@ -21,7 +22,7 @@ export function NewsTimeline() {
                 </span>
                 <span>{item.time}</span>
               </div>
-            </a>
+            </AccessibleButton>
           </li>
         ))}
       </ul>

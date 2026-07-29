@@ -31,7 +31,7 @@ export function PortalFooter() {
             <ul className="space-y-2">
               {col.links.map((link) => (
                 <li key={link}>
-                  <a href="#" className="text-sm text-white/60 transition-colors hover:text-brand">
+                  <a href="/" className="text-sm text-white/60 transition-colors hover:text-brand">
                     {link}
                   </a>
                 </li>

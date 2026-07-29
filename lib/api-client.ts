@@ -1,3 +1,21 @@
+/**
+ * Handles API errors with consistent logging and reporting
+ * @param error The error to handle
+ * @param context Context information for the error
+ */
+function handleApiError(error: unknown, context: string = 'API'): Error {
+  console.error(`[${context}] Error:`, error)
+
+  // TODO: Implement error reporting to monitoring system
+  // TODO: Implement user-friendly error messages
+
+  if (error instanceof Error) {
+    return error
+  }
+
+  return new Error(`Unknown ${context} error`)
+}
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1'
 const WS_BASE = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:3001'
 
@@ -142,10 +160,16 @@ export const apiClient = new ApiClient(API_BASE)
 export type { ApiError, RequestOptions }
 
 // WebSocket Client for Real-time Updates
+export interface WSMessage {
+  type: string
+  payload?: unknown
+  [key: string]: unknown
+}
+
 export class WSClient {
   private ws: WebSocket | null = null
   private url: string
-  private listeners: Map<string, Set<(data: any) => void>> = new Map()
+  private listeners: Map<string, Set<(data: WSMessage) => void>> = new Map()
   private reconnectAttempts = 0
   private maxReconnectAttempts = 5
 
@@ -159,7 +183,6 @@ export class WSClient {
     this.ws = new WebSocket(`${this.url}/ws/inbox?token=${token}`)
 
     this.ws.onopen = () => {
-      console.log('WebSocket connected')
       this.reconnectAttempts = 0
     }
 
@@ -169,12 +192,11 @@ export class WSClient {
         const handlers = this.listeners.get(type)
         handlers?.forEach((handler) => handler(data))
       } catch (e) {
-        console.error('WebSocket message parse error:', e)
+        throw handleApiError(e, 'WebSocket')
       }
     }
 
     this.ws.onclose = () => {
-      console.log('WebSocket disconnected')
       this.attemptReconnect(token)
     }
 
@@ -189,7 +211,7 @@ export class WSClient {
     setTimeout(() => this.connect(token), Math.pow(2, this.reconnectAttempts) * 1000)
   }
 
-  subscribe(type: string, handler: (data: any) => void) {
+  subscribe(type: string, handler: (data: WSMessage) => void) {
     if (!this.listeners.has(type)) {
       this.listeners.set(type, new Set())
     }
@@ -197,7 +219,7 @@ export class WSClient {
     return () => this.listeners.get(type)?.delete(handler)
   }
 
-  send(type: string, data: any) {
+  send(type: string, data: unknown) {
     if (this.ws?.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify({ type, data }))
     }
