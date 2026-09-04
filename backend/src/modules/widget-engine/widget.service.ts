@@ -114,7 +114,7 @@ export class WidgetService {
 
   private async findPublishedLayout(pageKey: string) {
     return this.prisma.pageLayout.findFirst({
-      where: { pageKey, isDraft: false },
+      where: { pageKey, isDraft: false, deletedAt: null },
       orderBy: { version: 'desc' },
       include: { widgets: true },
     })

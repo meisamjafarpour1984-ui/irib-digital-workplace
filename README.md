@@ -10,6 +10,79 @@
 
 ---
 
+## ⚠️ مهم: این مستند برای کدام نسخه است؟
+
+این README برای **هر دو نسخه پروژه** معتبر است، اما تفاوت‌های مهمی بین نسخه‌ها وجود دارد که باید توجه کنید.
+
+### نسخه‌های پروژه
+
+پروژه IRIB Digital Workplace دو نسخه مختلف دارد:
+
+#### نسخه ۱: توسعه ساده (docker-compose.dev.yml)
+
+**سرویس‌ها:**
+- Frontend (Next.js)
+- Backend (NestJS)
+- PostgreSQL
+- Redis
+
+**مناسب برای:**
+- توسعه روزمره با hot-reload
+- توسعه‌دهندگان تازه‌کار
+- سیستم‌هایی با منابع محدود (RAM < 8GB)
+
+**راه‌اندازی:**
+```bash
+docker-compose -f docker-compose.dev.yml up
+```
+
+**دسترسی:**
+- Frontend: http://localhost:3000
+- Backend: http://localhost:3001
+- PostgreSQL: localhost:5433
+- Redis: localhost:6379
+
+#### نسخه ۲: کامل زیرساختی (backend/docker-compose.db.yml)
+
+**سرویس‌ها:**
+- تمام سرویس‌های نسخه توسعه ساده
+- PgBouncer (connection pooling)
+- Kafka (message queue)
+- Zookeeper (Kafka coordination)
+- MinIO (object storage)
+- OpenSearch (search engine)
+- Keycloak (IAM)
+- MailHog (email testing)
+
+**مناسب برای:**
+- توسعه کامل با تمام زیرساخت‌ها
+- تست integration
+- توسعه‌دهندگان باتجربه
+- سیستم‌هایی با منابع کافی (RAM ≥ 16GB)
+
+**راه‌اندازی:**
+```bash
+cd backend
+docker-compose -f docker-compose.db.yml up
+```
+
+### کدام نسخه را انتخاب کنید؟
+
+| سناریو | نسخه پیشنهادی |
+|--------|---------------|
+| توسعه روزمره frontend/backend | نسخه توسعه ساده |
+| توسعه ویژگی‌های Kafka/Event Streaming | نسخه کامل زیرساختی |
+| توسعه ویژگی‌های Search/OpenSearch | نسخه کامل زیرساختی |
+| توسعه ویژگی‌های IAM/Keycloak | نسخه کامل زیرساختی |
+| تست integration کامل | نسخه کامل زیرساختی |
+| سیستم با منابع محدود (RAM < 8GB) | نسخه توسعه ساده |
+| سیستم با منابع کافی (RAM ≥ 16GB) | نسخه کامل زیرساختی |
+
+**نکته:** دستورات و جداول در این README برای **نسخه کامل زیرساختی** است. اگر از نسخه توسعه ساده استفاده می‌کنید، لطفاً به مستندات زیر مراجعه کنید:
+- [DOCKER_DEPLOYMENT_GUIDE.md](./DOCKER_DEPLOYMENT_GUIDE.md) - برای راهنمای Docker deployment
+
+---
+
 ## چشم‌انداز پروژه
 
 تبدیل پورتال سنتی به یک **پلتفرم محیط کار دیجیتال** تعاملی، خدمات‌محور و دانش‌محور با هویت بصری منحصر به فرد **صدا و سیمای آذربایجان شرقی**.
@@ -403,12 +476,44 @@ GET    /api/v1/search/unified              ← جستجوی یکپارچه
 
 ### Docker Compose (محلی)
 
+#### نسخه توسعه ساده (4 سرویس)
+
 ```bash
-cd backend
-docker-compose up -d
+docker-compose -f docker-compose.dev.yml up
 ```
 
-سرویس‌ها: PostgreSQL, Redis, MinIO, OpenSearch, Keycloak
+**سرویس‌ها:** Frontend, Backend, PostgreSQL, Redis
+
+**دسترسی:**
+- Frontend: http://localhost:3000
+- Backend: http://localhost:3001
+- PostgreSQL: localhost:5433
+- Redis: localhost:6379
+
+#### نسخه کامل زیرساختی (11+ سرویس)
+
+```bash
+cd backend
+docker-compose -f docker-compose.db.yml up
+```
+
+**سرویس‌ها:** Frontend, Backend, PostgreSQL, PgBouncer, Redis, Kafka, Zookeeper, MinIO, OpenSearch, Keycloak, MailHog
+
+**دسترسی:**
+- Frontend: http://localhost:3000
+- Backend: http://localhost:3001
+- PostgreSQL: localhost:5433
+- PgBouncer: localhost:6432
+- Redis: localhost:6379
+- Kafka: localhost:9092
+- Zookeeper: localhost:2181
+- MinIO API: http://localhost:9000
+- MinIO Console: http://localhost:9001
+- OpenSearch: http://localhost:9200
+- Keycloak: http://localhost:8080
+- MailHog Web: http://localhost:8025
+
+**نکته:** برای اطلاعات بیشتر در مورد Docker deployment، به [DOCKER_DEPLOYMENT_GUIDE.md](./DOCKER_DEPLOYMENT_GUIDE.md) مراجعه کنید.
 
 ### Kubernetes (تولید)
 
@@ -513,4 +618,13 @@ JWT_SECRET=your-secret-key
 
 کلیه حقوق این پروژه متعلق به **صدا و سیمای مرکز آذربایجان شرقی** است.
 
-© ۱۴۰۴
+---
+
+## اطلاعات توسعه‌دهنده
+
+**طراح و توسعه‌دهنده:** میثم جعفرپور آلانق  
+**مدرک تحصیلی:** کارشناسی ارشد مهندسی نرم‌افزار  
+**عنوان شغلی:** کارشناس صدا و تصویر ۴  
+**کارفرما/سفارش‌دهنده:** به سفارش معاونت فنی صدا و سیمای مرکز آذربایجان شرقی  
+
+کلیه حقوق محفوظ است © ۱۴۰۴

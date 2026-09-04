@@ -8,6 +8,33 @@
 
 ---
 
+## ⚠️ مهم: این runbook برای کدام نسخه است؟
+
+این runbook برای **نسخه کامل زیرساختی (backend/docker-compose.db.yml)** نوشته شده است.
+
+### نسخه‌های پروژه
+
+- **نسخه توسعه ساده (docker-compose.dev.yml):** 4 سرویس (frontend, backend, postgres, redis)
+  - مناسب برای: توسعه روزمره با hot-reload
+  - دسترسی: `docker-compose -f docker-compose.dev.yml up`
+
+- **نسخه کامل زیرساختی (backend/docker-compose.db.yml):** 11+ سرویس
+  - مناسب برای: توسعه کامل با تمام زیرساخت‌ها
+  - دسترسی: `docker-compose -f backend/docker-compose.db.yml up`
+
+### این runbook برای کدام نسخه است؟
+
+✅ **نسخه کامل زیرساختی (db.yml)** - این runbook برای این نسخه است
+❌ **نسخه توسعه ساده (dev.yml)** - این runbook برای این نسخه نیست
+
+### اگر از نسخه توسعه ساده استفاده می‌کنید:
+
+لطفاً به مستندات زیر مراجعه کنید:
+- [README.md](../../../../README.md) - برای اطلاعات کلی
+- [DOCKER_DEPLOYMENT_GUIDE.md](../../../../DOCKER_DEPLOYMENT_GUIDE.md) - برای راهنمای Docker
+
+---
+
 ## Objective
 
 Recover the entire DWP platform from backup in case of:
