@@ -515,6 +515,14 @@ docker-compose -f docker-compose.db.yml up
 
 **نکته:** برای اطلاعات بیشتر در مورد Docker deployment، به [DOCKER_DEPLOYMENT_GUIDE.md](./DOCKER_DEPLOYMENT_GUIDE.md) مراجعه کنید.
 
+---
+
+## 📚 مستندات قدیمی
+
+گزارش‌های وضعیت و پیاده‌سازی قدیمی به پوشه `archive/` منتقل شده‌اند. این فایل‌ها برای اهداف تاریخی نگهداری می‌شوند و نباید برای تصمیم‌گیری فعلی استفاده شوند.
+
+برای مشاهده فهرست کامل مستندات آرشیو شده، به [archive/README.md](./archive/README.md) مراجعه کنید.
+
 ### Kubernetes (تولید)
 
 ```bash
