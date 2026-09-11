@@ -3,6 +3,8 @@
  * Uses next-intl for ICU MessageFormat support
  */
 
+import { getRequestConfig } from 'next-intl/server'
+
 export const locales = ['fa'] as const
 export const defaultLocale = 'fa' as const
 
@@ -53,7 +55,7 @@ export const messages = {
     dashboard: {
       title: 'داشبورد مدیریتی',
       dailyVisits: 'بازدید امروز',
-      activeUsers: 'کاربران ف活跃',
+      activeUsers: 'کاربران فعال',
       announcements: 'اطلاعیه‌ها',
       polls: 'نظرسنجی‌ها',
       visitChart: 'نمودار بازدیدها',
@@ -136,14 +138,6 @@ export const messages = {
   },
 } as const
 
-/**
- * Simple translation function (no next-intl dependency)
- */
-export function t(key: string, locale: Locale = 'fa'): string {
-  const keys = key.split('.')
-  let value: unknown = messages[locale]
-  for (const k of keys) {
-    value = (value as Record<string, unknown> | undefined)?.[k]
-  }
-  return typeof value === 'string' ? value : key
-}
+export default getRequestConfig(async ({ locale }) => ({
+  messages: messages[locale as Locale],
+}))
