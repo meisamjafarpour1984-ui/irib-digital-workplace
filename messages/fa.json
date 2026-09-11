@@ -155,5 +155,24 @@
     "logout": "خروج",
     "admin": "مدیر سیستم",
     "userName": "حمید کریمی"
+  },
+  "login": {
+    "title": "ورود به درگاه",
+    "subtitle": "اطلاعات خود را وارد کنید",
+    "keycloakEnabled": "ورود از طریق Keycloak فعال است",
+    "personnelCode": "کد پرسنلی",
+    "personnelCodePlaceholder": "کد پرسنلی خود را وارد کنید",
+    "password": "رمز عبور",
+    "passwordPlaceholder": "رمز عبور",
+    "showPassword": "نمایش رمز",
+    "hidePassword": "پنهان کردن رمز",
+    "login": "ورود",
+    "demoLogin": "ورود دمو (تست)",
+    "forgotPassword": "فراموشی رمز عبور",
+    "register": "ثبت‌نام جدید",
+    "loginSuccess": "ورود موفق",
+    "redirecting": "در حال انتقال به داشبورد...",
+    "loginFailed": "ورود ناموفق بود",
+    "footer": "صدا و سیمای مرکز آذربایجان شرقی © ۱۴۰۴"
   }
 }
