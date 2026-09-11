@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { X, Download, Smartphone } from 'lucide-react'
 
 interface BeforeInstallPromptEvent extends Event {
@@ -9,6 +10,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export function PWAInstallPrompt() {
+  const t = useTranslations('pwa')
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [showPrompt, setShowPrompt] = useState(false)
   const [dismissed, setDismissed] = useState(false)
@@ -56,10 +58,8 @@ export function PWAInstallPrompt() {
             <Smartphone className="size-6 text-brand" aria-hidden />
           </div>
           <div className="flex-1">
-            <h3 className="text-sm font-bold text-foreground">نصب پرتال IRIB</h3>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              پرتال را روی گوشی خود نصب کنید تا دسترسی سریع‌تری داشته باشید
-            </p>
+            <h3 className="text-sm font-bold text-foreground">{t('title')}</h3>
+            <p className="mt-0.5 text-xs text-muted-foreground">{t('description')}</p>
             <div className="mt-3 flex gap-2">
               <button
                 type="button"
@@ -67,14 +67,14 @@ export function PWAInstallPrompt() {
                 className="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-brand-hover"
               >
                 <Download className="size-3.5" aria-hidden />
-                نصب
+                {t('install')}
               </button>
               <button
                 type="button"
                 onClick={handleDismiss}
                 className="rounded-lg px-3 py-1.5 text-xs text-muted-foreground hover:bg-muted"
               >
-                بعداً
+                {t('later')}
               </button>
             </div>
           </div>
@@ -82,7 +82,7 @@ export function PWAInstallPrompt() {
             type="button"
             onClick={handleDismiss}
             className="flex size-7 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted"
-            aria-label="بستن"
+            aria-label={t('close')}
           >
             <X className="size-4" />
           </button>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Bell, Check, CheckCheck, FileText, MessageSquare, Ticket, Settings } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -43,7 +44,7 @@ const notifications: Notification[] = [
     id: 'n4',
     type: 'system',
     title: 'به‌روزرسانی سیستم',
-    body: 'نسخه جدید پرتال فعال شد.',
+    body: 'نسخه جدید درگاه فعال شد.',
     time: '۳ ساعت پیش',
     read: true,
   },
@@ -64,6 +65,7 @@ const typeColors: Record<string, string> = {
 }
 
 export function NotificationCenter() {
+  const t = useTranslations('notifications')
   const [isOpen, setIsOpen] = useState(false)
   const [items, setItems] = useState(notifications)
   const unreadCount = items.filter((n) => !n.read).length
@@ -82,7 +84,7 @@ export function NotificationCenter() {
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="relative flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-        aria-label="اعلان‌ها"
+        aria-label={t('title')}
         aria-expanded={isOpen}
       >
         <Bell className="size-4.5" aria-hidden />
@@ -98,7 +100,7 @@ export function NotificationCenter() {
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
           <div className="absolute inset-x-0 top-full z-50 mt-2 w-80 rounded-2xl border border-border bg-card shadow-lg sm:left-0 sm:right-auto sm:w-96">
             <div className="flex items-center justify-between border-b border-border p-3">
-              <h3 className="text-sm font-bold text-foreground">اعلان‌ها</h3>
+              <h3 className="text-sm font-bold text-foreground">{t('title')}</h3>
               {unreadCount > 0 && (
                 <button
                   type="button"
@@ -106,7 +108,7 @@ export function NotificationCenter() {
                   className="flex items-center gap-1 text-xs text-brand hover:underline"
                 >
                   <CheckCheck className="size-3.5" aria-hidden />
-                  همه خوانده شد
+                  {t('markAllAsRead')}
                 </button>
               )}
             </div>
@@ -147,7 +149,7 @@ export function NotificationCenter() {
                         type="button"
                         onClick={() => markAsRead(notif.id)}
                         className="mt-1 flex size-6 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
-                        aria-label="خوانده شد"
+                        aria-label={t('markAsRead')}
                       >
                         <Check className="size-3" />
                       </button>
@@ -159,7 +161,7 @@ export function NotificationCenter() {
             {items.length === 0 && (
               <div className="py-8 text-center">
                 <Bell className="mx-auto size-8 text-muted-foreground/30" aria-hidden />
-                <p className="mt-2 text-sm text-muted-foreground">اعلانی وجود ندارد</p>
+                <p className="mt-2 text-sm text-muted-foreground">{t('noNotifications')}</p>
               </div>
             )}
           </div>

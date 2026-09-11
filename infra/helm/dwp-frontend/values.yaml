@@ -5,7 +5,7 @@
 replicaCount: 2
 
 image:
-  repository: harbor.iribtabriz.ir/dwp/frontend
+  repository: ghcr.io/irib-digital-workplace/irib-digital-workplace-frontend
   pullPolicy: IfNotPresent
   tag: "latest"
 

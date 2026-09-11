@@ -1,11 +1,17 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Menu, X } from 'lucide-react'
 import { navItems } from '@/lib/portal-data'
 import { PortalLogo } from './portal-logo'
 
-export function PortalHeader() {
+interface PortalHeaderProps {
+  authButton?: React.ReactNode
+}
+
+export function PortalHeader({ authButton }: PortalHeaderProps) {
+  const t = useTranslations('accessibility')
   const [open, setOpen] = useState(false)
 
   return (
@@ -14,7 +20,7 @@ export function PortalHeader() {
         <PortalLogo />
 
         {/* Desktop nav */}
-        <nav aria-label="ناوبری اصلی" className="hidden lg:block">
+        <nav aria-label={t('mainNav')} className="hidden lg:block">
           <ul className="flex items-center gap-1">
             {navItems.map((item) => (
               <li key={item.label}>
@@ -37,20 +43,23 @@ export function PortalHeader() {
           </ul>
         </nav>
 
-        <button
-          type="button"
-          onClick={() => setOpen((v) => !v)}
-          aria-expanded={open}
-          aria-label="باز کردن منو"
-          className="flex size-10 items-center justify-center rounded-lg border border-border text-foreground lg:hidden"
-        >
-          {open ? <X className="size-5" /> : <Menu className="size-5" />}
-        </button>
+        <div className="flex items-center gap-2">
+          {authButton}
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+            aria-label={open ? t('closeMenu') : t('openMenu')}
+            className="flex size-10 items-center justify-center rounded-lg border border-border text-foreground lg:hidden"
+          >
+            {open ? <X className="size-5" /> : <Menu className="size-5" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile nav */}
       {open && (
-        <nav aria-label="ناوبری موبایل" className="border-t border-border bg-card lg:hidden">
+        <nav aria-label={t('mobileNav')} className="border-t border-border bg-card lg:hidden">
           <ul className="mx-auto max-w-[1440px] px-4 py-2">
             {navItems.map((item) => (
               <li key={item.label}>

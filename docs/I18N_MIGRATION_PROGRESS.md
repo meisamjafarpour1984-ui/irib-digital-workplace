@@ -38,6 +38,38 @@
 - همه رشته‌های فرم و UI تبدیل شدند
 - شامل: title, labels, buttons, error messages, success state
 
+### 5. NotificationCenter ✅
+
+**فایل**: `components/organisms/notification-center.tsx`
+
+- استفاده از `useTranslations('notifications')`
+- رشته‌های UI تبدیل شدند
+- شامل: title, markAllAsRead, markAsRead (aria-label), noNotifications
+
+### 6. PortalHeader ✅
+
+**فایل**: `components/portal/portal-header.tsx`
+
+- استفاده از `useTranslations('accessibility')`
+- aria-labelهای ناوبری تبدیل شدند
+- شامل: mainNav, mobileNav, openMenu, closeMenu
+
+### 7. PortalFooter ✅
+
+**فایل**: `components/portal/portal-footer.tsx`
+
+- استفاده از `useTranslations('footer')`
+- عنوان ستون‌ها و متن کپی‌رایت تبدیل شدند
+- شامل: about, quickAccess, systems, support, copyright, developer
+
+### 8. PWAInstallPrompt ✅
+
+**فایل**: `components/organisms/pwa-install-prompt.tsx`
+
+- استفاده از `useTranslations('pwa')`
+- رشته‌های UI تبدیل شدند
+- شامل: title, description, install, later, close
+
 ## ترجمه‌های اضافه شده به messages/fa.json
 
 ### notifications
@@ -157,14 +189,15 @@
 
 ### کامپوننت‌های مهاجرت شده
 
-- ✅ 4 کامپوننت اصلی
-- 📊 ~15% از کل UI strings
+- ✅ 8 کامپوننت اصلی (4 قبلی + 4 جدید لایه‌ای)
+- 📊 ~20% از کل UI strings
 
 ### Translation Coverage
 
 - **پیام‌های سیستم**: 80%
 - **Dashboard**: 60%
 - **Auth**: 90%
+- **Portal (Header/Footer)**: 100% (لایه UI)
 - **Public pages**: 20%
 - **Admin pages**: 10%
 
@@ -174,3 +207,4 @@
 - 2026-09-11: مهاجرت NotificationsCenterWidget
 - 2026-09-11: مهاجرت DashboardSidebar و DashboardTopbar
 - 2026-09-11: مهاجرت LoginPage
+- 2026-09-12: مهاجرت NotificationCenter, PortalHeader, PortalFooter, PWAInstallPrompt

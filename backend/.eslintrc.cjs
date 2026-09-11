@@ -14,15 +14,6 @@ module.exports = {
   },
   ignorePatterns: [
     'dist/',
-    'src/modules/access-control/',
-    'src/modules/analytics/',
-    'src/modules/integration/',
-    'src/modules/knowledge/',
-    'src/modules/media/',
-    'src/modules/mobile-identity/',
-    'src/modules/organization/',
-    'src/modules/software/',
-    'src/modules/widget-engine/',
     '**/*.spec.ts',
   ],
   rules: {
