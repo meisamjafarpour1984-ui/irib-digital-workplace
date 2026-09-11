@@ -121,5 +121,23 @@
     "closeMenu": "بستن منو",
     "search": "جستجو",
     "notifications": "اعلان‌ها"
+  },
+  "notifications": {
+    "title": "مرکز اعلان‌ها",
+    "markAllAsRead": "علامت‌گذاری همه به عنوان خوانده شده",
+    "markAsRead": "علامت‌گذاری به عنوان خوانده شده",
+    "delete": "حذف",
+    "all": "همه",
+    "unread": "خوانده نشده",
+    "read": "خوانده شده",
+    "noNotifications": "اعلانی وجود ندارد",
+    "viewAll": "مشاهده همه اعلان‌ها",
+    "types": {
+      "info": "اطلاعیه",
+      "warning": "هشدار",
+      "success": "موفقیت",
+      "error": "خطا",
+      "message": "پیام"
+    }
   }
 }
