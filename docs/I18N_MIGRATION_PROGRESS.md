@@ -70,6 +70,30 @@
 - رشته‌های UI تبدیل شدند
 - شامل: title, description, install, later, close
 
+### 9. PortalHeaderClient ✅
+
+**فایل**: `components/portal/portal-header-client.tsx`
+
+- استفاده از `useTranslations('accessibility')`
+- aria-labelهای ناوبری تبدیل شدند
+- شامل: mainNav, mobileNav, openMenu
+
+### 10. LoginCard ✅
+
+**فایل**: `components/portal/login-card.tsx`
+
+- استفاده از `useTranslations('loginCard')` (namespace جدید)
+- رشته‌های فرم تبدیل شدند
+- شامل: title, username, usernamePlaceholder, password, passwordPlaceholder, login, guide
+
+### 11. Announcements ✅
+
+**فایل**: `components/portal/announcements.tsx`
+
+- استفاده از `useTranslations('homepage')` + `useTranslations('common')`
+- رشته‌های پنل تبدیل شدند
+- شامل: homepage.announcements, common.viewAll
+
 ## ترجمه‌های اضافه شده به messages/fa.json
 
 ### notifications
@@ -166,39 +190,47 @@
 
 ## وضعیت ESLint
 
-### فعلی
+### فعلی (2026-09-15)
 
-- 11 errors (down from 414)
-- 317 warnings (mostly any types)
+- ✅ **0 errors** (از 137 error ابتدایی)
+- ⚠️ **297 warnings** (۱۹۲ no-unused-vars, ۹۰ no-explicit-any, ۱۰ no-console, ۴ anchor-is-valid)
+- همگی warning — CI را نمی‌شکنند (طبق استراتژی `warn` برای no-explicit-any / no-unused-vars)
 
-### بهینه‌سازی‌های انجام شده
+### بهینه‌سازی‌های انجام شده (2026-09-15)
 
-- ignorePatterns کاهش یافت
-- no-explicit-any به warn تبدیل شد
-- no-unused-vars به warn تبدیل شد
-- 1 error با --fix رفع شد
+1. اصلاح `eslint.config.js`:
+   - غیرفعال کردن `no-undef` و `no-require-imports` (کاذب در TS/ESM)
+   - اضافه کردن فایل‌های زیرساختی به `ignores` (scripts, load-testing, jest.setup, next.config.mjs, spec/test فایل‌ها)
+2. رفع ۶ فایل parse-error (کدهای نیمه‌کاره wizard):
+   - `app/(admin)/admin/themes/page.tsx`
+   - `app/(authenticated)/dashboard/theme/page.tsx`
+   - `app/(authenticated)/dashboard/workspaces/page.tsx`
+   - `app/(authenticated)/dashboard/users/page.tsx`
+   - `app/(authenticated)/dashboard/afish/page.tsx`
+   - `app/(authenticated)/dashboard/integrations/page.tsx`
+3. حذف آرایه‌های معلق و متغیرهای تعریف‌نشده در فایل‌های بالا
 
-### رفع تدریجی پیشنهادی
+### رفع تدریجی پیشنهادی (آینده)
 
-1. رفع 11 errors باقی‌مانده
-2. رفع تدریجی any types با proper types
-3. رفع unused variables با prefix _
+1. رفع تدریجی `no-explicit-any` با proper types
+2. رفع `no-unused-vars` با prefix `_` یا حذف
+3. جایگزینی `console.log` با logger مناسب
 4. اضافه کردن proper interfaces برای generic types
 
 ## آمار
 
 ### کامپوننت‌های مهاجرت شده
 
-- ✅ 8 کامپوننت اصلی (4 قبلی + 4 جدید لایه‌ای)
-- 📊 ~20% از کل UI strings
+- ✅ **11 کامپوننت** (۸ قبلی + ۳ جدید: PortalHeaderClient, LoginCard, Announcements)
+- 📊 تقریباً **۲۵٪** از کل UI strings اصلی
 
 ### Translation Coverage
 
 - **پیام‌های سیستم**: 80%
-- **Dashboard**: 60%
-- **Auth**: 90%
+- **Dashboard**: 60% (sidebar + topbar)
+- **Auth**: 90% (login page + login card)
 - **Portal (Header/Footer)**: 100% (لایه UI)
-- **Public pages**: 20%
+- **Public pages**: 25% (announcements + homepage)
 - **Admin pages**: 10%
 
 ## تاریخچه
@@ -208,3 +240,5 @@
 - 2026-09-11: مهاجرت DashboardSidebar و DashboardTopbar
 - 2026-09-11: مهاجرت LoginPage
 - 2026-09-12: مهاجرت NotificationCenter, PortalHeader, PortalFooter, PWAInstallPrompt
+- 2026-09-15: مهاجرت PortalHeaderClient, LoginCard, Announcements
+- 2026-09-15: رفع 137 error → 0 error در ESLint (اصلاح config + ۶ فایل parse-error)

@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { AlertTriangle, FileText } from 'lucide-react'
 import { announcements as fallbackAnnouncements } from '@/lib/portal-data'
 import { PanelHeader } from './panel-header'
@@ -19,6 +20,8 @@ type AnnouncementItem = {
 }
 
 export function Announcements({ config }: Partial<WidgetProps> = {}) {
+  const t = useTranslations('homepage')
+  const tc = useTranslations('common')
   const limit = (config?.limit as number) ?? 5
   const seeded = config?.items as AnnouncementItem[] | undefined
   const { data } = usePublishedContentFeed('ANNOUNCEMENT', limit, !seeded?.length)
@@ -47,7 +50,7 @@ export function Announcements({ config }: Partial<WidgetProps> = {}) {
 
   return (
     <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-      <PanelHeader title="اطلاعیه‌های اداری" moreLabel="مشاهده همه" moreHref="/announcements" />
+      <PanelHeader title={t('announcements')} moreLabel={tc('viewAll')} moreHref="/announcements" />
       <ul>
         {items.map((item) => (
           <li key={item.id}>

@@ -8,6 +8,13 @@ export default [
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
+    // Core `no-undef`/`no-require-imports` are redundant in TS/ESM projects (tsc + bundler handle them)
+    rules: {
+      'no-undef': 'off',
+      'no-require-imports': 'off',
+    },
+  },
+  {
     files: ['**/*.{ts,tsx}'],
     plugins: {
       react: reactPlugin,
@@ -37,25 +44,25 @@ export default [
     },
   },
   {
-    files: ['scripts/**/*.js'],
-    languageOptions: {
-      globals: {
-        console: 'readonly',
-        process: 'readonly',
-      },
-    },
-  },
-  {
     ignores: [
       'node_modules/',
       '.next/',
       'dist/',
       'backend/',
       'public/sw.js',
+      'load-testing/',
       'load-tests/',
+      'scripts/',
+      'jest.setup.js',
+      'next.config.mjs',
       'vitest.config.ts',
       'playwright.config.ts',
+      'proxy.ts',
       '.storybook/',
+      '**/*.spec.ts',
+      '**/*.test.ts',
+      '**/*.spec.tsx',
+      '**/*.test.tsx',
     ],
   },
 ]

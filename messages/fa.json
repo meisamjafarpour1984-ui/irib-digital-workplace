@@ -191,5 +191,14 @@
     "install": "نصب",
     "later": "بعداً",
     "close": "بستن"
+  },
+  "loginCard": {
+    "title": "ورود به اینترنت سازمانی",
+    "username": "نام کاربری",
+    "usernamePlaceholder": "نام کاربری خود را وارد کنید",
+    "password": "رمز عبور",
+    "passwordPlaceholder": "رمز عبور",
+    "login": "ورود",
+    "guide": "راهنمای اتصال"
   }
 }
