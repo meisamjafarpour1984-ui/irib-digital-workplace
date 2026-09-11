@@ -1,0 +1,84 @@
+# ============================================================
+# IRIB DWP Backend — Helm Values (Staging)
+# ============================================================
+
+replicaCount: 1
+
+image:
+  repository: ghcr.io/irib-digital-workplace/irib-digital-workplace-backend
+  pullPolicy: IfNotPresent
+  tag: "staging"
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    cert-manager.io/cluster-issuer: "letsencrypt-staging"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Frame-Options: DENY";
+      more_set_headers "X-Content-Type-Options: nosniff";
+      more_set_headers "Referrer-Policy: strict-origin-when-cross-origin";
+      more_set_headers "Permissions-Policy: camera=(), microphone=(), geolocation=()";
+  hosts:
+    - host: staging-api.iribtabriz.ir
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: dwp-backend-staging-tls
+      hosts:
+        - staging-api.iribtabriz.ir
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: 1000m
+    memory: 2Gi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+env:
+  - name: NODE_ENV
+    value: "production"
+  - name: PORT
+    value: "3001"
+  - name: DATABASE_URL
+    valueFrom:
+      secretKeyRef:
+        name: dwp-database-credentials-staging
+        key: url
+  - name: REDIS_URL
+    valueFrom:
+      secretKeyRef:
+        name: dwp-redis-credentials-staging
+        key: url
+  - name: KEYCLOAK_URL
+    valueFrom:
+      secretKeyRef:
+        name: dwp-keycloak-credentials-staging
+        key: url
+  - name: MINIO_ENDPOINT
+    valueFrom:
+      secretKeyRef:
+        name: dwp-minio-credentials-staging
+        key: endpoint
+  - name: JWT_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: dwp-jwt-credentials-staging
+        key: secret
+  - name: OPENSEARCH_ENDPOINT
+    value: "http://opensearch:9200"
+  - name: CORS_ORIGINS
+    value: "https://staging-portal.iribtabriz.ir"

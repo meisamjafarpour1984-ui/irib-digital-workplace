@@ -1,0 +1,56 @@
+# ============================================================
+# IRIB DWP Frontend — Helm Values (Staging)
+# ============================================================
+
+replicaCount: 1
+
+image:
+  repository: ghcr.io/irib-digital-workplace/irib-digital-workplace-frontend
+  pullPolicy: IfNotPresent
+  tag: "staging"
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    cert-manager.io/cluster-issuer: "letsencrypt-staging"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Frame-Options: DENY";
+      more_set_headers "X-Content-Type-Options: nosniff";
+      more_set_headers "Referrer-Policy: strict-origin-when-cross-origin";
+      more_set_headers "Permissions-Policy: camera=(), microphone=(), geolocation=()";
+  hosts:
+    - host: staging-portal.iribtabriz.ir
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: dwp-frontend-staging-tls
+      hosts:
+        - staging-portal.iribtabriz.ir
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 1Gi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+env:
+  NODE_ENV: "production"
+  PORT: "3000"
+  NEXT_PUBLIC_API_URL: "https://staging-api.iribtabriz.ir"
+  NEXT_PUBLIC_WS_URL: "wss://staging-api.iribtabriz.ir"
+  extra: []

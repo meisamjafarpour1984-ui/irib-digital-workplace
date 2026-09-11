@@ -1,11 +1,11 @@
 # ============================================================
-# IRIB DWP Backend — Helm Values
+# IRIB DWP Frontend — Helm Values
 # ============================================================
 
 replicaCount: 2
 
 image:
-  repository: ghcr.io/irib-digital-workplace/irib-digital-workplace-backend
+  repository: harbor.iribtabriz.ir/dwp/frontend
   pullPolicy: IfNotPresent
   tag: "latest"
 
@@ -14,13 +14,13 @@ imagePullSecrets:
 
 serviceAccount:
   create: true
-  name: dwp-backend-sa
+  name: dwp-frontend-sa
   annotations: {}
 
 podAnnotations:
   prometheus.io/scrape: "true"
-  prometheus.io/port: "3001"
-  prometheus.io/path: "/metrics"
+  prometheus.io/port: "3000"
+  prometheus.io/path: "/"
 
 podSecurityContext:
   runAsNonRoot: true
@@ -40,7 +40,7 @@ securityContext:
 service:
   type: ClusterIP
   port: 80
-  targetPort: 3001
+  targetPort: 3000
 
 ingress:
   enabled: true
@@ -57,22 +57,22 @@ ingress:
       more_set_headers "Referrer-Policy: strict-origin-when-cross-origin";
       more_set_headers "Permissions-Policy: camera=(), microphone=(), geolocation=()";
   hosts:
-    - host: api.iribtabriz.ir
+    - host: portal.iribtabriz.ir
       paths:
         - path: /
           pathType: Prefix
   tls:
-    - secretName: dwp-backend-tls
+    - secretName: dwp-frontend-tls
       hosts:
-        - api.iribtabriz.ir
+        - portal.iribtabriz.ir
 
 resources:
   requests:
-    cpu: 500m
-    memory: 1Gi
+    cpu: 250m
+    memory: 512Mi
   limits:
-    cpu: 2000m
-    memory: 4Gi
+    cpu: 1000m
+    memory: 2Gi
 
 autoscaling:
   enabled: true
@@ -95,106 +95,40 @@ affinity:
               - key: app.kubernetes.io/name
                 operator: In
                 values:
-                  - dwp-backend
+                  - dwp-frontend
           topologyKey: kubernetes.io/hostname
 
 probes:
   liveness:
     httpGet:
-      path: /health/live
-      port: 3001
+      path: /
+      port: 3000
     initialDelaySeconds: 30
     periodSeconds: 10
     timeoutSeconds: 5
     failureThreshold: 3
   readiness:
     httpGet:
-      path: /health/ready
-      port: 3001
+      path: /
+      port: 3000
     initialDelaySeconds: 10
     periodSeconds: 5
     timeoutSeconds: 3
     failureThreshold: 3
   startup:
     httpGet:
-      path: /health/ready
-      port: 3001
+      path: /
+      port: 3000
     initialDelaySeconds: 5
     periodSeconds: 5
     timeoutSeconds: 3
     failureThreshold: 30
 
 env:
-  - name: NODE_ENV
-    value: "production"
-  - name: PORT
-    value: "3001"
-  - name: DATABASE_URL
-    valueFrom:
-      secretKeyRef:
-        name: dwp-database-credentials
-        key: url
-  - name: REDIS_URL
-    valueFrom:
-      secretKeyRef:
-        name: dwp-redis-credentials
-        key: url
-  - name: KEYCLOAK_URL
-    valueFrom:
-      secretKeyRef:
-        name: dwp-keycloak-credentials
-        key: url
-  - name: MINIO_ENDPOINT
-    valueFrom:
-      secretKeyRef:
-        name: dwp-minio-credentials
-        key: endpoint
-  - name: JWT_SECRET
-    valueFrom:
-      secretKeyRef:
-        name: dwp-jwt-credentials
-        key: secret
-  - name: OPENSEARCH_ENDPOINT
-    value: "http://opensearch:9200"
+  NODE_ENV: "production"
+  PORT: "3000"
+  NEXT_PUBLIC_API_URL: "https://api.iribtabriz.ir"
+  NEXT_PUBLIC_WS_URL: "wss://api.iribtabriz.ir"
+  extra: []
 
 envFrom: []
-
-networkPolicy:
-  enabled: true
-  ingress:
-    - from:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: ingress-nginx
-      ports:
-        - port: 3001
-          protocol: TCP
-  egress:
-    - to:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: data
-      ports:
-        - port: 5432
-          protocol: TCP
-        - port: 6379
-          protocol: TCP
-        - port: 9092
-          protocol: TCP
-        - port: 9000
-          protocol: TCP
-    - to:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: infra
-      ports:
-        - port: 8080
-          protocol: TCP
-        - port: 8200
-          protocol: TCP
-    - to: []
-      ports:
-        - port: 443
-          protocol: TCP
-        - port: 80
-          protocol: TCP

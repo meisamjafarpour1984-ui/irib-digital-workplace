@@ -1,21 +1,168 @@
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/Dockerfile
-FROM node:22-slim AS build
+# ============================================================
+# IRIB DWP Backend — Dockerfile
+# Multi-stage build for NestJS backend
+# ============================================================
+#
+# Designer & Developer: میثم جعفرپور آلانق
+# Education: Master of Software Engineering
+# Position: Audio and Video Expert Level 4
+# Client: Technical Deputy of IRIB East Azerbaijan Center
+# All rights reserved © 2026
+#
 
-RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates \
- && rm -rf /var/lib/apt/lists/*
+FROM node:20-slim AS base
+
+# Install base dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    openssl \
+    ca-certificates \
+    python3 \
+    make \
+    g++ \
+    procps \
+    && rm -rf /var/lib/apt/lists/*
+
+# Enable pnpm
 RUN corepack enable
+
+# Configure pnpm for better network resilience
+RUN pnpm config set fetch-retries 5 && \
+    pnpm config set fetch-retry-mintimeout 20000 && \
+    pnpm config set fetch-retry-maxtimeout 120000 && \
+    pnpm config set fetch-timeout 180000
+
 WORKDIR /workspace
 
+# ============================================================
+# Development stage - for hot-reload development
+# ============================================================
+
+FROM base AS development
+
+# Build arguments for environment configuration
+ARG NODE_ENV=development
+ARG ENVIRONMENT=development
+
+# Set build environment
+ENV NODE_ENV=${NODE_ENV}
+ENV ENVIRONMENT=${ENVIRONMENT}
+ENV PNPM_IGNORE_SCRIPTS=false
+
+# Copy package files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY backend ./backend
+COPY backend/package.json ./backend/
 
-RUN pnpm install --frozen-lockfile
+# Install dependencies
+RUN pnpm install --ignore-scripts --prefer-offline || pnpm install --ignore-scripts
 
-RUN pnpm --filter irib-dwp-backend run prisma:generate \
-  && pnpm --filter irib-dwp-backend build
+# Rebuild bcrypt native module
+RUN pnpm rebuild bcrypt || true
+RUN find node_modules/.pnpm -type d -name "bcrypt@*" -exec sh -c 'cd "$1" && pnpm rebuild bcrypt || npm rebuild bcrypt' _ {} \;
 
-FROM node:22-slim AS runtime
+# Copy source code
+COPY backend/src ./backend/src
+COPY backend/prisma ./backend/prisma
+COPY backend/tsconfig.json ./backend/
+COPY backend/nest-cli.json ./backend/
 
+WORKDIR /workspace/backend
+
+# Set DATABASE_URL for Prisma generation
+ARG DATABASE_URL
+ENV DATABASE_URL=${DATABASE_URL}
+
+# Generate Prisma client
+RUN npx prisma generate
+
+# Expose port
+EXPOSE 3001
+
+# Start development server with hot-reload
+CMD ["pnpm", "run", "dev"]
+
+# ============================================================
+# Build stage - for production build
+# ============================================================
+
+FROM base AS build
+
+# Build arguments for environment configuration
+ARG NODE_ENV=production
+ARG ENVIRONMENT=production
+
+# Set build environment
+ENV NODE_ENV=${NODE_ENV}
+ENV ENVIRONMENT=${ENVIRONMENT}
+ENV PNPM_IGNORE_SCRIPTS=false
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    openssl \
+    ca-certificates \
+    python3 \
+    make \
+    g++ \
+    procps \
+    && rm -rf /var/lib/apt/lists/*
+
+# Enable pnpm
+RUN corepack enable
+
+# Configure pnpm for better network resilience
+RUN pnpm config set fetch-retries 5 && \
+    pnpm config set fetch-retry-mintimeout 20000 && \
+    pnpm config set fetch-retry-maxtimeout 120000 && \
+    pnpm config set fetch-timeout 180000
+
+WORKDIR /workspace
+
+# Copy workspace package files
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# Copy backend package file first
+COPY backend/package.json ./backend/
+
+# Install workspace dependencies with network resilience
+# Install only production dependencies
+RUN pnpm install --ignore-scripts --prefer-offline || pnpm install --ignore-scripts
+
+# Rebuild bcrypt native module to ensure it's compiled correctly for all locations
+RUN pnpm rebuild bcrypt || true
+RUN find node_modules/.pnpm -type d -name "bcrypt@*" -exec sh -c 'cd "$1" && pnpm rebuild bcrypt || npm rebuild bcrypt' _ {} \;
+
+COPY backend/src ./backend/src
+COPY backend/prisma ./backend/prisma
+COPY backend/tsconfig.json ./backend/
+COPY backend/nest-cli.json ./backend/
+
+WORKDIR /workspace/backend
+
+# Set DATABASE_URL for Prisma generation
+ARG DATABASE_URL
+ENV DATABASE_URL=${DATABASE_URL}
+
+# Generate Prisma client using locally installed Prisma
+RUN npx prisma generate
+
+# Build the application
+RUN npm run build
+
+# ============================================================
+# Runtime stage
+# ============================================================
+
+FROM node:20-slim AS runtime
+
+# Runtime arguments
+ARG NODE_ENV=production
+ARG PORT=3001
+
+# Set runtime environment
+ENV NODE_ENV=${NODE_ENV}
+ENV PORT=${PORT}
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+
+# Install runtime dependencies including Puppeteer and build tools for bcrypt
 RUN apt-get update && apt-get install -y --no-install-recommends \
     chromium \
     fonts-liberation libasound2 libatk-bridge2.0-0 libatk1.0-0 libc6 libcairo2 \
@@ -25,171 +172,41 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates \
     fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf \
     libxshmfence1 libxkbcommon0 libdrm2 libatspi2.0-0 xdg-utils \
+    python3 make g++ procps \
     && rm -rf /var/lib/apt/lists/*
-RUN corepack enable
-WORKDIR /workspace
-ENV NODE_ENV=production
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
-COPY --from=build /workspace/package.json /workspace/pnpm-lock.yaml /workspace/pnpm-workspace.yaml ./
+# Enable pnpm
+RUN corepack enable
+
+WORKDIR /workspace
+
+# Copy backend package file for runtime
+COPY backend/package.json ./backend/
+
+# Copy backend dependencies and build output
 COPY --from=build /workspace/node_modules ./node_modules
-COPY --from=build /workspace/backend/package.json ./backend/package.json
 COPY --from=build /workspace/backend/node_modules ./backend/node_modules
 COPY --from=build /workspace/backend/dist ./backend/dist
 COPY --from=build /workspace/backend/prisma ./backend/prisma
 
 WORKDIR /workspace/backend
+
+# Rebuild bcrypt native module for runtime using pnpm in both locations
+RUN pnpm rebuild bcrypt || true
+RUN find /workspace/node_modules/.pnpm -type d -name "bcrypt@*" -exec sh -c 'cd "$1" && pnpm rebuild bcrypt || npm rebuild bcrypt' _ {} \;
+RUN cd /workspace && pnpm rebuild bcrypt || true
+RUN cd /workspace && find /workspace/node_modules/.pnpm -type d -name "bcrypt@*" -exec sh -c 'cd "$1" && pnpm rebuild bcrypt || npm rebuild bcrypt' _ {} \;
+
+# Create non-root user for security
+RUN useradd -m -u 1001 appuser && chown -R appuser:appuser /workspace
+USER appuser
+
+# Expose port
 EXPOSE 3001
-=======
-FROM node:22-slim AS build
 
-RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates \
- && rm -rf /var/lib/apt/lists/*
-RUN corepack enable
-WORKDIR /workspace
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3001/api/v1/health/live', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 
-# Cache bust to force rebuild
-RUN echo "Build timestamp: $(date)" > /tmp/build-timestamp.txt
-
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY backend ./backend
-
-# Cache bust to force rebuild
-RUN echo "Build timestamp: $(date)" > /tmp/build-timestamp.txt
-
-RUN pnpm install --frozen-lockfile
-
-RUN pnpm --filter irib-dwp-backend run prisma:generate \
-  && pnpm --filter irib-dwp-backend build
-
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/Dockerfile
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/Dockerfile
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/Dockerfile
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/Dockerfile
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/Dockerfile
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/Dockerfile
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/Dockerfile
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/Dockerfile
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/Dockerfile
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/Dockerfile
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/Dockerfile
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/Dockerfile
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/Dockerfile
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/Dockerfile
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/Dockerfile
-# Verify the prisma.middleware.js file was compiled
-RUN ls -la /workspace/backend/dist/prisma/
-=======
-# Verify prisma.middleware.js was compiled
-RUN ls -la /workspace/backend/dist/prisma/ || echo "ERROR: prisma.middleware.js not found"
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/Dockerfile
-=======
-# Verify prisma.middleware.js exists
-RUN test -f /workspace/backend/dist/prisma/prisma.middleware.js || (echo "ERROR: prisma.middleware.js not found" && exit 1)
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/Dockerfile
-=======
-# Verify prisma.middleware.js exists
-RUN test -f /workspace/backend/dist/prisma/prisma.middleware.js || (echo "ERROR: prisma.middleware.js not found" && exit 1)
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/Dockerfile
-=======
-# Verify prisma.middleware.js exists
-RUN test -f /workspace/backend/dist/prisma/prisma.middleware.js || (echo "ERROR: prisma.middleware.js not found" && exit 1)
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/Dockerfile
-=======
-# Debug: list what was actually compiled
-RUN ls -la /workspace/backend/dist/prisma/
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/Dockerfile
-=======
-# Manually compile prisma.middleware.ts since nest build doesn't pick it up
-RUN npx tsc src/prisma/prisma.middleware.ts --outDir dist/prisma --module commonjs --target ES2021 --esModuleInterop --skipLibCheck
-
-# Debug: list what was actually compiled
-RUN ls -la /workspace/backend/dist/prisma/
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/Dockerfile
-=======
-# Manually compile prisma.middleware.ts since nest build doesn't pick it up
-RUN npx tsc backend/src/prisma/prisma.middleware.ts --outDir backend/dist/prisma --module commonjs --target ES2021 --esModuleInterop --skipLibCheck
-
-# Debug: list what was actually compiled
-RUN ls -la /workspace/backend/dist/prisma/
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/Dockerfile
-
-=======
-# Manually compile prisma.middleware.ts since nest build doesn't pick it up
-RUN npx tsc backend/src/prisma/prisma.middleware.ts --outDir backend/dist/prisma --module commonjs --target ES2021 --esModuleInterop --skipLibCheck
-
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/Dockerfile
-=======
-=======
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/Dockerfile
-# Manually compile prisma.middleware.ts since nest build doesn't pick it up
-RUN npx tsc backend/src/prisma/prisma.middleware.ts --outDir backend/dist/prisma --module commonjs --target ES2021 --esModuleInterop --skipLibCheck
-
-# Compile all DTO files that might be missed
-RUN find backend/src -name "*.dto.ts" -exec npx tsc {} --outDir backend/dist --module commonjs --target ES2021 --esModuleInterop --skipLibCheck \;
-
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/Dockerfile
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/Dockerfile
-=======
-# Manually compile prisma.middleware.ts since nest build doesn't pick it up
-RUN npx tsc backend/src/prisma/prisma.middleware.ts --outDir backend/dist/prisma --module commonjs --target ES2021 --esModuleInterop --skipLibCheck
-
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/Dockerfile
-=======
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/Dockerfile
-=======
-# Manually compile prisma.middleware.ts since nest build doesn't pick it up
-RUN npx tsc backend/src/prisma/prisma.middleware.ts --outDir backend/dist/prisma --module commonjs --target ES2021 --esModuleInterop --skipLibCheck
-
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/Dockerfile
-=======
-# Manually compile prisma.middleware.ts since nest build doesn't pick it up
-RUN npx tsc backend/src/prisma/prisma.middleware.ts --outDir backend/dist/prisma --module commonjs --target ES2021 --esModuleInterop --skipLibCheck
-
-# Manually compile all DTO files
-RUN npx tsc backend/src/modules/iam/dto/auth.dto.ts --outDir backend/dist/modules/iam/dto --module commonjs --target ES2021 --esModuleInterop --skipLibCheck
-RUN npx tsc backend/src/modules/content/dto/content.dto.ts --outDir backend/dist/modules/content/dto --module commonjs --target ES2021 --esModuleInterop --skipLibCheck
-RUN npx tsc backend/src/modules/forms/dto/forms.dto.ts --outDir backend/dist/modules/forms/dto --module commonjs --target ES2021 --esModuleInterop --skipLibCheck
-RUN npx tsc backend/src/modules/communication/dto/communication.dto.ts --outDir backend/dist/modules/communication/dto --module commonjs --target ES2021 --esModuleInterop --skipLibCheck
-RUN npx tsc backend/src/modules/pdf-generator/dto/pdf-generator.dto.ts --outDir backend/dist/modules/pdf-generator/dto --module commonjs --target ES2021 --esModuleInterop --skipLibCheck
-RUN npx tsc backend/src/modules/search/search.dto.ts --outDir backend/dist/modules/search --module commonjs --target ES2021 --esModuleInterop --skipLibCheck
-
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/Dockerfile
-=======
-# Use tsc with project config to ensure all files are compiled
-RUN cd backend && npx tsc --project tsconfig.json
-
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/Dockerfile
-=======
-# Use tsc with project config to ensure all files are compiled
-RUN cd backend && npx tsc --project tsconfig.json
-
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/Dockerfile
-FROM node:22-slim AS runtime
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    chromium \
-    fonts-liberation libasound2 libatk-bridge2.0-0 libatk1.0-0 libc6 libcairo2 \
-    libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgbm1 libgcc1 libglib2.0-0 \
-    libgtk-3-0 libnspr4 libnss3 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 \
-    libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 \
-    libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates \
-    fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf \
-    libxshmfence1 libxkbcommon0 libdrm2 libatspi2.0-0 xdg-utils \
-    && rm -rf /var/lib/apt/lists/*
-RUN corepack enable
-WORKDIR /workspace
-ENV NODE_ENV=production
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
-
-COPY --from=build /workspace/package.json /workspace/pnpm-lock.yaml /workspace/pnpm-workspace.yaml ./
-COPY --from=build /workspace/node_modules ./node_modules
-COPY --from=build /workspace/backend/package.json ./backend/package.json
-COPY --from=build /workspace/backend/node_modules ./backend/node_modules
-COPY --from=build /workspace/backend/dist ./backend/dist
-COPY --from=build /workspace/backend/prisma ./backend/prisma
-
-WORKDIR /workspace/backend
-EXPOSE 3001
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/Dockerfile
+# Start the application
 CMD ["node", "dist/main"]

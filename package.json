@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@10.26.2",
+  "packageManager": "pnpm@11.25.0",
   "engines": {
-    "node": ">=20.9.0"
+    "node": ">=20.0.0"
   },
   "scripts": {
     "dev": "next dev",
@@ -24,7 +24,10 @@
     "storybook:build": "storybook build",
     "typecheck": "tsc --noEmit",
     "knip": "knip",
-    "prepare": "husky"
+    "prepare": "husky",
+    "setup-local": "node scripts/setup-local.js",
+    "deploy-production": "node scripts/deploy-production.js",
+    "wizard": "docker-compose -f docker-compose.wizard.yml up"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
@@ -50,6 +53,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns-jalali": "4.4.0-0",
+    "keycloak-js": "^26.2.4",
     "lucide-react": "^1.16.0",
     "next": "16.2.6",
     "next-intl": "^4.13.4",
@@ -103,17 +107,5 @@
     "typescript": "5.7.3",
     "typescript-eslint": "^8.65.0",
     "vitest": "^4.1.10"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@nestjs/core",
-      "@prisma/client",
-      "@prisma/engines",
-      "bcrypt",
-      "prisma"
-    ],
-    "overrides": {
-      "hono": "4.12.25"
-    }
   }
 }

@@ -1,0 +1,78 @@
+# ============================================================
+# IRIB DWP Frontend — Helm Values (Production)
+# ============================================================
+
+replicaCount: 3
+
+image:
+  repository: ghcr.io/irib-digital-workplace/irib-digital-workplace-frontend
+  pullPolicy: IfNotPresent
+  tag: ""
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Frame-Options: DENY";
+      more_set_headers "X-Content-Type-Options: nosniff";
+      more_set_headers "Referrer-Policy: strict-origin-when-cross-origin";
+      more_set_headers "Permissions-Policy: camera=(), microphone=(), geolocation=()";
+      more_set_headers "Strict-Transport-Security: max-age=31536000; includeSubDomains";
+  hosts:
+    - host: portal.iribtabriz.ir
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: dwp-frontend-tls
+      hosts:
+        - portal.iribtabriz.ir
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 1Gi
+  limits:
+    cpu: 2000m
+    memory: 4Gi
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 20
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - dwp-frontend
+          topologyKey: kubernetes.io/hostname
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+                - dwp-frontend
+        topologyKey: "topology.kubernetes.io/zone"
+
+env:
+  NODE_ENV: "production"
+  PORT: "3000"
+  NEXT_PUBLIC_API_URL: "https://api.iribtabriz.ir"
+  NEXT_PUBLIC_WS_URL: "wss://api.iribtabriz.ir"
+  extra: []
