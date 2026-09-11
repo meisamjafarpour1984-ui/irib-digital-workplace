@@ -1,6 +1,18 @@
+/**
+ * IRIB Digital Workplace Platform - Root Layout
+ *
+ * Designer & Developer: میثم جعفرپور آلانق
+ * Education: Master of Software Engineering
+ * Position: Audio and Video Expert Level 4
+ * Client: Technical Deputy of IRIB East Azerbaijan Center
+ * All rights reserved © 2026
+ */
+
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Vazirmatn } from 'next/font/google'
+import { NextIntlClientProvider } from 'next-intl'
+import { getMessages } from 'next-intl/server'
 import {
   ThemeProvider,
   PermissionProvider,
@@ -18,15 +30,19 @@ const vazirmatn = Vazirmatn({
 })
 
 export const metadata: Metadata = {
-  title: 'پرتال دیجیتال کارکنان | صدا و سیمای آذربایجان شرقی',
+  title: 'درگاه دیجیتال کارکنان | صدا و سیمای آذربایجان شرقی',
   description:
-    'پرتال دیجیتال کارکنان صدا و سیمای مرکز آذربایجان شرقی — دسترسی به سامانه‌ها، اخبار، اطلاعیه‌ها و خدمات فناوری اطلاعات.',
+    'درگاه دیجیتال کارکنان صدا و سیمای مرکز آذربایجان شرقی — دسترسی به سامانه‌ها، اخبار، اطلاعیه‌ها و خدمات فناوری اطلاعات.',
   generator: 'v0.app',
   manifest: '/manifest.json',
+  icons: {
+    icon: '/icon.svg',
+    apple: '/apple-icon.png',
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'پرتال IRIB',
+    title: 'درگاه IRIB',
   },
 }
 
@@ -38,11 +54,13 @@ export const viewport: Viewport = {
   ],
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const messages = await getMessages()
+
   return (
     <html
       lang="fa"
@@ -51,16 +69,18 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="font-sans antialiased">
-        <ThemeProvider>
-          <QueryProvider>
-            <AuthProvider>
-              <PermissionProvider>
-                {children}
-                <ToasterProvider />
-              </PermissionProvider>
-            </AuthProvider>
-          </QueryProvider>
-        </ThemeProvider>
+        <NextIntlClientProvider messages={messages}>
+          <ThemeProvider>
+            <QueryProvider>
+              <AuthProvider>
+                <PermissionProvider>
+                  {children}
+                  <ToasterProvider />
+                </PermissionProvider>
+              </AuthProvider>
+            </QueryProvider>
+          </ThemeProvider>
+        </NextIntlClientProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

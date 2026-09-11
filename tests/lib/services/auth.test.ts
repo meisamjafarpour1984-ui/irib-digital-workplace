@@ -1,110 +1,190 @@
 /**
- * Tests for AuthService
+ * Tests for Auth API
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { AuthService } from '@/lib/services/auth'
+import { authApi } from '@/lib/services/auth'
 
-describe('AuthService', () => {
-  let authService: AuthService
-
+describe('Auth API', () => {
   beforeEach(() => {
-    authService = new AuthService()
     vi.clearAllMocks()
+  })
+
+  describe('register', () => {
+    it('should register with valid credentials', async () => {
+      const mockResponse = {
+        challengeId: 'challenge-123',
+        expiresIn: 300,
+        devOtp: '123456',
+      }
+
+      vi.spyOn(authApi, 'register').mockResolvedValue(mockResponse)
+
+      const result = await authApi.register({
+        personnelCode: '123456',
+        mobile: '09123456789',
+        name: 'Test User',
+      })
+
+      expect(result).toEqual(mockResponse)
+    })
+
+    it('should handle registration failures', async () => {
+      vi.spyOn(authApi, 'register').mockRejectedValue(new Error('Registration failed'))
+
+      await expect(
+        authApi.register({
+          personnelCode: '123456',
+          mobile: '09123456789',
+        })
+      ).rejects.toThrow('Registration failed')
+    })
   })
 
   describe('login', () => {
     it('should login with valid credentials', async () => {
       const mockResponse = {
-        data: {
-          token: 'mock-token',
-          user: {
-            id: '1',
-            name: 'Test User',
-            email: 'test@example.com',
-          },
-        },
+        challengeId: 'challenge-123',
+        expiresIn: 300,
+        devOtp: '123456',
       }
 
-      vi.spyOn(authService, 'login').mockResolvedValue(mockResponse)
+      vi.spyOn(authApi, 'login').mockResolvedValue(mockResponse)
 
-      const result = await authService.login('test@example.com', 'password123')
+      const result = await authApi.login({
+        personnelCode: '123456',
+        password: 'password123',
+      })
 
       expect(result).toEqual(mockResponse)
     })
 
     it('should handle login failures', async () => {
-      vi.spyOn(authService, 'login').mockRejectedValue(new Error('Invalid credentials'))
+      vi.spyOn(authApi, 'login').mockRejectedValue(new Error('Invalid credentials'))
 
-      await expect(authService.login('test@example.com', 'wrong-password')).rejects.toThrow(
-        'Invalid credentials'
-      )
-    })
-
-    it('should handle network errors', async () => {
-      vi.spyOn(authService, 'login').mockRejectedValue(new Error('Network error'))
-
-      await expect(authService.login('test@example.com', 'password123')).rejects.toThrow(
-        'Network error'
-      )
+      await expect(
+        authApi.login({
+          personnelCode: '123456',
+          password: 'wrong-password',
+        })
+      ).rejects.toThrow('Invalid credentials')
     })
   })
 
-  describe('logout', () => {
-    it('should logout correctly', async () => {
-      vi.spyOn(authService, 'logout').mockResolvedValue(undefined)
-
-      await authService.logout()
-
-      expect(authService.logout).toHaveBeenCalled()
-    })
-  })
-
-  describe('refreshToken', () => {
-    it('should refresh tokens successfully', async () => {
-      const mockResponse = {
-        data: {
-          token: 'new-token',
-          refreshToken: 'new-refresh-token',
-        },
-      }
-
-      vi.spyOn(authService, 'refreshToken').mockResolvedValue(mockResponse)
-
-      const result = await authService.refreshToken('old-refresh-token')
-
-      expect(result).toEqual(mockResponse)
-    })
-
-    it('should handle token refresh failures', async () => {
-      vi.spyOn(authService, 'refreshToken').mockRejectedValue(new Error('Invalid refresh token'))
-
-      await expect(authService.refreshToken('invalid-token')).rejects.toThrow(
-        'Invalid refresh token'
-      )
-    })
-  })
-
-  describe('verifyOTP', () => {
+  describe('verifyOtp', () => {
     it('should verify OTP successfully', async () => {
       const mockResponse = {
-        data: {
-          verified: true,
-          token: 'verified-token',
+        accessToken: 'access-token',
+        refreshToken: 'refresh-token',
+        expiresIn: 3600,
+        user: {
+          id: '1',
+          name: 'Test User',
+          personnelCode: '123456',
         },
       }
 
-      vi.spyOn(authService, 'verifyOTP').mockResolvedValue(mockResponse)
+      vi.spyOn(authApi, 'verifyOtp').mockResolvedValue(mockResponse)
 
-      const result = await authService.verifyOTP('123456', 'user-id')
+      const result = await authApi.verifyOtp({
+        challengeId: 'challenge-123',
+        code: '123456',
+      })
 
       expect(result).toEqual(mockResponse)
     })
 
     it('should handle invalid OTP', async () => {
-      vi.spyOn(authService, 'verifyOTP').mockRejectedValue(new Error('Invalid OTP'))
+      vi.spyOn(authApi, 'verifyOtp').mockRejectedValue(new Error('Invalid OTP'))
 
-      await expect(authService.verifyOTP('000000', 'user-id')).rejects.toThrow('Invalid OTP')
+      await expect(
+        authApi.verifyOtp({
+          challengeId: 'challenge-123',
+          code: '000000',
+        })
+      ).rejects.toThrow('Invalid OTP')
+    })
+  })
+
+  describe('refresh', () => {
+    it('should refresh tokens successfully', async () => {
+      const mockResponse = {
+        accessToken: 'new-access-token',
+        refreshToken: 'new-refresh-token',
+        expiresIn: 3600,
+        user: {
+          id: '1',
+          name: 'Test User',
+          personnelCode: '123456',
+        },
+      }
+
+      vi.spyOn(authApi, 'refresh').mockResolvedValue(mockResponse)
+
+      const result = await authApi.refresh()
+
+      expect(result).toEqual(mockResponse)
+    })
+
+    it('should handle token refresh failures', async () => {
+      vi.spyOn(authApi, 'refresh').mockRejectedValue(new Error('Invalid refresh token'))
+
+      await expect(authApi.refresh()).rejects.toThrow('Invalid refresh token')
+    })
+  })
+
+  describe('logout', () => {
+    it('should logout successfully', async () => {
+      const mockResponse = { success: true }
+
+      vi.spyOn(authApi, 'logout').mockResolvedValue(mockResponse)
+
+      const result = await authApi.logout()
+
+      expect(result).toEqual(mockResponse)
+    })
+
+    it('should handle logout failures', async () => {
+      vi.spyOn(authApi, 'logout').mockRejectedValue(new Error('Logout failed'))
+
+      await expect(authApi.logout()).rejects.toThrow('Logout failed')
+    })
+  })
+
+  describe('keycloakLogin', () => {
+    it('should login via Keycloak successfully', async () => {
+      const mockResponse = {
+        accessToken: 'keycloak-access-token',
+        refreshToken: 'keycloak-refresh-token',
+        expiresIn: 3600,
+        user: {
+          id: '1',
+          name: 'Test User',
+          personnelCode: '123456',
+        },
+      }
+
+      vi.spyOn(authApi, 'keycloakLogin').mockResolvedValue(mockResponse)
+
+      const result = await authApi.keycloakLogin({
+        personnelCode: '123456',
+        password: 'password123',
+      })
+
+      expect(result).toEqual(mockResponse)
+    })
+
+    it('should handle Keycloak login failures', async () => {
+      vi.spyOn(authApi, 'keycloakLogin').mockRejectedValue(
+        new Error('Keycloak authentication failed')
+      )
+
+      await expect(
+        authApi.keycloakLogin({
+          personnelCode: '123456',
+          password: 'wrong-password',
+        })
+      ).rejects.toThrow('Keycloak authentication failed')
     })
   })
 })

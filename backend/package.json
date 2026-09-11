@@ -25,7 +25,9 @@
     "prisma:migrate:prod": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
     "prisma:seed": "ts-node prisma/seed.ts",
-    "swagger:export": "ts-node-esm scripts/export-swagger.ts"
+    "swagger:export": "ts-node-esm scripts/export-swagger.ts",
+    "db:migrate": "bash scripts/migrate.sh",
+    "db:rollback": "bash scripts/rollback.sh"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"

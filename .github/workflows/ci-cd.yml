@@ -141,7 +141,7 @@ jobs:
         working-directory: ./backend
         env:
           DATABASE_URL: postgresql://test:test@localhost:5432/irib_dwp_test
-        run: pnpm prisma migrate deploy
+        run: bash scripts/migrate.sh
 
       - name: Run unit tests
         working-directory: ./backend

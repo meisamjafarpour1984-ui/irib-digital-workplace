@@ -18,6 +18,8 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "storybook": "storybook dev -p 6006",
@@ -27,6 +29,7 @@
     "prepare": "husky",
     "setup-local": "node scripts/setup-local.js",
     "deploy-production": "node scripts/deploy-production.js",
+    "deploy-staging": "bash scripts/deploy-staging.sh",
     "wizard": "docker-compose -f docker-compose.wizard.yml up"
   },
   "dependencies": {
