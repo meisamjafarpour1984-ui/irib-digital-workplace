@@ -139,5 +139,21 @@
       "error": "خطا",
       "message": "پیام"
     }
+  },
+  "sidebar": {
+    "systemManagement": "مدیریت سامانه",
+    "eastAzerbaijanCenter": "مرکز آذربایجان شرقی",
+    "backToPortal": "بازگشت به درگاه"
+  },
+  "topbar": {
+    "title": "داشبورد مدیریتی",
+    "subtitle": "مرکز صدا و سیمای آذربایجان شرقی",
+    "searchPlaceholder": "جستجو در سامانه مدیریت...",
+    "changeTheme": "تغییر پوسته",
+    "systems": "سامانه‌ها",
+    "notifications": "اعلان‌ها",
+    "logout": "خروج",
+    "admin": "مدیر سیستم",
+    "userName": "حمید کریمی"
   }
 }

@@ -1,8 +1,12 @@
+'use client'
+
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { Radio } from 'lucide-react'
 import { sidebarItems } from '@/lib/dashboard-data'
 
 export function DashboardSidebar() {
+  const t = useTranslations('sidebar')
   return (
     <aside className="hidden w-64 shrink-0 flex-col bg-navy text-white lg:flex">
       <div className="flex items-center gap-3 border-b border-white/10 px-5 py-5">
@@ -10,8 +14,8 @@ export function DashboardSidebar() {
           <Radio className="size-5" aria-hidden />
         </div>
         <div className="text-right leading-tight">
-          <p className="text-sm font-bold text-white">مدیریت سامانه</p>
-          <p className="text-xs text-white/55">مرکز آذربایجان شرقی</p>
+          <p className="text-sm font-bold text-white">{t('systemManagement')}</p>
+          <p className="text-xs text-white/55">{t('eastAzerbaijanCenter')}</p>
         </div>
       </div>
 
@@ -21,8 +25,8 @@ export function DashboardSidebar() {
             const Icon = item.icon
             return (
               <li key={item.label}>
-                <a
-                  href="#"
+                <Link
+                  href={item.href || '#'}
                   className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-sm transition-colors ${
                     item.active
                       ? 'bg-brand text-white shadow-sm'
@@ -43,7 +47,7 @@ export function DashboardSidebar() {
                       {item.badge}
                     </span>
                   )}
-                </a>
+                </Link>
               </li>
             )
           })}
@@ -55,7 +59,7 @@ export function DashboardSidebar() {
           href="/"
           className="flex items-center justify-center rounded-lg bg-white/5 px-3 py-2.5 text-sm text-white/80 transition-colors hover:bg-white/10 hover:text-white"
         >
-          بازگشت به پرتال
+          {t('backToPortal')}
         </Link>
       </div>
     </aside>
