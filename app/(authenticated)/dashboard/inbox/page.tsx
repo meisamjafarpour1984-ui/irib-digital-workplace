@@ -1,8 +1,6 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { DashboardSidebar } from '@/components/dashboard/dashboard-sidebar'
-import { DashboardTopbar } from '@/components/dashboard/dashboard-topbar'
 import {
   AlertCircle,
   CheckCircle2,
@@ -228,11 +226,7 @@ export default function InboxPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <DashboardSidebar />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <DashboardTopbar />
-        <main className="flex-1 p-6">
+    <main className="flex-1 p-6">
           <div className="grid h-[calc(100vh-140px)] grid-cols-1 gap-4 lg:grid-cols-12">
             <div className="flex flex-col rounded-2xl border border-border bg-card shadow-sm lg:col-span-4">
               <div className="border-b border-border p-4">
@@ -505,7 +499,5 @@ export default function InboxPage() {
             )}
           </div>
         </main>
-      </div>
-    </div>
   )
 }

@@ -23,8 +23,6 @@ import {
   HardDrive,
   Palette,
 } from 'lucide-react'
-import { DashboardSidebar } from '@/components/dashboard/dashboard-sidebar'
-import { DashboardTopbar } from '@/components/dashboard/dashboard-topbar'
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState('general')
@@ -41,11 +39,7 @@ export default function SettingsPage() {
   ]
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <DashboardSidebar />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <DashboardTopbar />
-        <main className="flex-1 space-y-6 p-6">
+    <main className="flex-1 space-y-6 p-6">
           <div>
             <h1 className="text-heading-1 text-foreground">تنظیمات سیستم</h1>
             <p className="text-sm text-muted-foreground">مدیریت تنظیمات و پیکربندی سیستم</p>
@@ -82,8 +76,6 @@ export default function SettingsPage() {
           {activeTab === 'users' && <UserSettingsTab />}
           {activeTab === 'appearance' && <AppearanceSettingsTab />}
         </main>
-      </div>
-    </div>
   )
 }
 

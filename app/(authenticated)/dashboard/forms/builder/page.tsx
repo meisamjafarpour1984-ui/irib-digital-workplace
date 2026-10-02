@@ -1,8 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { DashboardSidebar } from '@/components/dashboard/dashboard-sidebar'
-import { DashboardTopbar } from '@/components/dashboard/dashboard-topbar'
 import {
   Plus,
   Trash2,
@@ -123,11 +121,7 @@ export default function FormBuilderPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <DashboardSidebar />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <DashboardTopbar />
-        <main className="flex-1 p-6">
+    <main className="flex-1 p-6">
           {/* Toolbar */}
           <div className="mb-4 flex items-center justify-between rounded-2xl border border-border bg-card p-4 shadow-sm">
             <div className="flex items-center gap-3">
@@ -406,7 +400,5 @@ export default function FormBuilderPage() {
             )}
           </div>
         </main>
-      </div>
-    </div>
   )
 }

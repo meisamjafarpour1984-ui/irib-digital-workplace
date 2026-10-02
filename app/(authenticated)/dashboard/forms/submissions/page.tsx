@@ -2,8 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { AlertCircle, ClipboardList, Clock, Inbox, Loader2, Search } from 'lucide-react'
-import { DashboardSidebar } from '@/components/dashboard/dashboard-sidebar'
-import { DashboardTopbar } from '@/components/dashboard/dashboard-topbar'
 import { formsApi, formText, type FormDefinition, type FormSubmission } from '@/lib/services/forms'
 
 const statusOptions = [
@@ -155,11 +153,7 @@ export default function FormSubmissionsPage() {
   }, [])
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <DashboardSidebar />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <DashboardTopbar />
-        <main className="flex-1 p-6">
+    <main className="flex-1 p-6">
           <div className="mx-auto max-w-6xl space-y-6">
             <div>
               <h1 className="text-heading-1 text-foreground">ارسال‌های فرم</h1>
@@ -371,7 +365,5 @@ export default function FormSubmissionsPage() {
             )}
           </div>
         </main>
-      </div>
-    </div>
   )
 }

@@ -1,8 +1,7 @@
 'use client'
 
+import { DashboardShell } from '@/components/dashboard/dashboard-shell'
 import { useState } from 'react'
-import { DashboardSidebar } from '@/components/dashboard/dashboard-sidebar'
-import { DashboardTopbar } from '@/components/dashboard/dashboard-topbar'
 import { Sun, Moon, Bell, Globe, Monitor, Save, Loader2 } from 'lucide-react'
 import { useTheme } from '@/components/providers'
 import { useUserSettings, type UserSettings } from '@/hooks/use-user-settings'
@@ -27,11 +26,8 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <DashboardSidebar />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <DashboardTopbar />
-        <main className="flex-1 p-6">
+    <DashboardShell>
+      <main className="flex-1 p-6">
           <div className="mx-auto max-w-3xl space-y-6">
             <h1 className="text-display-lg text-foreground">تنظیمات</h1>
 
@@ -175,7 +171,6 @@ export default function SettingsPage() {
             </div>
           </div>
         </main>
-      </div>
-    </div>
+        </DashboardShell>
   )
 }

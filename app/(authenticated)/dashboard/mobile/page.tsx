@@ -25,8 +25,6 @@ import {
   Plus,
   Zap,
 } from 'lucide-react'
-import { DashboardSidebar } from '@/components/dashboard/dashboard-sidebar'
-import { DashboardTopbar } from '@/components/dashboard/dashboard-topbar'
 
 export default function MobileDeviceManagementPage() {
   const [activeTab, setActiveTab] = useState('devices')
@@ -177,11 +175,7 @@ export default function MobileDeviceManagementPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <DashboardSidebar />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <DashboardTopbar />
-        <main className="flex-1 space-y-6 p-6">
+    <main className="flex-1 space-y-6 p-6">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-heading-1 text-foreground">مدیریت دستگاه‌های موبایل</h1>
@@ -587,7 +581,5 @@ export default function MobileDeviceManagementPage() {
             </div>
           )}
         </main>
-      </div>
-    </div>
   )
 }

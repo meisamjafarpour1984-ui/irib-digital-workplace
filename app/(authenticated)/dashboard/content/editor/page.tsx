@@ -13,8 +13,6 @@
 import { useState, useEffect, Suspense } from 'react'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
-import { DashboardSidebar } from '@/components/dashboard/dashboard-sidebar'
-import { DashboardTopbar } from '@/components/dashboard/dashboard-topbar'
 import { Save, Eye, AlertCircle, X, FileText, Sparkles, Plus, Archive } from 'lucide-react'
 import { FileUploader } from '@/components/molecules/file-uploader'
 import { useSearchParams } from 'next/navigation'
@@ -567,13 +565,7 @@ function EditorContent() {
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <DashboardSidebar />
-
-      <div className="flex-1 flex flex-col">
-        <DashboardTopbar />
-
-        <main className="flex-1 p-6 overflow-auto">
+    <main className="flex-1 p-6 overflow-auto">
           <div className="max-w-7xl mx-auto">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
@@ -935,8 +927,6 @@ function EditorContent() {
             </div>
           </div>
         </main>
-      </div>
-    </div>
   )
 }
 

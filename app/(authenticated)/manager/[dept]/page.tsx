@@ -1,7 +1,6 @@
 'use client'
 
-import { DashboardSidebar } from '@/components/dashboard/dashboard-sidebar'
-import { DashboardTopbar } from '@/components/dashboard/dashboard-topbar'
+import { DashboardShell } from '@/components/dashboard/dashboard-shell'
 import { KpiCards } from '@/components/dashboard/kpi-cards'
 import { VisitsChart } from '@/components/dashboard/visits-chart'
 import { TrafficDonut } from '@/components/dashboard/traffic-donut'
@@ -10,11 +9,8 @@ import { TicketsList } from '@/components/dashboard/tickets-list'
 
 export default function ManagerDashboardPage() {
   return (
-    <div className="flex min-h-screen bg-background">
-      <DashboardSidebar />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <DashboardTopbar />
-        <main className="flex-1 space-y-6 p-6">
+    <DashboardShell>
+      <main className="flex-1 space-y-6 p-6">
           <KpiCards />
 
           <div className="grid gap-6 lg:grid-cols-3">
@@ -29,7 +25,6 @@ export default function ManagerDashboardPage() {
             <TicketsList />
           </div>
         </main>
-      </div>
-    </div>
+        </DashboardShell>
   )
 }

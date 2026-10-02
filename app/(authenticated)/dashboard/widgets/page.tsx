@@ -24,8 +24,6 @@ import {
   Settings,
   Loader2,
 } from 'lucide-react'
-import { DashboardSidebar } from '@/components/dashboard/dashboard-sidebar'
-import { DashboardTopbar } from '@/components/dashboard/dashboard-topbar'
 import { useWidgets } from '@/hooks/use-widgets'
 
 export default function WidgetsPage() {
@@ -42,15 +40,9 @@ export default function WidgetsPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen bg-background">
-        <DashboardSidebar />
-        <div className="flex min-w-0 flex-1 flex-col">
-          <DashboardTopbar />
-          <main className="flex-1 flex items-center justify-center p-6">
+      <main className="flex-1 flex items-center justify-center p-6">
             <Loader2 className="size-8 animate-spin text-muted-foreground" />
           </main>
-        </div>
-      </div>
     )
   }
 
@@ -83,11 +75,7 @@ export default function WidgetsPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <DashboardSidebar />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <DashboardTopbar />
-        <main className="flex-1 space-y-6 p-6">
+    <main className="flex-1 space-y-6 p-6">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-heading-1 text-foreground">مدیریت ویجت‌ها</h1>
@@ -268,7 +256,5 @@ export default function WidgetsPage() {
             </div>
           )}
         </main>
-      </div>
-    </div>
   )
 }

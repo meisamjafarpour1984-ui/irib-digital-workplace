@@ -1,9 +1,8 @@
 'use client'
 
+import { DashboardShell } from '@/components/dashboard/dashboard-shell'
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { DashboardSidebar } from '@/components/dashboard/dashboard-sidebar'
-import { DashboardTopbar } from '@/components/dashboard/dashboard-topbar'
 import {
   Bell,
   Check,
@@ -58,24 +57,17 @@ export default function NotificationsPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen bg-background">
-        <DashboardSidebar />
-        <div className="flex min-w-0 flex-1 flex-col">
-          <DashboardTopbar />
-          <main className="flex-1 flex items-center justify-center p-6">
+      <DashboardShell>
+        <main className="flex-1 flex items-center justify-center p-6">
             <Loader2 className="size-8 animate-spin text-muted-foreground" />
           </main>
-        </div>
-      </div>
+          </DashboardShell>
     )
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <DashboardSidebar />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <DashboardTopbar />
-        <main className="flex-1 p-6">
+    <DashboardShell>
+      <main className="flex-1 p-6">
           <div className="mx-auto max-w-3xl space-y-6">
             {/* Header */}
             <div className="flex items-center justify-between">
@@ -177,7 +169,6 @@ export default function NotificationsPage() {
             </div>
           </div>
         </main>
-      </div>
-    </div>
+        </DashboardShell>
   )
 }

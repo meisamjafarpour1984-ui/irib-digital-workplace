@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { DashboardSidebar } from '@/components/dashboard/dashboard-sidebar'
-import { DashboardTopbar } from '@/components/dashboard/dashboard-topbar'
 import {
   useReactTable,
   getCoreRowModel,
@@ -659,11 +657,7 @@ export default function ContentManagerPage() {
   })
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <DashboardSidebar />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <DashboardTopbar />
-        <main className="flex-1 space-y-6 p-6">
+    <main className="flex-1 space-y-6 p-6">
           {/* Header */}
           <div className="flex items-center justify-between">
             <div>
@@ -878,7 +872,5 @@ export default function ContentManagerPage() {
             </>
           )}
         </main>
-      </div>
-    </div>
   )
 }
