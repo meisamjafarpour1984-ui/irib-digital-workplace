@@ -1,16 +1,19 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import createMiddleware from 'next-intl/middleware'
-import { locales, defaultLocale } from './lib/i18n'
-
-const intlMiddleware = createMiddleware({
-  locales,
-  defaultLocale,
-  localePrefix: 'as-needed',
-})
+import { defaultLocale } from './lib/i18n'
 
 export function proxy(request: NextRequest) {
-  const response = intlMiddleware(request)
+  const localePrefix = `/${defaultLocale}`
+  const pathname = request.nextUrl.pathname
+  let response: NextResponse
+
+  if (pathname === localePrefix || pathname.startsWith(`${localePrefix}/`)) {
+    const url = request.nextUrl.clone()
+    url.pathname = pathname.slice(localePrefix.length) || '/'
+    response = NextResponse.redirect(url)
+  } else {
+    response = NextResponse.next()
+  }
 
   // Generate nonce for CSP
   const nonce = crypto.randomUUID()

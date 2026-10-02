@@ -91,7 +91,68 @@
     "rbac": "مدیریت دسترسی‌ها",
     "orgChart": "نمودار سازمانی",
     "storage": "مدیریت استوریج",
-    "audit": "لاگ فعالیت‌ها"
+    "audit": "لاگ فعالیت‌ها",
+    "settings": {
+      "title": "تنظیمات سیستم",
+      "subtitle": "مدیریت تنظیمات و سرویس‌های سیستم",
+      "initializing": "در حال مقداردهی...",
+      "initializingButton": "مقداردهی اولیه",
+      "exporting": "در حال خروجی...",
+      "exportButton": "خروجی",
+      "importing": "در حال ورودی...",
+      "importButton": "ورودی",
+      "securityNotes": "نکات امنیتی",
+      "categories": {
+        "authentication": "احراز هویت",
+        "sms": "پیامک",
+        "email": "ایمیل",
+        "notification": "اعلان‌ها",
+        "storage": "ذخیره‌سازی",
+        "integration": "یکپارچگی",
+        "general": "عمومی"
+      },
+      "saveAll": "ذخیره همه",
+      "environmentOverride": "⚠️ این مقدار از environment variable override شده است",
+      "locked": "قفل شده",
+      "noSettings": "هیچ تنظیمی در این دسته وجود ندارد",
+      "history": {
+        "title": "تاریخچه تغییرات",
+        "empty": "تاریخچه‌ای یافت نشد",
+        "by": "توسط: {name}",
+        "previousValue": "مقدار قبلی:",
+        "newValue": "مقدار جدید:"
+      },
+      "security": {
+        "title": "نکات امنیتی مهم",
+        "encryption": {
+          "title": "رمزنگاری تنظیمات حساس",
+          "item1": "تنظیمات با نوع encrypted با AES-256-GCM رمزنگاری می‌شوند",
+          "item2": "کلید رمزنگاری باید در environment variable SETTINGS_ENCRYPTION_KEY تنظیم شود",
+          "item3": "در production، از یک کلید رمزنگاری قوی و محیط امن استفاده کنید",
+          "item4": "کلید رمزنگاری نباید در کد commit شود"
+        },
+        "override": {
+          "item1": "تنظیمات می‌توانند با environment variables override شوند",
+          "item2": "فرمت: SETTING_KEY=value (نقطه به underline تبدیل می‌شود)",
+          "item3": "مثال: AUTH_KEYCLOAK_URL=http://keycloak:8080",
+          "item4": "Environment variables اولویت دارند روی database settings"
+        },
+        "audit": {
+          "title": "اعتبار سنجی و Audit",
+          "item1": "تمام تغییرات تنظیمات در audit log ثبت می‌شوند",
+          "item2": "تنظیمات حساس (رمز، توکن‌ها) باید با دقت وارد شوند",
+          "item3": "برای production، permission checks فعال شود",
+          "item4": "فقط کاربران admin دسترسی به این صفحه دارند"
+        },
+        "backup": {
+          "title": "Backup و Restore",
+          "item1": "قبل از تغییرات مهم، از تنظیمات خروجی بگیرید",
+          "item2": "فایل backup حاوی رمزهای رمزنگاری شده است",
+          "item3": "فایل backup را در محیط امن نگهداری کنید",
+          "item4": "برای restore، از دکمه ورودی استفاده کنید"
+        }
+      }
+    }
   },
   "form": {
     "title": "فرم",
@@ -769,67 +830,6 @@
       "publish": "انتشار",
       "edit": "ویرایش",
       "more": "بیشتر"
-    },
-    "admin.settings": {
-      "title": "تنظیمات سیستم",
-      "subtitle": "مدیریت تنظیمات و سرویس‌های سیستم",
-      "initializing": "در حال مقداردهی...",
-      "initializingButton": "مقداردهی اولیه",
-      "exporting": "در حال خروجی...",
-      "exportButton": "خروجی",
-      "importing": "در حال ورودی...",
-      "importButton": "ورودی",
-      "securityNotes": "نکات امنیتی",
-      "categories": {
-        "authentication": "احراز هویت",
-        "sms": "پیامک",
-        "email": "ایمیل",
-        "notification": "اعلان‌ها",
-        "storage": "ذخیره‌سازی",
-        "integration": "یکپارچگی",
-        "general": "عمومی"
-      },
-      "saveAll": "ذخیره همه",
-      "environmentOverride": "⚠️ این مقدار از environment variable override شده است",
-      "locked": "قفل شده",
-      "noSettings": "هیچ تنظیمی در این دسته وجود ندارد",
-      "history": {
-        "title": "تاریخچه تغییرات",
-        "empty": "تاریخچه‌ای یافت نشد",
-        "by": "توسط: {name}",
-        "previousValue": "مقدار قبلی:",
-        "newValue": "مقدار جدید:"
-      },
-      "security": {
-        "title": "نکات امنیتی مهم",
-        "encryption": {
-          "title": "رمزنگاری تنظیمات حساس",
-          "item1": "تنظیمات با نوع encrypted با AES-256-GCM رمزنگاری می‌شوند",
-          "item2": "کلید رمزنگاری باید در environment variable SETTINGS_ENCRYPTION_KEY تنظیم شود",
-          "item3": "در production، از یک کلید رمزنگاری قوی و محیط امن استفاده کنید",
-          "item4": "کلید رمزنگاری نباید در کد commit شود"
-        },
-        "override": {
-          "item1": "تنظیمات می‌توانند با environment variables override شوند",
-          "item2": "فرمت: SETTING_KEY=value (نقطه به underline تبدیل می‌شود)",
-          "item3": "مثال: AUTH_KEYCLOAK_URL=http://keycloak:8080",
-          "item4": "Environment variables اولویت دارند روی database settings"
-        },
-        "audit": {
-          "title": "اعتبار سنجی و Audit",
-          "item1": "تمام تغییرات تنظیمات در audit log ثبت می‌شوند",
-          "item2": "تنظیمات حساس (رمز، توکن‌ها) باید با دقت وارد شوند",
-          "item3": "برای production، permission checks فعال شود",
-          "item4": "فقط کاربران admin دسترسی به این صفحه دارند"
-        },
-        "backup": {
-          "title": "Backup و Restore",
-          "item1": "قبل از تغییرات مهم، از تنظیمات خروجی بگیرید",
-          "item2": "فایل backup حاوی رمزهای رمزنگاری شده است",
-          "item3": "فایل backup را در محیط امن نگهداری کنید",
-          "item4": "برای restore، از دکمه ورودی استفاده کنید"
-        }
-      }
     },
     "pages": {
       "title": "مدیریت صفحات",
