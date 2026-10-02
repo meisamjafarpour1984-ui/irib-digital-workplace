@@ -641,14 +641,14 @@ export default function WizardPage() {
       <div className="container mx-auto p-6 space-y-6">
         {/* Header */}
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-y-4">
             <div>
               <h1 className="text-4xl font-bold text-white mb-2">ویزارد راه‌اندازی سیستم</h1>
               <p className="text-white/80 text-lg">
                 IRIB Digital Workplace - راه‌اندازی و پیکربندی حرفه‌ای
               </p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button
                 variant={mode === 'development' ? 'default' : 'outline'}
                 onClick={() => setMode('development')}
@@ -863,7 +863,7 @@ export default function WizardPage() {
                 <CardDescription>عملیات مدیریتی روی سیستم</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <Button
                     variant="destructive"
                     onClick={() => {
@@ -984,13 +984,13 @@ export default function WizardPage() {
                       {dockerContainers.map((container) => (
                         <Card key={container.id}>
                           <CardContent className="pt-4">
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-wrap items-center justify-between gap-y-3">
                               <div>
                                 <h4 className="font-semibold">{container.name}</h4>
                                 <p className="text-sm text-muted-foreground">{container.status}</p>
                                 <p className="text-xs text-muted-foreground">{container.image}</p>
                               </div>
-                              <div className="flex gap-2">
+                              <div className="flex flex-wrap gap-2">
                                 <Button
                                   size="sm"
                                   variant="outline"
