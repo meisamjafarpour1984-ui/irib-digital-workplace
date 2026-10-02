@@ -595,6 +595,7 @@
   },
   "mobileNav": {
     "ariaLabel": "ناوبری موبایل",
+    "more": "بیشتر",
     "items": {
       "home": "خانه",
       "inbox": "کارتابل",

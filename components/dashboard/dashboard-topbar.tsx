@@ -17,46 +17,47 @@ export function DashboardTopbar() {
   }
 
   return (
-    <header className="sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-border bg-card/80 px-6 py-3.5 backdrop-blur">
+    <header className="sticky top-0 z-20 flex min-h-[4.5rem] items-center justify-between gap-2 border-b border-border bg-card px-3 py-3 sm:gap-4 sm:px-6">
       <div className="flex items-center gap-3">
         <div className="text-right leading-tight">
-          <h1 className="text-lg font-extrabold text-foreground">{t('title')}</h1>
-          <p className="text-xs text-muted-foreground">{t('subtitle')}</p>
+          <h1 className="text-base font-bold text-foreground sm:text-lg">{t('title')}</h1>
+          <p className="hidden text-xs text-muted-foreground sm:block">{t('subtitle')}</p>
         </div>
       </div>
 
       <div className="hidden flex-1 items-center md:flex">
         <div className="relative mx-auto w-full max-w-md">
           <Search
-            className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+            className="absolute end-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
             aria-hidden
           />
           <input
             type="search"
             placeholder={t('searchPlaceholder')}
-            className="w-full rounded-xl border border-input bg-background py-2 pr-10 pl-3 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
+            aria-label={t('searchPlaceholder')}
+            className="h-10 w-full rounded-lg border border-input bg-background py-2 pe-10 ps-3 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-brand focus:ring-2 focus:ring-brand/20"
           />
         </div>
       </div>
 
-      <div className="flex items-center gap-1.5">
+      <div className="flex shrink-0 items-center gap-1 sm:gap-1.5">
         <button
           type="button"
-          className="flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          className="flex size-10 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           aria-label={t('changeTheme')}
         >
           <Sun className="size-4.5" aria-hidden />
         </button>
         <button
           type="button"
-          className="flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          className="flex size-10 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           aria-label={t('systems')}
         >
           <Grid3x3 className="size-4.5" aria-hidden />
         </button>
         <button
           type="button"
-          className="relative flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          className="relative flex size-10 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           aria-label={t('notifications')}
         >
           <Bell className="size-4.5" aria-hidden />
@@ -68,17 +69,17 @@ export function DashboardTopbar() {
         <button
           type="button"
           onClick={handleLogout}
-          className="flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          className="flex size-10 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           aria-label={t('logout')}
         >
           <LogOut className="size-4.5" aria-hidden />
         </button>
-        <div className="mr-2 flex items-center gap-2.5 border-r border-border pr-3">
-          <div className="text-left leading-tight">
+        <div className="ms-1 flex shrink-0 items-center gap-2 border-s border-border ps-2.5 sm:ms-2 sm:gap-2.5 sm:ps-3">
+          <div className="hidden leading-tight sm:block sm:text-start">
             <p className="text-sm font-semibold text-foreground">{t('admin')}</p>
             <p className="text-xs text-muted-foreground">{t('userName')}</p>
           </div>
-          <div className="flex size-9 items-center justify-center rounded-full bg-brand text-sm font-bold text-white">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand text-sm font-bold text-white">
             ح.ک
           </div>
         </div>

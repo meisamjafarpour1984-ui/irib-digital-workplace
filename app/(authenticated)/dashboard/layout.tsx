@@ -1,5 +1,7 @@
 'use client'
 
+'use client'
+
 import type { ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
 import { DashboardShell } from '@/components/dashboard/dashboard-shell'

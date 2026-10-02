@@ -31,13 +31,12 @@ import {
 export type SidebarItem = {
   label: string
   icon: LucideIcon
-  active?: boolean
   badge?: string
   href?: string
 }
 
 export const sidebarItems: SidebarItem[] = [
-  { label: 'داشبورد', icon: LayoutDashboard, active: true, href: '/dashboard' },
+  { label: 'داشبورد', icon: LayoutDashboard, href: '/dashboard' },
   { label: 'محتوا', icon: FileText, href: '/dashboard/content' },
   { label: 'صفحه‌ها', icon: FileStack, href: '/dashboard/pages' },
   { label: 'رسانه', icon: Radio, href: '/dashboard/media' },

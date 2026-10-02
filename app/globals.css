@@ -2,43 +2,6 @@
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 
-/* Estedad Display Font (loaded from CDN — not in next/font/google) */
-@font-face {
-  font-family: 'Estedad';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('https://fonts.gstatic.com/s/estedad/v13/Yekan-400.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Estedad';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url('https://fonts.gstatic.com/s/estedad/v13/Yekan-500.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Estedad';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url('https://fonts.gstatic.com/s/estedad/v13/Yekan-600.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Estedad';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url('https://fonts.gstatic.com/s/estedad/v13/Yekan-700.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Estedad';
-  font-style: normal;
-  font-weight: 800;
-  font-display: swap;
-  src: url('https://fonts.gstatic.com/s/estedad/v13/Yekan-800.woff2') format('woff2');
-}
-
 @custom-variant dark (&:is(.dark *));
 
 /* =========================================================
@@ -49,7 +12,7 @@
 
 @theme inline {
   --font-sans: var(--font-vazirmatn), 'Vazirmatn Fallback', system-ui, sans-serif;
-  --font-display: var(--font-estedad), var(--font-vazirmatn), system-ui, sans-serif;
+  --font-display: var(--font-vazirmatn), system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
   /* PEDS Typography Scale — clamp() for fluid sizing */
@@ -129,7 +92,7 @@
   --surface-glass-border: rgba(15, 23, 42, 0.08);
 
   /* shadcn semantic (light) */
-  --background: #fafcfd;
+  --background: #f7fafb;
   --foreground: #0f172a;
   --card: #ffffff;
   --card-foreground: #0f172a;
@@ -144,8 +107,8 @@
   --accent: #dff8fb;
   --accent-foreground: #075a63;
   --destructive: #dc2626;
-  --border: #e2e8ec;
-  --input: #e2e8ec;
+  --border: #dce5e9;
+  --input: #dce5e9;
   --ring: #00a6b6;
 
   --chart-1: #00a6b6;
@@ -154,7 +117,7 @@
   --chart-4: #059669;
   --chart-5: #d97706;
 
-  --radius: 0.875rem;
+  --radius: 0.75rem;
 }
 
 .dark {
@@ -201,7 +164,25 @@
   }
   body {
     @apply bg-background text-foreground;
+    min-height: 100%;
     font-feature-settings: 'ss01';
+    line-height: 1.6;
+  }
+
+  :where(a, button, input, select, textarea, [tabindex]:not([tabindex='-1'])):focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
 
