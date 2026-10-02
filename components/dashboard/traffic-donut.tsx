@@ -7,13 +7,13 @@ import { trafficData } from '@/lib/dashboard-data'
 export function TrafficDonut() {
   const t = useTranslations('dashboard')
   return (
-    <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+    <div className="surface-panel p-4 sm:p-5">
       <div className="mb-4 flex items-center gap-2">
         <span className="h-5 w-1 rounded-full bg-gold" aria-hidden />
         <h2 className="text-sm font-bold text-foreground">{t('trafficSources')}</h2>
       </div>
 
-      <div className="relative h-44 w-full" dir="ltr">
+      <div className="relative h-40 w-full sm:h-44" dir="ltr">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie

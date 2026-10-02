@@ -13,7 +13,7 @@ export default function AdminPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
         <Loader2 className="size-8 animate-spin text-brand" />
       </div>
     )
@@ -39,7 +39,7 @@ export default function AdminPage() {
           {/* Stats Overview */}
           {overview && (
             <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-              <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
+              <div className="surface-panel p-4">
                 <div className="flex items-center gap-2">
                   <Users className="size-5 text-brand" />
                   <span className="text-xs text-muted-foreground">کاربران</span>
@@ -47,7 +47,7 @@ export default function AdminPage() {
                 <p className="mt-2 text-2xl font-bold text-foreground">{overview.users.total}</p>
                 <p className="text-xs text-muted-foreground">{overview.users.active} فعال</p>
               </div>
-              <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
+              <div className="surface-panel p-4">
                 <div className="flex items-center gap-2">
                   <FileText className="size-5 text-brand" />
                   <span className="text-xs text-muted-foreground">محتوا</span>
@@ -57,7 +57,7 @@ export default function AdminPage() {
                   {overview.content.published} منتشر شده
                 </p>
               </div>
-              <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
+              <div className="surface-panel p-4">
                 <div className="flex items-center gap-2">
                   <Layers className="size-5 text-brand" />
                   <span className="text-xs text-muted-foreground">فرم‌ها</span>
@@ -67,7 +67,7 @@ export default function AdminPage() {
                   {overview.forms.submissions} ثبت‌نام
                 </p>
               </div>
-              <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
+              <div className="surface-panel p-4">
                 <div className="flex items-center gap-2">
                   <Activity className="size-5 text-brand" />
                   <span className="text-xs text-muted-foreground">فعالیت</span>
@@ -80,11 +80,11 @@ export default function AdminPage() {
             </div>
           )}
 
-          <div className="rounded-2xl border border-border bg-card p-8 shadow-sm">
+          <div className="surface-panel p-4 sm:p-6">
             <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <a
                 href="/admin/pages"
-                className="rounded-xl border border-border p-6 transition-colors hover:border-brand/50 hover:shadow-sm"
+                className="flex min-h-28 flex-col justify-center rounded-lg border border-border bg-background p-4 transition-colors hover:border-brand/50 hover:bg-accent sm:p-5"
               >
                 <h3 className="text-heading-1 text-foreground">سازنده صفحه</h3>
                 <p className="mt-1 text-sm text-muted-foreground">
@@ -93,7 +93,7 @@ export default function AdminPage() {
               </a>
               <a
                 href="/admin/themes"
-                className="rounded-xl border border-border p-6 transition-colors hover:border-brand/50 hover:shadow-sm"
+                className="flex min-h-28 flex-col justify-center rounded-lg border border-border bg-background p-4 transition-colors hover:border-brand/50 hover:bg-accent sm:p-5"
               >
                 <h3 className="text-heading-1 text-foreground">مدیریت پوسته</h3>
                 <p className="mt-1 text-sm text-muted-foreground">
@@ -102,28 +102,28 @@ export default function AdminPage() {
               </a>
               <a
                 href="/admin/rbac"
-                className="rounded-xl border border-border p-6 transition-colors hover:border-brand/50 hover:shadow-sm"
+                className="flex min-h-28 flex-col justify-center rounded-lg border border-border bg-background p-4 transition-colors hover:border-brand/50 hover:bg-accent sm:p-5"
               >
                 <h3 className="text-heading-1 text-foreground">مدیریت دسترسی‌ها</h3>
                 <p className="mt-1 text-sm text-muted-foreground">تعریف نقش‌ها و ماتریس مجوزها</p>
               </a>
               <a
                 href="/admin/org-chart"
-                className="rounded-xl border border-border p-6 transition-colors hover:border-brand/50 hover:shadow-sm"
+                className="flex min-h-28 flex-col justify-center rounded-lg border border-border bg-background p-4 transition-colors hover:border-brand/50 hover:bg-accent sm:p-5"
               >
                 <h3 className="text-heading-1 text-foreground">نمودار سازمانی</h3>
                 <p className="mt-1 text-sm text-muted-foreground">مدیریت درختی ساختار سازمان</p>
               </a>
               <a
                 href="/admin/storage"
-                className="rounded-xl border border-border p-6 transition-colors hover:border-brand/50 hover:shadow-sm"
+                className="flex min-h-28 flex-col justify-center rounded-lg border border-border bg-background p-4 transition-colors hover:border-brand/50 hover:bg-accent sm:p-5"
               >
                 <h3 className="text-heading-1 text-foreground">مدیریت استوریج</h3>
                 <p className="mt-1 text-sm text-muted-foreground">پیکربندی ذخیره‌سازی فایل‌ها</p>
               </a>
               <a
                 href="/admin/audit"
-                className="rounded-xl border border-border p-6 transition-colors hover:border-brand/50 hover:shadow-sm"
+                className="flex min-h-28 flex-col justify-center rounded-lg border border-border bg-background p-4 transition-colors hover:border-brand/50 hover:bg-accent sm:p-5"
               >
                 <h3 className="text-heading-1 text-foreground">لاگ فعالیت‌ها</h3>
                 <p className="mt-1 text-sm text-muted-foreground">

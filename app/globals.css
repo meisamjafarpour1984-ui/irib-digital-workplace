@@ -80,7 +80,7 @@
   --brand-primary-hover: #009faf;
   --brand-primary-light: #dff8fb;
   --gold: #cda349;
-  --navy: #0f172a;
+  --navy: #0b141b;
 
   --success: #059669;
   --warning: #d97706;
@@ -92,7 +92,7 @@
   --surface-glass-border: rgba(15, 23, 42, 0.08);
 
   /* shadcn semantic (light) */
-  --background: #f7fafb;
+  --background: #f0f8fa;
   --foreground: #0f172a;
   --card: #ffffff;
   --card-foreground: #0f172a;
@@ -127,23 +127,23 @@
   --brand-primary-hover: #38d0dd;
   --brand-primary-light: #123c41;
   --gold: #d9b45f;
-  --navy: #0f172a;
+  --navy: #0b141b;
 
   --surface-glass: rgba(15, 23, 42, 0.6);
   --surface-glass-border: rgba(255, 255, 255, 0.08);
 
-  --background: #0b1220;
-  --foreground: #e6edf3;
-  --card: #111c2e;
-  --card-foreground: #e6edf3;
-  --popover: #111c2e;
-  --popover-foreground: #e6edf3;
+  --background: #0b141b;
+  --foreground: #dae3ee;
+  --card: #0f1c24;
+  --card-foreground: #dae3ee;
+  --popover: #0f1c24;
+  --popover-foreground: #dae3ee;
   --primary: #22c2d1;
   --primary-foreground: #04212a;
-  --secondary: #1a2740;
-  --secondary-foreground: #e6edf3;
-  --muted: #172136;
-  --muted-foreground: #94a3b8;
+  --secondary: #17262e;
+  --secondary-foreground: #dae3ee;
+  --muted: #16242b;
+  --muted-foreground: #9eacb5;
   --accent: #123c41;
   --accent-foreground: #7fe4ee;
   --destructive: #f87171;
@@ -187,6 +187,10 @@
 }
 
 @layer components {
+  .surface-panel {
+    @apply rounded-xl border border-border bg-card shadow-sm;
+  }
+
   /* level-glass — primary surface for widgets/panels */
   .glass {
     background: var(--surface-glass);

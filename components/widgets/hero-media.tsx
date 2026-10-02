@@ -41,7 +41,7 @@ export function HeroMediaWidget({ config }: WidgetProps) {
     <section
       aria-label={t('carouselLabel')}
       aria-roledescription="carousel"
-      className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-border md:aspect-[21/9]"
+      className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-border bg-navy shadow-sm sm:aspect-[16/9] lg:aspect-[21/9]"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onKeyDown={(e) => {
@@ -65,21 +65,21 @@ export function HeroMediaWidget({ config }: WidgetProps) {
             className="size-full object-cover"
           />
           {/* Glass overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-navy/85 via-navy/40 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 p-5 md:p-8">
+          <div className="absolute inset-0 bg-gradient-to-t from-navy/95 via-navy/45 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 p-4 sm:p-6 md:p-8">
             <div className="max-w-2xl">
-              <span className="inline-flex rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-medium text-white backdrop-blur-md">
+              <span className="inline-flex rounded-full border border-white/20 bg-navy/70 px-3 py-1 text-xs font-medium text-white">
                 {slide.category}
               </span>
-              <h2 className="mt-3 text-balance text-display-lg font-extrabold leading-relaxed text-white">
+              <h2 className="mt-2 text-balance text-xl font-bold leading-relaxed text-white sm:mt-3 sm:text-display-lg">
                 {slide.title}
               </h2>
-              <p className="mt-2 text-pretty text-body-lg leading-relaxed text-white/80">
+              <p className="mt-2 line-clamp-2 text-pretty text-sm leading-relaxed text-white/80 sm:text-body-lg">
                 {slide.excerpt}
               </p>
               <button
                 type="button"
-                className="mt-4 inline-flex items-center gap-2 rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-brand-hover"
+                className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-brand-hover sm:mt-4"
               >
                 {slide.cta}
               </button>
@@ -93,7 +93,7 @@ export function HeroMediaWidget({ config }: WidgetProps) {
         type="button"
         onClick={() => go(-1)}
         aria-label={t('prevSlide')}
-        className="absolute end-3 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-white/10 text-white backdrop-blur-md transition-colors hover:bg-white/20"
+        className="absolute end-2 top-1/2 flex size-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-navy/70 text-white transition-colors hover:bg-navy sm:end-3"
       >
         <ChevronRight className="size-5" />
       </button>
@@ -101,13 +101,13 @@ export function HeroMediaWidget({ config }: WidgetProps) {
         type="button"
         onClick={() => go(1)}
         aria-label={t('nextSlide')}
-        className="absolute start-3 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-white/10 text-white backdrop-blur-md transition-colors hover:bg-white/20"
+        className="absolute start-2 top-1/2 flex size-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-navy/70 text-white transition-colors hover:bg-navy sm:start-3"
       >
         <ChevronLeft className="size-5" />
       </button>
 
       {/* Pagination */}
-      <div className="absolute bottom-3 start-1/2 flex -translate-x-1/2 gap-2">
+      <div className="absolute bottom-1 start-1/2 flex -translate-x-1/2 gap-0.5">
         {heroSlides.map((s, i) => (
           <button
             key={s.id}
@@ -115,10 +115,14 @@ export function HeroMediaWidget({ config }: WidgetProps) {
             onClick={() => setIndex(i)}
             aria-label={t('goToSlide', { n: i + 1 })}
             aria-current={i === index}
-            className={`h-2 rounded-full transition-all ${
-              i === index ? 'w-6 bg-white' : 'w-2 bg-white/50 hover:bg-white/70'
-            }`}
-          />
+            className="flex size-10 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-white"
+          >
+            <span
+              className={`h-2 rounded-full transition-all ${
+                i === index ? 'w-6 bg-white' : 'w-2 bg-white/50 hover:bg-white/70'
+              }`}
+            />
+          </button>
         ))}
       </div>
     </section>

@@ -18,7 +18,7 @@ export function NewsTimelineWidget({ config }: WidgetProps) {
   const displayNews = items.slice(0, limit)
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+    <div className="surface-panel p-4">
       <div className="mb-3 flex items-center justify-between border-b border-border pb-3">
         <div className="flex items-center gap-2">
           <span className="h-5 w-1 rounded-full bg-brand" aria-hidden />

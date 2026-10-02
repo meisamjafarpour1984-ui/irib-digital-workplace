@@ -6,7 +6,7 @@ import { activities } from '@/lib/dashboard-data'
 export function ActivityList() {
   const t = useTranslations('dashboard')
   return (
-    <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+    <div className="surface-panel p-4 sm:p-5">
       <div className="mb-4 flex items-center gap-2">
         <span className="h-5 w-1 rounded-full bg-brand" aria-hidden />
         <h2 className="text-sm font-bold text-foreground">{t('recentActivity')}</h2>
@@ -15,7 +15,7 @@ export function ActivityList() {
         {activities.map((row, i) => (
           <li
             key={row.id}
-            className={`flex items-center gap-3 py-3 ${i !== activities.length - 1 ? 'border-b border-border' : ''}`}
+            className={`flex items-start gap-3 py-3 sm:items-center ${i !== activities.length - 1 ? 'border-b border-border' : ''}`}
           >
             <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent text-xs font-bold text-brand">
               {row.user.slice(0, 1)}

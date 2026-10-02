@@ -14,7 +14,7 @@ export function DeptAnnouncementsWidget({ instance: _instance, config: _config }
   const [activeTab, setActiveTab] = useState('admin')
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+    <div className="surface-panel p-4">
       <div className="mb-3 flex items-center justify-between border-b border-border pb-3">
         <div className="flex items-center gap-2">
           <span className="h-5 w-1 rounded-full bg-brand" aria-hidden />
@@ -23,12 +23,12 @@ export function DeptAnnouncementsWidget({ instance: _instance, config: _config }
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="mb-3 w-full justify-start gap-1 bg-muted p-1">
+        <TabsList className="mb-3 w-full justify-start gap-1 overflow-x-auto bg-muted p-1">
           {departmentIds.map((id) => (
             <TabsTrigger
               key={id}
               value={id}
-              className="text-xs data-[state=active]:bg-brand data-[state=active]:text-white"
+              className="min-h-9 whitespace-nowrap text-xs data-[state=active]:bg-brand data-[state=active]:text-white"
             >
               {t(`departments.${id}`)}
             </TabsTrigger>

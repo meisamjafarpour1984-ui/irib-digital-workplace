@@ -85,7 +85,7 @@ export function TicketsList() {
   const rows: DisplayTicket[] = data && Array.isArray(data) ? mapTickets(data) : mapFallback()
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+    <div className="surface-panel p-4 sm:p-5">
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="h-5 w-1 rounded-full bg-gold" aria-hidden />
@@ -102,7 +102,7 @@ export function TicketsList() {
         {rows.map((row, i) => (
           <li
             key={row.id}
-            className={`flex items-center justify-between gap-3 py-3 ${i !== rows.length - 1 ? 'border-b border-border' : ''}`}
+            className={`flex items-start justify-between gap-3 py-3 sm:items-center ${i !== rows.length - 1 ? 'border-b border-border' : ''}`}
           >
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm text-foreground">{row.title}</p>
@@ -111,7 +111,7 @@ export function TicketsList() {
               </p>
             </div>
             <span
-              className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${statusStyles[row.statusKey]}`}
+              className={`shrink-0 rounded-lg px-2.5 py-1 text-xs font-semibold ${statusStyles[row.statusKey]}`}
             >
               {row.statusLabel}
             </span>

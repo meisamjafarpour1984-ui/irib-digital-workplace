@@ -15,13 +15,13 @@ import { visitsData } from '@/lib/dashboard-data'
 export function VisitsChart() {
   const t = useTranslations('dashboard')
   return (
-    <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+    <div className="surface-panel p-4 sm:p-5">
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="h-5 w-1 rounded-full bg-brand" aria-hidden />
           <h2 className="text-sm font-bold text-foreground">{t('visitChart')}</h2>
         </div>
-        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <span className="size-2.5 rounded-full bg-chart-1" aria-hidden />
             {t('totalVisits')}
@@ -33,7 +33,7 @@ export function VisitsChart() {
         </div>
       </div>
 
-      <div className="h-64 w-full" dir="ltr">
+      <div className="h-56 w-full sm:h-64" dir="ltr">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={visitsData} margin={{ top: 10, right: 8, left: 8, bottom: 0 }}>
             <defs>
