@@ -5,6 +5,7 @@ info:
   version: 1.0.0
   contact:
     name: IRIB IT Department
+    email: it@irib.ir
 
 servers:
   - url: http://localhost:3001/api/v1
@@ -21,6 +22,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+      description: 'JWT token obtained from /auth/login endpoint. Format: Authorization: Bearer <token>'
 
   schemas:
     ContentItem:
@@ -254,6 +256,101 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Department'
+
+    AuditLog:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        actorId:
+          type: string
+          format: uuid
+        actorName:
+          type: string
+        action:
+          type: string
+        entityType:
+          type: string
+        entityId:
+          type: string
+        newData:
+          type: object
+        ip:
+          type: string
+        userAgent:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        type:
+          type: string
+        title:
+          type: string
+        message:
+          type: string
+        priority:
+          type: string
+          enum: [LOW, NORMAL, HIGH, URGENT]
+        channels:
+          type: array
+          items:
+            type: string
+            enum: [IN_APP, SMS, EMAIL, PUSH]
+        metadata:
+          type: object
+        readAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    KPI:
+      type: object
+      properties:
+        activeUsers:
+          type: integer
+        publishedContent:
+          type: integer
+        openTickets:
+          type: integer
+
+    ContentStats:
+      type: object
+      properties:
+        period:
+          type: string
+          enum: [day, week, month]
+        published:
+          type: integer
+        views:
+          type: integer
+
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+        message:
+          type: string
+        error:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        path:
+          type: string
 
   parameters:
     PageKeyPath:
@@ -587,3 +684,389 @@ paths:
             application/json:
               schema:
                 type: object
+
+  # Audit
+  /audit/logs:
+    get:
+      operationId: getAuditLogs
+      summary: "Get audit logs with pagination"
+      tags: [Audit]
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: userId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: action
+          in: query
+          schema:
+            type: string
+        - name: entity
+          in: query
+          schema:
+            type: string
+        - name: entityId
+          in: query
+          schema:
+            type: string
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: "Paginated audit logs"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AuditLog'
+                  pagination:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                      totalPages:
+                        type: integer
+        '400':
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /audit/logs/{id}:
+    get:
+      operationId: getAuditLogById
+      summary: "Get audit log by ID"
+      tags: [Audit]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: "Audit log"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditLog'
+        '404':
+          description: "Not found"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /audit/log:
+    post:
+      operationId: createAuditLog
+      summary: "Create audit log entry"
+      tags: [Audit]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [action, entity]
+              properties:
+                userId:
+                  type: string
+                  format: uuid
+                action:
+                  type: string
+                entity:
+                  type: string
+                entityId:
+                  type: string
+                metadata:
+                  type: object
+                ipAddress:
+                  type: string
+                userAgent:
+                  type: string
+      responses:
+        '201':
+          description: "Audit log created"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditLog'
+
+  # Notifications
+  /notifications:
+    get:
+      operationId: getUserNotifications
+      summary: "Get user notifications"
+      tags: [Notifications]
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: "User notifications"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+
+  /notifications/send:
+    post:
+      operationId: sendNotification
+      summary: "Send notification"
+      tags: [Notifications]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userId, type, title, message]
+              properties:
+                userId:
+                  type: string
+                  format: uuid
+                type:
+                  type: string
+                title:
+                  type: string
+                message:
+                  type: string
+                priority:
+                  type: string
+                  enum: [LOW, NORMAL, HIGH, URGENT]
+                  default: NORMAL
+                channels:
+                  type: array
+                  items:
+                    type: string
+                    enum: [IN_APP, SMS, EMAIL, PUSH]
+                metadata:
+                  type: object
+      responses:
+        '201':
+          description: "Notification sent"
+
+  /notifications/{id}/read:
+    post:
+      operationId: markNotificationAsRead
+      summary: "Mark notification as read"
+      tags: [Notifications]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: "Notification marked as read"
+
+  /notifications/read-all:
+    post:
+      operationId: markAllNotificationsAsRead
+      summary: "Mark all notifications as read"
+      tags: [Notifications]
+      responses:
+        '200':
+          description: "All notifications marked as read"
+
+  /notifications/stats:
+    get:
+      operationId: getNotificationStats
+      summary: "Get notification statistics"
+      tags: [Notifications]
+      responses:
+        '200':
+          description: "Notification statistics"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                  unread:
+                    type: integer
+
+  # Analytics
+  /analytics/kpis:
+    get:
+      operationId: getKPIs
+      summary: "Get key performance indicators"
+      tags: [Analytics]
+      responses:
+        '200':
+          description: "KPIs"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KPI'
+
+  /analytics/content-stats:
+    get:
+      operationId: getContentStats
+      summary: "Get content statistics"
+      tags: [Analytics]
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [day, week, month]
+            default: day
+      responses:
+        '200':
+          description: "Content statistics"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentStats'
+
+  /analytics/page-views:
+    get:
+      operationId: getPageViews
+      summary: "Get page view statistics"
+      tags: [Analytics]
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: "Page view statistics"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  views:
+                    type: integer
+                  uniqueVisitors:
+                    type: integer
+
+  # Keycloak Migration
+  /keycloak-migration/stats:
+    get:
+      operationId: getMigrationStats
+      summary: "Get migration statistics"
+      tags: [IAM]
+      responses:
+        '200':
+          description: "Migration statistics"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                  migrated:
+                    type: integer
+                  notMigrated:
+                    type: integer
+                  migrationRate:
+                    type: number
+                    format: float
+
+  /keycloak-migration/migrate:
+    post:
+      operationId: migrateUsersToKeycloak
+      summary: "Migrate all users to Keycloak"
+      tags: [IAM]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dryRun:
+                  type: boolean
+                  default: false
+                batchSize:
+                  type: integer
+                  default: 10
+      responses:
+        '200':
+          description: "Migration completed"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                  success:
+                    type: integer
+                  failure:
+                    type: integer
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        user:
+                          type: string
+                        error:
+                          type: string
+
+  /keycloak-migration/sync/{userId}:
+    post:
+      operationId: syncUserToKeycloak
+      summary: "Sync single user to Keycloak"
+      tags: [IAM]
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: "User synced"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  keycloakId:
+                    type: string

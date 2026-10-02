@@ -1,6 +1,10 @@
+'use client'
+
 import { Radio } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 export function PortalLogo({ variant = 'default' }: { variant?: 'default' | 'inverse' }) {
+  const t = useTranslations('portal.logo')
   const isInverse = variant === 'inverse'
   return (
     <div className="flex items-center gap-3">
@@ -13,11 +17,9 @@ export function PortalLogo({ variant = 'default' }: { variant?: 'default' | 'inv
       </div>
       <div className="text-right leading-tight">
         <p className={`text-base font-extrabold ${isInverse ? 'text-white' : 'text-foreground'}`}>
-          صدا و سیمای آذربایجان شرقی
+          {t('orgName')}
         </p>
-        <p className={`text-xs ${isInverse ? 'text-white/70' : 'text-brand'}`}>
-          پرتال دیجیتال کارکنان
-        </p>
+        <p className={`text-xs ${isInverse ? 'text-white/70' : 'text-brand'}`}>{t('tagline')}</p>
       </div>
     </div>
   )

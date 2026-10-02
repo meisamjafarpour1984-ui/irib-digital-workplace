@@ -1,0 +1,90 @@
+﻿ingress:
+  enabled: false
+imagePullSecrets: []
+replicaCount: 1
+uploads:
+  persistence:
+    enabled: true
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    storageClassName: standard
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1001
+  runAsGroup: 1001
+  fsGroup: 1001
+  seccompProfile:
+    type: Unconfined
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  capabilities:
+    drop:
+      - ALL
+image:
+  repository: irib-dwp-backend
+  pullPolicy: IfNotPresent
+  tag: "staging"
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3001
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: 1000m
+    memory: 2Gi
+env:
+  - name: NODE_ENV
+    value: "production"
+  - name: PORT
+    value: "3001"
+  - name: DATABASE_URL
+    valueFrom:
+      secretKeyRef:
+        name: dwp-kind-backend-secrets
+        key: database-url
+  - name: REDIS_URL
+    valueFrom:
+      secretKeyRef:
+        name: dwp-kind-backend-secrets
+        key: redis-url
+  - name: KEYCLOAK_URL
+    valueFrom:
+      secretKeyRef:
+        name: dwp-kind-backend-secrets
+        key: keycloak-url
+  - name: MINIO_ENDPOINT
+    valueFrom:
+      secretKeyRef:
+        name: dwp-kind-backend-secrets
+        key: minio-endpoint
+  - name: JWT_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: dwp-kind-backend-secrets
+        key: jwt-secret
+  - name: OPENSEARCH_ENDPOINT
+    value: "http://host.docker.internal:9200"
+  - name: CORS_ORIGINS
+    value: "http://dwp-frontend.dwp-staging.svc.cluster.local"
+  - name: XDG_CONFIG_HOME
+    value: "/tmp/.config"
+  - name: XDG_CACHE_HOME
+    value: "/tmp/.cache"
+
+probes:
+  liveness:
+    httpGet:
+      path: /api/v1/health/live
+      port: 3001
+  readiness:
+    httpGet:
+      path: /api/v1/health/ready
+      port: 3001
+  startup:
+    httpGet:
+      path: /api/v1/health/ready
+      port: 3001

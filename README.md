@@ -1,638 +1,464 @@
-# پرتال دیجیتال کارکنان صدا و سیمای آذربایجان شرقی
+# IRIB Digital Workplace (DWP)
 
-> **Digital Workplace Platform (DWP)** — پلتفرم محیط کار دیجیتال نسل جدید
-
-[![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8)](https://tailwindcss.com/)
-[![NestJS](https://img.shields.io/badge/NestJS-10-e0234e)](https://nestjs.com/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169e1)](https://www.postgresql.org/)
+**نسخه:** ۰.۱.۰ (Frontend) / ۱.۰.۰ (Backend)  
+**آخرین بروزرسانی مستندات:** ۱۴۰۵/۰۶/۱۸ (۲۰۲۶-۰۹-۰۸)  
+**پیشرفت پروژه:** ۹۱٪  
+**زبان اصلی کد:** TypeScript / Node.js
 
 ---
 
-## ⚠️ مهم: این مستند برای کدام نسخه است؟
+## 📖 فهرست مطالب
 
-این README برای **هر دو نسخه پروژه** معتبر است، اما تفاوت‌های مهمی بین نسخه‌ها وجود دارد که باید توجه کنید.
+1. [مرور کلی پروژه](#-مرور-کلی-پروژه)
+2. [پشته فناوری](#-پشته-فناوری)
+3. [معماری پروژه](#-معماری-پروژه)
+4. [زیرساخت داده](#-زیرساخت-داده)
+5. [مشاهده‌پذیری و مانیتورینگ](#-مشاهدهپذیری-و-مانیتورینگ)
+6. [شروع سریع](#-شروع-سریع)
+7. [اسکریپت‌های مفید](#-اسکریپتهای-مفید)
+8. [ماژول‌های اصلی](#-ماژولهای-اصلی)
+9. [محدودیت‌های سخت (Hard Constraints)](#-محدودیتهای-سخت-hard-constraints)
+10. [درس‌های آموخته‌شده](#-درس‌های-آموختهشده)
+11. [لیست کاری پروژه](#-لیست-کاری-پروژه)
 
-### نسخه‌های پروژه
+---
 
-پروژه IRIB Digital Workplace دو نسخه مختلف دارد:
+## 🔭 مرور کلی پروژه
 
-#### نسخه ۱: توسعه ساده (docker-compose.dev.yml)
+پلتفرم **Digital Workplace** سازمان صدا و سیمای استان آذربایجان شرقی با هدف یکپارچه‌سازی ابزارها، فرآیندها و ارتباطات داخلی سازمان طراحی و پیاده‌سازی شده است. این پلتفرم شامل قابلیت‌های زیر است:
 
-**سرویس‌ها:**
-- Frontend (Next.js)
-- Backend (NestJS)
-- PostgreSQL
-- Redis
+- **مدیریت هویت و دسترسی (IAM):** احراز هویت چندعاملی، مهاجرت Keycloak، RBAC + ABAC
+- **مدیریت محتوا:** خبر، اطلاعیه، رویداد، بنر، گالری، صفحه‌ساز و ویجت‌ها
+- **فرم‌ها و گردش کار:** سازنده فرم، گردش کار تایید، پوشه الکترونیک (Afish)
+- **ارتباطات:** صندوق ورودی Thread-Based، اعلان‌ها، پیامک، ایمیل، Push Notification
+- **سازمان:** چارت سازمانی، دفترچه تلفن، میراث و متخصصان
+- **پشتیبانی IT:** مرکز نرم‌افزار، تیکت‌ینگ پشتیبانی
+- **موبایل:** اپلیکیشن موبایل با احراز هویت QR و Push
+- **میکروسایت:** صفحات اختصاصی برای هر دپارتمان
 
-**مناسب برای:**
-- توسعه روزمره با hot-reload
-- توسعه‌دهندگان تازه‌کار
-- سیستم‌هایی با منابع محدود (RAM < 8GB)
+---
 
-**راه‌اندازی:**
-```bash
-docker-compose -f docker-compose.dev.yml up
+## 🧱 پشته فناوری
+
+| لایه                       | فناوری                                                                                                    | نسخه           |
+| -------------------------- | --------------------------------------------------------------------------------------------------------- | -------------- |
+| **Frontend Framework**     | Next.js (App Router)                                                                                      | ۱۶.۲.۶         |
+| **Frontend Language**      | React + TypeScript                                                                                        | ۱۹ / ۵.۷.۳     |
+| **Styling**                | Tailwind CSS + shadcn/ui                                                                                  | ۴.۳.۳ / ۴.۸.۰  |
+| **State Management**       | Zustand                                                                                                   | ۵.۰.۱۴         |
+| **Data Fetching**          | TanStack Query (React Query)                                                                              | ۵.۱۰۱.۴        |
+| **Form Management**        | React Hook Form + Zod                                                                                     | ۷.۸۳.۰ / ۴.۴.۳ |
+| **Backend Framework**      | NestJS                                                                                                    | ۱۰.۳.۰         |
+| **Database ORM**           | Prisma Client                                                                                             | ۵.۸.۰          |
+| **Database**               | PostgreSQL                                                                                                | ۱۶             |
+| **Cache / Message Broker** | Redis (IORedis)                                                                                           | ۵.۳.۲          |
+| **Queue System**           | BullMQ                                                                                                    | ۵.۱.۰          |
+| **Event Streaming**        | Kafka (Kafkajs)                                                                                           | ۲.۲.۴          |
+| **Object Storage**         | MinIO                                                                                                     | ۸.۰.۰          |
+| **Search Engine**          | OpenSearch                                                                                                | ۲.۵.۰          |
+| **PDF Generation**         | Puppeteer                                                                                                 | ۲۱.۰.۰         |
+| **SMS**                    | Ideh Payam (پیاده‌سازی‌شده) / Mock (تست) · Kavehnegar + Melli Payamak (فقط enum تعریف‌شده · بدون آداپتور) | —              |
+| **Containerization**       | Docker + Docker Compose                                                                                   | —              |
+| **Kubernetes**             | Helm Charts + Argo CD (GitOps)                                                                            | —              |
+| **Package Manager**        | pnpm                                                                                                      | ۱۱.۲۵.۰        |
+| **Node.js Runtime**        | Node.js                                                                                                   | ≥ ۲۰.۹.۰       |
+
+---
+
+## 🏗️ معماری پروژه
+
+```
+d:\irib-digital-workplace
+├── app/                          # رابط کاربری Next.js (App Router)
+│   ├── (admin)/                  # صفحات ادمین
+│   ├── (authenticated)/          # صفحات نیازمند احراز هویت
+│   ├── (public)/                 # صفحات عمومی (لاگین، میکروسایت‌ها، خبر...)
+│   ├── api/                      # Route های API رابط کاربری
+│   ├── components/               # کامپوننت‌های اختصاصی App
+│   └── hooks/                    # Hooks اختصاصی رابط کاربری
+├── backend/                      # سرور NestJS
+│   ├── src/
+│   │   ├── common/               # ابزارهای مشترک (Cache, Tracing, Queue...)
+│   │   └── modules/              # ماژول‌های دامنه (IAM, Content, Forms, ...)
+│   ├── prisma/                   # Schema و Migrationهای Prisma
+│   ├── migrations/               # Migrationهای SQL سطح پایین (Flyway-style)
+│   ├── devtools/wizard/          # Wizard راه‌اندازی فقط برای توسعه
+│   ├── infra/                    # زیرساخت (Helm, Ansible, Monitoring)
+│   └── monitoring/               # تنظیمات Prometheus / Loki / Grafana
+├── components/                   # UI Library مشترک
+│   ├── atoms/                    # Atoms طراحی
+│   ├── molecules/                # Molecules طراحی
+│   ├── organisms/                # Organisms طراحی
+│   ├── ui/                       # کامپوننت‌های shadcn
+│   ├── providers/                # Provider های React
+│   └── widgets/                  # ویجت‌های صفحه‌ساز
+├── lib/                          # کتابخانه‌های مشترک JS/TS
+├── infra/helm/dwp-frontend/      # Helm Chart فرانت‌اند
+├── e2e/                          # تست‌های Playwright E2E
+├── tests/                        # تست‌های واحد/یکپارچه
+└── app/wizard/                   # رابط کاربری Setup Wizard توسعه
 ```
 
-**دسترسی:**
-- Frontend: http://localhost:3000
-- Backend: http://localhost:3001
-- PostgreSQL: localhost:5433
-- Redis: localhost:6379
+### معماری بک‌اند
 
-#### نسخه ۲: کامل زیرساختی (backend/docker-compose.db.yml)
+پروژه از معماری **Modular Monolith** با NestJS استفاده می‌کند:
 
-**سرویس‌ها:**
-- تمام سرویس‌های نسخه توسعه ساده
-- PgBouncer (connection pooling)
-- Kafka (message queue)
-- Zookeeper (Kafka coordination)
-- MinIO (object storage)
-- OpenSearch (search engine)
-- Keycloak (IAM)
-- MailHog (email testing)
-
-**مناسب برای:**
-- توسعه کامل با تمام زیرساخت‌ها
-- تست integration
-- توسعه‌دهندگان باتجربه
-- سیستم‌هایی با منابع کافی (RAM ≥ 16GB)
-
-**راه‌اندازی:**
-```bash
-cd backend
-docker-compose -f docker-compose.db.yml up
+```
+src/
+├── common/
+│   ├── cache/                    # Multi-level Cache (Memory + Redis)
+│   ├── circuit-breaker/          # Circuit Breaker Pattern
+│   ├── middleware/               # Rate Limit + Security
+│   ├── monitoring/               # Sentry Integration
+│   ├── queues/                   # BullMQ Processors (Email, SMS, PDF, ...)
+│   ├── tracing/                  # OpenTelemetry SDK
+│   └── filters/guards/decorators # ابزارهای Cross-cutting
+└── modules/
+    ├── iam/                      # احراز هویت و مدیریت کاربران
+    ├── access-control/           # RBAC و دسترسی‌ها
+    ├── content/                  # مدیریت محتوا
+    ├── forms/ + afish/           # فرم‌ها و پوشه الکترونیک
+    ├── organization/             # ساختار سازمانی
+    ├── media/ + storage/         # ذخیره‌سازی فایل
+    ├── page-builder/             # صفحه‌ساز
+    ├── widget-engine/            # موتور ویجت
+    ├── theme/                    # تم و Design Tokens
+    ├── tickets/                  # تیکت‌ینگ
+    ├── sms/                      # سامانه پیامک
+    ├── notification/             # اعلان‌ها
+    ├── communication/            # ارتباطات و صندوق ورودی
+    ├── analytics/                # آمار و تحلیل
+    ├── audit/                    # لاگ حسابرسی
+    ├── knowledge/                # دانش‌نامه و متخصصان
+    ├── software/                 # مرکز نرم‌افزار
+    ├── search/                   # جستجوی متنی
+    ├── pdf-generator/            # تولید PDF
+    ├── outbox/                   # Outbox Pattern
+    ├── integration/              # اتصال به سیستم‌های قدیمی
+    └── health/                   # Health Check و Metrics
 ```
 
-### کدام نسخه را انتخاب کنید؟
+---
 
-| سناریو | نسخه پیشنهادی |
-|--------|---------------|
-| توسعه روزمره frontend/backend | نسخه توسعه ساده |
-| توسعه ویژگی‌های Kafka/Event Streaming | نسخه کامل زیرساختی |
-| توسعه ویژگی‌های Search/OpenSearch | نسخه کامل زیرساختی |
-| توسعه ویژگی‌های IAM/Keycloak | نسخه کامل زیرساختی |
-| تست integration کامل | نسخه کامل زیرساختی |
-| سیستم با منابع محدود (RAM < 8GB) | نسخه توسعه ساده |
-| سیستم با منابع کافی (RAM ≥ 16GB) | نسخه کامل زیرساختی |
+## 💾 زیرساخت داده
 
-**نکته:** دستورات و جداول در این README برای **نسخه کامل زیرساختی** است. اگر از نسخه توسعه ساده استفاده می‌کنید، لطفاً به مستندات زیر مراجعه کنید:
-- [DOCKER_DEPLOYMENT_GUIDE.md](./DOCKER_DEPLOYMENT_GUIDE.md) - برای راهنمای Docker deployment
+### پایگاه داده PostgreSQL ۱۶
+
+**اتصال:** Prisma + PgBouncer (Transaction Pooling Mode)  
+**استراتژی اتصال:**
+
+- `relationMode = "prisma"` برای سازگاری با PgBouncer
+- Exponential Backoff برای اتصالات شکست‌خورده
+- Connection Pool تنظیم شده بر اساس تعداد CPU ها
+
+### پارتیشن‌بندی جداول پرحجم (Range Partitioning) — وضعیت واقعی
+
+⚠️ Migration V030 در حال حاضر فقط **۳ جدول** زیر را پوشش می‌دهد (SmsMessage و OutboxEvent در تسک P2-1 باقی مانده‌اند):
+
+| جدول            | کلید پارتیشن | استراتژی واقعی                 | نوع ایندکس                             | وضعیت                   |
+| --------------- | ------------ | ------------------------------ | -------------------------------------- | ----------------------- |
+| `AuditLogEntry` | `createdAt`  | **Range (فصلانه / Quarterly)** | B-tree (پس از پارتیشن)                 | ✅ انجام‌شده در V030    |
+| `Notification`  | `createdAt`  | Range (ماهانه)                 | B-tree (userId + isRead + createdAt)   | ✅ انجام‌شده در V030    |
+| `PageView`      | `createdAt`  | Range (ماهانه)                 | **BRIN** (۹۰٪ کاهش حجم نسبت به B-tree) | ✅ انجام‌شده در V030    |
+| `SmsMessage`    | `createdAt`  | ماهانه (پیشنهادی)              | BRIN (پیشنهادی)                        | ⬜ در PROJECT_TODO P2-1 |
+| `OutboxEvent`   | `createdAt`  | ماهانه (پیشنهادی)              | BRIN (پیشنهادی)                        | ⬜ در PROJECT_TODO P2-1 |
+
+### مدل دامنه اصلی (۴۹ مدل جدول + ۲۱ Enum نوع داده)
+
+- **IAM:** `User`, `AuthSession`, `OtpChallenge`, `UserDepartmentScope`
+- **Access Control:** `Role`, `AtomicPermission`, `UserRoleAssignment` (RBAC + ABAC + Scope)
+- **Organization:** `Department` (سلسله‌مراتبی با ltree)، `MicrositeConfig`
+- **Content:** `Content` (Single Content Model با ۱۵ ContentType: NEWS, ANNOUNCEMENT, EVENT, GALLERY, BANNER, FILE, SOFTWARE, EXPERT, LEGEND, FORM, AFISH, DOCUMENT, SURVEY, FAQ, LINK)، نسخه‌بندی، برچسب، دسته‌بندی
+- **Media:** `MediaAsset` (Deduplication با SHA-256 Hash)
+- **Widgets:** `WidgetManifest`, `PageLayout`, `PageWidget`
+- **Theme:** `ThemeToken` (Design Tokens با زمان‌بندی)
+- **Forms:** `FormDefinition`, `FormSubmission`, `AfishRecord`
+- **Knowledge:** `ExpertProfile` (متخصصان + میراث)
+- **IT:** `SoftwareEntry`, `SoftwareVersion`, `DownloadLog`, `Ticket`
+- **Communication:** `Conversation`, `Message`, `Notification`
+- **Mobile:** `DeviceRegistration`, `QrLinkToken`, `PushSubscription`
+- **Analytics:** `AuditLogEntry`, `PageView`
+- **Reliability:** `OutboxEvent` (Outbox Pattern)
+- **Integration:** `LegacyConnector`, `WebhookEndpoint`
+- **SMS:** `SmsProviderConfig`, `SmsTemplate`, `SmsCampaign`, `SmsMessage`
+- **Settings:** `SystemSetting` (تنظیمات سیستم + Feature Flags)
+
+> **ارجاع کامل:** [schema.prisma](file:///d:/irib-digital-workplace/backend/prisma/schema.prisma)
 
 ---
 
-## چشم‌انداز پروژه
+## 🔍 مشاهده‌پذیری و مانیتورینگ
 
-تبدیل پورتال سنتی به یک **پلتفرم محیط کار دیجیتال** تعاملی، خدمات‌محور و دانش‌محور با هویت بصری منحصر به فرد **صدا و سیمای آذربایجان شرقی**.
+### Distributed Tracing — OpenTelemetry (OTLP)
+
+- **SDK:** `@opentelemetry/sdk-node` v0.57.0
+- **Exporter:** OTLP HTTP (Jaeger / Grafana Tempo)
+- **Instrumentation:**
+  - NestJS Core (Request Tracing)
+  - HTTP Server/Client
+  - PostgreSQL (pg)
+  - BullMQ (Queue Jobs)
+  - IORedis (Cache Operations)
+  - Pino Logger
+
+> **فایل پیاده‌سازی:** [tracing.ts](file:///d:/irib-digital-workplace/backend/src/common/tracing/tracing.ts)
+
+### مانیتورینگ
+
+| ابزار            | هدف                | مسیر                                                                                                        |
+| ---------------- | ------------------ | ----------------------------------------------------------------------------------------------------------- |
+| **Prometheus**   | جمع‌آوری Metrics   | [backend/monitoring/prometheus.yml](file:///d:/irib-digital-workplace/backend/monitoring/prometheus.yml)    |
+| **Grafana**      | داشبوردهای عملیاتی | [grafana-dashboard.json](file:///d:/irib-digital-workplace/backend/infra/monitoring/grafana-dashboard.json) |
+| **Alertmanager** | قوانین هشدار       | [alerts/](file:///d:/irib-digital-workplace/backend/infra/monitoring/alerts/)                               |
+| **Loki**         | جمع‌آوری Log ها    | [loki-config.yml](file:///d:/irib-digital-workplace/backend/monitoring/loki/loki-config.yml)                |
+| **Promtail**     | ارسال Log به Loki  | [promtail-config.yml](file:///d:/irib-digital-workplace/backend/monitoring/promtail/promtail-config.yml)    |
+| **Sentry**       | Error Tracking     | [sentry.module.ts](file:///d:/irib-digital-workplace/backend/src/common/monitoring/sentry.module.ts)        |
 
 ---
 
-## فهرست مطالب
-
-- [شروع سریع](#شروع-سریع)
-- [ساختار پروژه](#ساختار-پروژه)
-- [فناوری‌ها](#فناوری‌ها)
-- [صفحات و مسیرها](#صفحات-و-مسیرها)
-- [سیستم ویجت](#سیستم-ویجت)
-- [طراحی (PEDS)](#طراحی-peds)
-- [بک‌اند](#بک‌اند)
-- [دیتابیس](#دیتابیس)
-- [استقرار](#استقرار)
-- [تست](#تست)
-- [دستورات](#دستورات)
-- [ساختار فایل‌ها](#ساختار-فایل‌ها)
-
----
-
-## شروع سریع
+## 🚀 شروع سریع
 
 ### پیش‌نیازها
 
-| ابزار   | نسخه | توضیح             |
-| ------- | ---- | ----------------- |
-| Node.js | 18+  | Runtime           |
-| pnpm    | 8+   | Package Manager   |
-| Docker  | 24+  | برای دیتابیس محلی |
+- **Node.js** ≥ ۲۰.۹.۰
+- **pnpm** ۱۱.۲۵.۰ (`npm i -g pnpm@11.25.0`)
+- **PostgreSQL** ۱۶ (با PgBouncer در Production)
+- **Redis** ۷+
+- **Docker** (برای Infrastructure سریع)
 
-### نصب و اجرا
+### راه‌اندازی محیط محلی
+
+#### ۱. نصب وابستگی‌ها
 
 ```bash
-# 1. کلون کردن پروژه
-git clone https://git.iribtabriz.ir/irib/dwp-frontend.git
-cd dwp-frontend
-
-# 2. نصب وابستگی‌ها
 pnpm install
+```
 
-# 3. راه‌اندازی دیتابیس (اختیاری - برای بک‌اند)
+#### ۲. راه‌اندازی زیرساخت دیتابیس و سرویس‌ها
+
+```bash
+# دیتابیس + ردیس + مینیو
+docker-compose -f docker-compose.yml up -d
+
+# فقط دیتابیس + تابع‌های اضافی
+docker-compose -f backend/docker-compose.db.yml up -d
+```
+
+#### ۳. تنظیم متغیرهای محیطی
+
+```bash
+cp .env.example .env
+cp backend/.env.example backend/.env
+# مقادیر را بر اساس محیط خود پر کنید
+```
+
+#### ۴. اجرای Migration و Seed دیتابیس
+
+```bash
 cd backend
-docker-compose up -d
+pnpm prisma:migrate       # اجرای Migration های Prisma
+pnpm prisma:seed          # درج داده‌های اولیه (دسترسی‌ها، نقش‌ها، کاربر نمونه)
 cd ..
+```
 
-# 4. اجرای توسعه
+#### ۵. اجرای اسکریپت راه‌اندازی خودکار
+
+```bash
+pnpm setup-local
+```
+
+#### ۶. اجرای سرویس‌ها (پنجره‌های جداگانه)
+
+```bash
+# فرانت‌اند (Next.js - پورت ۳۰۰۰)
 pnpm dev
+
+# بک‌اند (NestJS - پورت ۳۰۰۱)
+cd backend && pnpm dev
 ```
 
-سرور روی `http://localhost:3000` راه‌اندازی می‌شود.
+#### ۷. دسترسی به سرویس‌ها
+
+| سرویس              | آدرس                           |
+| ------------------ | ------------------------------ |
+| Frontend (Next.js) | http://localhost:3000          |
+| Backend (NestJS)   | http://localhost:3001          |
+| Swagger API Docs   | http://localhost:3001/api/docs |
+| Prisma Studio      | http://localhost:5۵۵۵          |
+| Storybook          | http://localhost:6006          |
+| Setup Wizard       | http://localhost:8080          |
 
 ---
 
-## ساختار پروژه
+## 📜 اسکریپت‌های مفید
 
-```
-irib-digital-workplace/
-├── app/                              ← صفحات (Next.js App Router)
-│   ├── (public)/                     ← صفحات عمومی
-│   │   ├── page.tsx                  ← صفحه اصلی (Widget-Driven)
-│   │   ├── login/page.tsx            ← ورود
-│   │   ├── search/page.tsx           ← جستجو
-│   │   ├── departments/[slug]/       ← میکروسایت‌های پویا
-│   │   ├── news/[slug]/              ← جزئیات خبر
-│   │   ├── forms/[slug]/             ← رندرر فرم
-│   │   ├── mobile/welcome/           ← خوش‌آمدگویی موبایل
-│   │   ├── mobile/register/          ← ثبت‌نام موبایل
-│   │   ├── mobile/link/              ← لینک دسکتاپ (QR)
-│   │   └── offline/                  ← حالت آفلاین
-│   ├── (authenticated)/              ← صفحات احراز هویت شده
-│   │   ├── dashboard/page.tsx        ← داشبورد مدیریتی
-│   │   ├── dashboard/content/        ← مدیریت محتوا
-│   │   ├── dashboard/content/editor/ ← ویرایشگر محتوا
-│   │   ├── dashboard/inbox/          ← کارتابل ارتباطات
-│   │   ├── dashboard/forms/builder/  ← سازنده فرم
-│   │   ├── dashboard/forms/submissions/ ← ارسال‌های فرم
-│   │   ├── profile/page.tsx          ← پروفایل
-│   │   ├── settings/page.tsx         ← تنظیمات
-│   │   ├── notifications/page.tsx    ← اعلان‌ها
-│   │   └── manager/[dept]/           ← داشبورد معاونت
-│   └── (admin)/                      ← صفحات مدیریتی
-│       └── admin/
-│           ├── page.tsx              ← کنسول مدیریت
-│           ├── pages/page.tsx        ← سازنده صفحه
-│           ├── themes/page.tsx       ← مدیریت تم
-│           ├── rbac/page.tsx         ← مدیریت دسترسی
-│           ├── org-chart/page.tsx    ← نمودار سازمانی
-│           ├── storage/page.tsx      ← مدیریت استوریج
-│           ├── audit/page.tsx        ← لاگ فعالیت
-│           └── users/page.tsx        ← مدیریت کاربران
-│
-├── components/                       ← کامپوننت‌ها
-│   ├── ui/                           ← ۲۴ کامپوننت shadcn/ui
-│   ├── atoms/                        ← اتم‌ها (SkipLink, Breadcrumb, Pagination, Spinner)
-│   ├── molecules/                    ← مولکول‌ها (SearchBar, RichTextEditor, FileUploader, AfishTable)
-│   ├── organisms/                    ← ارگانیسم‌ها (BroadcastComposer, ChatThread, NotificationCenter)
-│   ├── widgets/                      ← ۱۹ ویجت
-│   ├── layout/                       ← لایه‌بندی (Container, Section, GridLayout, MobileNav)
-│   ├── providers/                    ← پروایدرها (Theme, Permission, Query, Toaster)
-│   ├── identity/                     ← IdentityPattern SVG
-│   ├── portal/                       ← کامپوننت‌های پرتال (۱۵)
-│   ├── dashboard/                    ← کامپوننت‌های داشبورد (۷)
-│   └── microsite/                    ← کامپوننت‌های میکروسایت (۶)
-│
-├── lib/                              ← ابزارها
-│   ├── api-client.ts                 ← کلاینت API + WebSocket
-│   ├── validators.ts                 ← Zod Schemas
-│   ├── jalali.ts                     ← تاریخ شمسی
-│   ├── i18n.ts                       ← ترجمه‌ها
-│   ├── utils.ts                      ← cn() utility
-│   └── stores/                       ← Zustand Stores
-│
-├── hooks/                            ← هوک‌ها
-│   ├── use-media-query.ts            ← useMediaQuery, useIsMobile
-│   └── use-debounce.ts               ← useDebounce
-│
-├── backend/                          ← بک‌اند (NestJS)
-│   ├── src/modules/                  ← ۱۴ بخش مرزی
-│   ├── prisma/schema.prisma          ← مدل دیتابیس (۴۰+ مدل)
-│   ├── migrations/                   ← SQL Migrations + RLS
-│   ├── seeds/                        ← داده‌های اولیه
-│   ├── docs/contracts/               ← OpenAPI 3.1
-│   └── infra/                        ← زیرساخت استقرار
-│
-├── public/                           ← فایل‌های استاتیک + PWA
-├── tests/                            ← تست‌های Vitest
-├── e2e/                              ← تست‌های Playwright
-└── .storybook/                       ← Storybook
-```
+### فرانت‌اند (ریشه پروژه)
+
+| اسکریپت              | توضیح                               |
+| -------------------- | ----------------------------------- |
+| `pnpm dev`           | اجرای سرور توسعه Next.js            |
+| `pnpm build`         | ساخت بیلد Production                |
+| `pnpm start`         | اجرای Production Server             |
+| `pnpm lint`          | اجرای ESLint                        |
+| `pnpm lint:fix`      | رفع خودکار خطاهای Lint              |
+| `pnpm format`        | قالب‌بندی با Prettier               |
+| `pnpm test`          | اجرای تست‌های Vitest (Watch Mode)   |
+| `pnpm test:run`      | اجرای تست‌ها یک‌بار                 |
+| `pnpm test:coverage` | اجرای تست‌ها با Coverage Report     |
+| `pnpm test:e2e`      | اجرای تست‌های Playwright E2E        |
+| `pnpm typecheck`     | بررسی Type بدون ساخت                |
+| `pnpm knip`          | پیدا کردن کد وابسته استفاده‌نشده    |
+| `pnpm storybook`     | اجرای Storybook                     |
+| `pnpm setup-local`   | اسکریپت راه‌اندازی خودکار محیط محلی |
+
+### بک‌اند (پوشه backend/)
+
+| اسکریپت                    | توضیح                                 |
+| -------------------------- | ------------------------------------- |
+| `pnpm dev`                 | اجرای NestJS با Watch Mode            |
+| `pnpm build`               | ساخت بیلد NestJS                      |
+| `pnpm start`               | اجرای Production (node dist/main)     |
+| `pnpm prisma:migrate`      | اجرای Migrationهای جدید در محیط توسعه |
+| `pnpm prisma:migrate:prod` | اعمال Migration در Production         |
+| `pnpm prisma:seed`         | درج داده‌های اولیه                    |
+| `pnpm prisma:studio`       | اجرای رابط کاربری Prisma Studio       |
+| `pnpm test`                | اجرای تست‌های Jest (Watch)            |
+| `pnpm test:cov`            | تست با Coverage                       |
+| `pnpm lint`                | Lint کد بک‌اند                        |
 
 ---
 
-## فناوری‌ها
+## 🧩 ماژول‌های اصلی
 
-### فرانت‌اند
+### ۱. احراز هویت و مدیریت کاربران (IAM)
 
-| لایه               | فناوری                    | نسخه  |
-| ------------------ | ------------------------- | ----- |
-| **Framework**      | Next.js (App Router, RSC) | 16    |
-| **Language**       | TypeScript (Strict)       | 5.7   |
-| **UI Library**     | React                     | 19    |
-| **Styling**        | Tailwind CSS (JIT)        | 4     |
-| **UI Components**  | shadcn/ui + Radix UI      | —     |
-| **State (Server)** | TanStack Query            | 5     |
-| **State (Client)** | Zustand                   | 5     |
-| **Forms**          | React Hook Form + Zod     | 7 + 4 |
-| **Rich Text**      | TipTap (ProseMirror)      | 3     |
-| **Drag & Drop**    | @dnd-kit                  | 6     |
-| **Charts**         | Recharts                  | 3     |
-| **File Upload**    | Uppy                      | 5     |
-| **Table**          | TanStack Table            | 8     |
-| **i18n**           | next-intl                 | 4     |
-| **PWA**            | Service Worker + Manifest | —     |
+- JWT + Refresh Token (تکمیل شده با Blacklist)
+- OTP Challenge (رمز یکبارمصرف موبایل)
+- مهاجرت تدریجی از Keycloak (Keycloak Sync + Dual Auth)
+- ارتباط با `keycloak-admin-client`
 
-### بک‌اند
+### ۲. کنترل دسترسی (Access Control)
 
-| لایه           | فناوری                | نسخه |
-| -------------- | --------------------- | ---- |
-| **Framework**  | NestJS (TypeScript)   | 10   |
-| **ORM**        | Prisma                | 5    |
-| **API Docs**   | Swagger (OpenAPI 3.1) | —    |
-| **Auth**       | Keycloak (OIDC/SAML)  | 24   |
-| **WebSocket**  | Socket.io             | —    |
-| **Validation** | class-validator + Zod | —    |
+- **RBAC:** نقش‌ها + مجوزهای اتمی (AtomicPermission)
+- **ABAC:** Scope های دسترسی (GLOBAL / DEPARTMENT / UNIT / OWNERSHIP)
+- **Explicit Deny + Grant:** لیست سیاه و سفید در سطح UserRoleAssignment
+- Permissions Guard + Decorator
 
-### دیتابیس و Storage
+### ۳. مدیریت محتوا (Content Management)
 
-| سرویس              | فناوری         | نسخه   |
-| ------------------ | -------------- | ------ |
-| **Primary DB**     | PostgreSQL     | 16     |
-| **Cache/Session**  | Redis          | 7      |
-| **Search**         | OpenSearch     | 2.x    |
-| **Object Storage** | MinIO (S3 API) | Latest |
-| **Message Broker** | Kafka/Redpanda | —      |
+- **Single Content Model:** ۱۶ نوع محتوا با یک Schema واحد
+- **نسخه‌بندی خودکار:** هر ویرایش → رکورد جدید در ContentVersion
+- **Workflow انتشار:** DRAFT → UNDER_REVIEW → APPROVED → PUBLISHED
+- **Time-based Scheduling:** SCHEDULED + ARCHIVED با زمان‌بندی خودکار
+- **Content Scoping:** محدودیت نمایش بر اساس دپارتمان
 
-### DevOps و استقرار
+### ۴. فرم‌ها و پوشه الکترونیک (Forms + Afish)
 
-| ابزار             | کاربرد                      |
-| ----------------- | --------------------------- |
-| **Container**     | Docker + Docker Compose     |
-| **Orchestration** | Kubernetes (K3s/RKE2)       |
-| **GitOps**        | ArgoCD                      |
-| **IaC**           | Terraform + Ansible         |
-| **Helm**          | Chart for Backend/Frontend  |
-| **CI/CD**         | GitHub Actions / GitLab CI  |
-| **Monitoring**    | Grafana + Prometheus + Loki |
-| **Security**      | Trivy, Snyk, OWASP ZAP      |
+- **Form Builder:** JSON Schema + UI Schema (Conditional Logic، Visibility Rules)
+- **Workflow:** چندمرحله‌ای با Assignee، Comment، Attachment
+- **Afish (پوشه الکترونیک):** ردیف‌های داده ساختاریافته + PDF خودکار + Watermark
+- **شماره‌گذاری خودکار:** AFISH-YYYY-0001
 
----
+### ۵. صفحه‌ساز و ویجت (Page Builder + Widget Engine)
 
-## صفحات و مسیرها
+- **Widget Manifest Registry:** ۱۲ ویجت مستقل پیاده‌سازی‌شده + دایرکتوری کامل (News Timeline, Weather, Prayer Calendar, Dept Announcements, Dept Experts, Dept Forms Center, Dept Document Center, Dept Service Cards, Hero Media, Quick Access, Research Highlights, Admin KPI) — هر ۱۲ ویجت دارای Storybook Story هستند
+- **Grid Layout System:** Drag & Drop با تنظیم Breakpoint
+- **SSR / CSR:** انتخابی برای هر ویجت (فیلد `ssr: true/false`)
+- **Permissions:** بررسی دسترسی سطح ویجت قبل از رندر
+- **Design Tokens:** تم‌های مبتنی بر Token با زمان‌بندی (مناسبت‌ها)
 
-### صفحات عمومی (۱۰ صفحه)
+### ۶. ارتباطات (Communication)
 
-| مسیر                  | توضیح                                         |
-| --------------------- | --------------------------------------------- |
-| `/`                   | صفحه اصلی (Widget-Driven)                     |
-| `/login`              | ورود (OTP + Password)                         |
-| `/search`             | جستجوی یکپارچه                                |
-| `/departments/[slug]` | میکروسایت‌های پویا (IT, Research, Production) |
-| `/news/[slug]`        | جزئیات خبر                                    |
-| `/forms/[slug]`       | رندرر فرم (Wizard/Single)                     |
-| `/mobile/welcome`     | خوش‌آمدگویی موبایل                            |
-| `/mobile/register`    | ثبت‌نام موبایل (OTP)                          |
-| `/mobile/link`        | لینک دسکتاپ (QR Code)                         |
-| `/offline`            | حالت آفلاین                                   |
+- **Thread-Based Inbox:** هر موضوع → Conversation با چندین Message
+- **Mention System:** @mention با اعلان همزمان
+- **Attachment:** فایل پیوست از طریق MediaAsset
+- **Push Notification:** Web Push (VAPID) + موبایل
+- **Email:** Nodemailer با Queue (BullMQ)
 
-### صفحات احراز هویت شده (۱۰ صفحه)
+### ۷. سامانه پیامک (SMS)
 
-| مسیر                           | توضیح                            |
-| ------------------------------ | -------------------------------- |
-| `/dashboard`                   | داشبورد مدیریتی                  |
-| `/dashboard/content`           | مدیریت محتوا (TanStack Table)    |
-| `/dashboard/content/editor`    | ویرایشگر محتوا (RichText)        |
-| `/dashboard/inbox`             | کارتابل ارتباتات (Master-Detail) |
-| `/dashboard/forms/builder`     | سازنده فرم (Drag-Drop)           |
-| `/dashboard/forms/submissions` | ارسال‌های فرم                    |
-| `/profile`                     | پروفایل کاربر                    |
-| `/settings`                    | تنظیمات (پوسته، اعلان‌ها)        |
-| `/notifications`               | اعلان‌ها                         |
-| `/manager/[dept]`              | داشبورد معاونت                   |
-
-### صفحات مدیریتی (۸ صفحه)
-
-| مسیر               | توضیح                       |
-| ------------------ | --------------------------- |
-| `/admin`           | کنسول مدیریت                |
-| `/admin/pages`     | سازنده صفحه (Page Builder)  |
-| `/admin/themes`    | مدیریت تم و توکن‌ها         |
-| `/admin/rbac`      | مدیریت دسترسی (RBAC Matrix) |
-| `/admin/org-chart` | نمودار سازمانی              |
-| `/admin/storage`   | مدیریت استوریج (Local/S3)   |
-| `/admin/audit`     | لاگ فعالیت‌ها               |
-| `/admin/users`     | مدیریت کاربران              |
+- **چند ارائه‌دهنده:** Ideh Payam و Mock Adapter **پیاده‌سازی‌شده** · Kavehnegar + Melli Payamak فقط در سطح `SmsProviderType` enum تعریف شده‌اند (Adapter فایل ندارند)
+- **Template System:** قالب‌های پارامتریک با Placeholder
+- **Campaign Management:** برنامه‌ریزی ارسال گروهی + گزارش تحویل
+- **Queue + Retry:** BullMQ Queue با Exponential Backoff
+- **Delivery Tracking:** پیگیری وضعیت تحویل تا ۳ تلاش
 
 ---
 
-## سیستم ویجت
+## 🚫 محدودیت‌های سخت (Hard Constraints)
 
-### ویجت‌های موجود (۱۹ ویجت)
+1. **Migration دیتابیس:**
+   - تمام تغییرات Schema باید از طریق Migrationهای استاندارد اعمال شوند
+   - Migrationهای سطح پایین: `backend/migrations/V***__*.sql` (Flyway-style)
+   - Migrationهای Prisma: `backend/prisma/migrations/*/migration.sql`
+   - **ممنوع:** تغییر مستقیم دستی در پایگاه داده Production
 
-| شناسه                      | نام                | دسته       | توضیح               |
-| -------------------------- | ------------------ | ---------- | ------------------- |
-| `hero-media`               | Hero Media         | Hero       | اسلایدر سینمایی     |
-| `quick-access`             | دسترسی سریع        | Navigation | شبکه آیکونی         |
-| `internet-login`           | لاگین اینترنت      | Auth       | فرم ورود سازمانی    |
-| `news-timeline`            | خط زمان اخبار      | Content    | آخرین اخبار         |
-| `dept-announcements`       | اطلاعیه‌های واحدها | Content    | تب‌دار              |
-| `media-gallery`            | گالری رویدادها     | Media      | Masonry             |
-| `it-services`              | سرویس‌های IT       | Services   | کارت‌های خدمات      |
-| `research-highlights`      | برجسته‌های پژوهش   | Knowledge  | کارشناسان و ایده‌ها |
-| `calendar-prayer`          | تقویم و اوقات      | Utility    | شمسی + شرعی         |
-| `weather-tabriz`           | آب و هوا           | Utility    | تبریز               |
-| `admin-kpi-stats`          | KPI مدیریتی        | Admin      | شاخص‌ها             |
-| `dept-document-center`     | مرکز اسناد         | Department | فهرست اسناد         |
-| `dept-forms-center`        | مرکز فرم‌ها        | Department | فرم‌های فعال        |
-| `dept-experts-directory`   | فهرست کارشناسان    | Department | مهارت‌ها            |
-| `dept-service-cards`       | کارت‌های خدمات     | Department | سرویس‌ها            |
-| `services-grid`            | خدمات و سامانه‌ها  | Services   | گرید                |
-| `help-cards`               | کارت‌های راهنما    | Support    | تیکت، FAQ           |
-| `dept-announcements-basic` | اطلاعیه‌ها         | Content    | ساده                |
-| `occasion-banner`          | بنر مناسبتی        | Content    | تبریک               |
-
-### ایجاد ویجت جدید
-
-```tsx
-// components/widgets/my-widget.tsx
-'use client'
-import type { WidgetProps } from './types'
-
-export function MyWidget({ instance, config }: WidgetProps) {
-  return (
-    <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-      <h2 className="text-heading-1 text-foreground">عنوان ویجت</h2>
-      {/* محتوا */}
-    </div>
-  )
-}
-```
-
-```tsx
-// components/widgets/manifest.ts
-import { MyWidget } from './my-widget'
-
-widgetRegistry.register(
-  {
-    id: 'my-widget',
-    name: 'ویجت من',
-    category: 'Custom',
-    defaultSize: { cols: 6, rows: 4 },
-  },
-  MyWidget
-)
-```
+2. **PgBouncer سازگاری:**
+   - کوئری‌ها و تنظیمات Prisma باید با **PgBouncer Transaction Pooling Mode** سازگار باشند
+   - استفاده از `relationMode = "prisma"` (غیرفعال‌سازی Foreign Key در سطح DB)
+   - **ممنوع:** کوئری‌های Long-running که تراکنش را بیش از چند ثانیه نگه می‌دارند
+   - **ممنوع:** استفاده از `pg_advisory_lock` یا ویژگی‌های Session-specific
 
 ---
 
-## طراحی (PEDS)
+## 📚 درس‌های آموخته‌شده (Lessons Learned)
 
-### سیستم رنگ
+### ۱. بهینه‌سازی ایندکس برای جداول پرحجم
 
-| توکن              | مقدار     | کاربرد              |
-| ----------------- | --------- | ------------------- |
-| `--brand-primary` | `#00A6B6` | فیروزه تبریز        |
-| `--gold`          | `#CDA349` | طلا (افتخارات)      |
-| `--navy`          | `#0F172A` | سرمه‌ای (Dark Mode) |
-| `--success`       | `#059669` | موفقیت              |
-| `--warning`       | `#D97706` | هشدار               |
-| `--error`         | `#DC2626` | خطا                 |
-| `--info`          | `#0284C7` | اطلاعات             |
+> **BRIN Index در جداول Append-only (مانند PageView) باعث کاهش ۹۰ درصدی حجم ایندکس نسبت به B-tree شده است.**
+>
+> دلایل:
+>
+> - داده‌ها بر اساس `createdAt` به صورت ترتیبی وارد می‌شوند
+> - BRIN فقط Blobk Range را ایندکس می‌کند (نه هر رکورد)
+> - مناسب‌تر از B-tree برای داده‌های Time-series و تاریخچه‌ای
 
-### تایپوگرافی
+### ۲. مدیریت اتصال دیتابیس در Production
 
-| توکن             | فونت           | کاربرد   |
-| ---------------- | -------------- | -------- |
-| `--font-display` | Estedad        | عنوان‌ها |
-| `--font-sans`    | Vazirmatn      | متن      |
-| `--font-mono`    | JetBrains Mono | کد       |
-
-### افکت‌ها
-
-- **Glassmorphism:** کارت‌های بلوری (`glass` class)
-- **Identity Pattern:** SVG گره‌چینی مسجد کبود (`peds-pattern` class)
-- **RTL-First:** راست به چپ
-
----
-
-## بک‌اند
-
-### ساختار ماژول‌ها (۱۴ بخش مرزی)
-
-| ماژول             | مسئولیت                      |
-| ----------------- | ---------------------------- |
-| `iam`             | هویت و احراز هویت            |
-| `access-control`  | RBAC + ABAC                  |
-| `organization`    | ساختار سازمانی (ltree)       |
-| `content`         | CMS Core (SCM)               |
-| `media`           | مدیریت فایل                  |
-| `widget-engine`   | موتور ویجت                   |
-| `forms`           | فرم‌ساز دوحالت               |
-| `knowledge`       | کارشناسان و نخبگان           |
-| `software`        | مرکز نرم‌افزار               |
-| `search`          | جستجو (OpenSearch)           |
-| `communication`   | ارتباطات (WebSocket)         |
-| `mobile-identity` | هویت موبایل (OTP/QR)         |
-| `analytics`       | تحلیل و آمار                 |
-| `integration`     | یکپارچگی با سامانه‌های قدیمی |
-
-### API‌های کلیدی
-
-```
-GET    /api/v1/contents                    ← لیست محتوا
-POST   /api/v1/contents                    ← ایجاد محتوا
-POST   /api/v1/contents/{id}/publish       ← انتشار
-GET    /api/v1/widget-engine/pages/{key}/render-data  ← داده ویجت‌ها
-POST   /api/v1/forms/{slug}/submit         ← ارسال فرم
-GET    /api/v1/conversations               ← لیست مکاتبات
-WS     /ws/inbox                           ← ارتباطات بلادرنگ
-GET    /api/v1/search/unified              ← جستجوی یکپارچه
-```
+> **برای جلوگیری از Pool Exhaustion در محیط Production، پیاده‌سازی Query Timeout Middleware ضروری است.** (✅ **۱۴۰۵/۰۶/۱۸ پیاده‌سازی شد**)
+>
+> اقدامات انجام‌شده:
+>
+> - Prisma Connection Pool تنظیم شده (Exponential Backoff)
+> - PgBouncer Transaction Pooling در Production
+> - **لایه ۱ — HTTP AbortController:** `QueryTimeoutMiddleware` با زمان‌بندی متفاوت برای مسیرهای Export/Upload/Heavy Read/Default و پاسخ ۴۰۸
+> - **لایه ۲ — Prisma Promise.race:** `connectionTimeoutMiddleware` داخلی Prisma با کد خطای P2024 Timeout
+> - **لایه ۳ — Prisma Slow Query Detection:** `queryTimeoutMiddleware` با هشدار ۲/۵ ثانیه و خطای Risk ۸ ثانیه
+> - **لایه ۴ — PostgreSQL SET LOCAL:** متد `QueryTimeoutMiddleware.getStatementTimeoutSQL()` برای تراکنش‌های پرهزینه (سازگار با PgBouncer)
+> - ۲۱ تست واحد مستقل برای همه لایه‌ها PASS شده
+> - **اقلام باقی‌مانده:** Load Testing رسمی با k6/Gatling برای تأیید عملکرد Pool تحت بار واقعی
 
 ---
 
-## دیتابیس
+## ✅ لیست کاری پروژه
 
-### مدل داده (۴۰+ مدل)
+لیست کامل تسک‌ها و پیشرفت هر کدام در فایل جداگانه مستند شده است:
 
-| بخش                | جداول                                                                      |
-| ------------------ | -------------------------------------------------------------------------- |
-| **IAM**            | `users`, `user_devices`, `qr_link_tokens`, `push_subscriptions`            |
-| **RBAC**           | `atomic_permissions`, `roles`, `role_permissions`, `user_role_assignments` |
-| **Organization**   | `organization_units` (ltree), `microsite_configs`                          |
-| **Content**        | `content_items`, `content_versions`, `tags`, `categories`                  |
-| **Media**          | `storage_providers`, `media_assets`                                        |
-| **Widget**         | `widget_manifests`, `page_layouts`, `theme_tokens`                         |
-| **Forms**          | `form_definitions`, `form_submissions`, `afish_records`                    |
-| **Communication**  | `conversations`, `messages`, `notifications`                               |
-| **Software**       | `software_entries`, `it_tickets`                                           |
-| **Infrastructure** | `outbox_events`, `audit_logs`, `system_settings`                           |
+> **ارتباط مستقیم:** [PROJECT_TODO.md](file:///d:/irib-digital-workplace/PROJECT_TODO.md)
 
-### RLS (Row Level Security)
+### خلاصه سریع
 
-تمام جداول دارای RLS فعال هستند. کنترل دسترسی از طریق `current_tenant_id()` و `current_user_id()` انجام می‌شود.
+- **تعداد کل تسک:** ۱۷ مورد (P0:۳ ، P1:۵ ، P2:۵ ، P3:۴)
+- **بحرانی‌ترین تسک:** پیاده‌سازی Query Timeout Middleware (P0-1)
+- **تسک‌های در حال انجام:** Keycloak Migration، PgBouncer Production، Backup Automation، OpenAPI Docs، E2E Tests
 
 ---
 
-## استقرار
+## 🔗 ارجاع‌های سریع
 
-### Docker Compose (محلی)
-
-#### نسخه توسعه ساده (4 سرویس)
-
-```bash
-docker-compose -f docker-compose.dev.yml up
-```
-
-**سرویس‌ها:** Frontend, Backend, PostgreSQL, Redis
-
-**دسترسی:**
-- Frontend: http://localhost:3000
-- Backend: http://localhost:3001
-- PostgreSQL: localhost:5433
-- Redis: localhost:6379
-
-#### نسخه کامل زیرساختی (11+ سرویس)
-
-```bash
-cd backend
-docker-compose -f docker-compose.db.yml up
-```
-
-**سرویس‌ها:** Frontend, Backend, PostgreSQL, PgBouncer, Redis, Kafka, Zookeeper, MinIO, OpenSearch, Keycloak, MailHog
-
-**دسترسی:**
-- Frontend: http://localhost:3000
-- Backend: http://localhost:3001
-- PostgreSQL: localhost:5433
-- PgBouncer: localhost:6432
-- Redis: localhost:6379
-- Kafka: localhost:9092
-- Zookeeper: localhost:2181
-- MinIO API: http://localhost:9000
-- MinIO Console: http://localhost:9001
-- OpenSearch: http://localhost:9200
-- Keycloak: http://localhost:8080
-- MailHog Web: http://localhost:8025
-
-**نکته:** برای اطلاعات بیشتر در مورد Docker deployment، به [DOCKER_DEPLOYMENT_GUIDE.md](./DOCKER_DEPLOYMENT_GUIDE.md) مراجعه کنید.
+| فایل                                                                                                                | توضیح                             |
+| ------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| [PROJECT_TODO.md](file:///d:/irib-digital-workplace/PROJECT_TODO.md)                                                | لیست کامل تسک‌های پروژه           |
+| [schema.prisma](file:///d:/irib-digital-workplace/backend/prisma/schema.prisma)                                     | مدل دیتابیس کامل                  |
+| [V030 Partitioning](file:///d:/irib-digital-workplace/backend/migrations/V030__partitioning_high_volume_tables.sql) | پارتیشن‌بندی جداول پرحجم          |
+| [tracing.ts](file:///d:/irib-digital-workplace/backend/src/common/tracing/tracing.ts)                               | OpenTelemetry Distributed Tracing |
+| [CI Workflow](file:///d:/irib-digital-workplace/.github/workflows/ci.yml)                                           | CI Pipeline                       |
+| [CI/CD Workflow](file:///d:/irib-digital-workplace/.github/workflows/ci-cd.yml)                                     | CI/CD Pipeline                    |
+| [Frontend Helm](file:///d:/irib-digital-workplace/infra/helm/dwp-frontend/)                                         | Helm Chart فرانت‌اند              |
+| [Backend Helm](file:///d:/irib-digital-workplace/backend/infra/helm/dwp-backend/)                                   | Helm Chart بک‌اند                 |
+| [OpenAPI Spec](file:///d:/irib-digital-workplace/backend/docs/contracts/openapi.yaml)                               | مستندات قرارداد API               |
 
 ---
 
-## 📚 مستندات قدیمی
-
-گزارش‌های وضعیت و پیاده‌سازی قدیمی به پوشه `archive/` منتقل شده‌اند. این فایل‌ها برای اهداف تاریخی نگهداری می‌شوند و نباید برای تصمیم‌گیری فعلی استفاده شوند.
-
-برای مشاهده فهرست کامل مستندات آرشیو شده، به [archive/README.md](./archive/README.md) مراجعه کنید.
-
-### Kubernetes (تولید)
-
-```bash
-# بوت‌استرپ
-ansible-playbook -i inventory/hosts infra/ansible/bootstrap.yml
-
-# استقرار با ArgoCD
-kubectl apply -f infra/gitops/argocd-applications.yaml
-```
-
-### هرمونی (Helm)
-
-```bash
-helm upgrade --install dwp-backend infra/helm/dwp-backend -n dwp
-```
-
----
-
-## تست
-
-### تست‌های Unit (Vitest)
-
-```bash
-pnpm test:run
-pnpm test:coverage
-```
-
-### تست‌های E2E (Playwright)
-
-```bash
-pnpm test:e2e
-pnpm test:e2e:ui
-```
-
-### تست‌های بار (k6)
-
-```bash
-k6 run --vus 400 --duration 30m scenarios/load-test.js
-```
-
-### تست‌های امنیتی
-
-```bash
-trivy image --severity CRITICAL,HIGH harbor.iribtabriz.ir/dwp/backend:latest
-zap-api-scan.py -t https://api.iribtabriz.ir/openapi.yaml
-```
-
----
-
-## دستورات
-
-| دستور            | توضیح                 |
-| ---------------- | --------------------- |
-| `pnpm dev`       | سرور توسعه            |
-| `pnpm build`     | بیلد تولید            |
-| `pnpm start`     | سرور تولید            |
-| `pnpm lint`      | بررسی ESLint          |
-| `pnpm lint:fix`  | اصلاح خودکار          |
-| `pnpm format`    | فرمت Prettier         |
-| `pnpm typecheck` | بررسی TypeScript      |
-| `pnpm test`      | تست‌های Unit          |
-| `pnpm test:run`  | اجرای تست‌ها          |
-| `pnpm test:e2e`  | تست‌های E2E           |
-| `pnpm storybook` | Storybook             |
-| `pnpm knip`      | بررسی کد استفاده نشده |
-
----
-
-## متغیرهای محیطی
-
-```env
-# فرانت‌اند
-NEXT_PUBLIC_API_URL=http://localhost:3001/api/v1
-NEXT_PUBLIC_WS_URL=ws://localhost:3001
-
-# بک‌اند
-DATABASE_URL=postgresql://irib_admin:***@localhost:5432/irib_dwp
-REDIS_URL=redis://:***@localhost:6379
-KEYCLOAK_URL=http://localhost:8080
-MINIO_ENDPOINT=localhost:9000
-JWT_SECRET=your-secret-key
-```
-
----
-
-## تیم پروژه
-
-| نقش                       | مسئولیت                    |
-| ------------------------- | -------------------------- |
-| **معمار ارشد**            | معماری سیستم و تصمیمات فنی |
-| **مدیر پروژه**            | برنامه‌ریزی و هماهنگی      |
-| **توسعه‌دهنده فرانت‌اند** | رابط کاربری و تجربه کاربری |
-| **توسعه‌دهنده بک‌اند**    | API و منطق کسب‌وکار        |
-| **دیتابیس‌آدمین**         | مدل‌سازی و بهینه‌سازی      |
-| ** DevOps Engineer**      | استقرار و نظارت            |
-| **امنیت**                 | تست نفوذ و سخت‌سازی        |
-
----
-
-## مجوز
-
-کلیه حقوق این پروژه متعلق به **صدا و سیمای مرکز آذربایجان شرقی** است.
-
----
-
-## اطلاعات توسعه‌دهنده
-
-**طراح و توسعه‌دهنده:** میثم جعفرپور آلانق  
-**مدرک تحصیلی:** کارشناسی ارشد مهندسی نرم‌افزار  
-**عنوان شغلی:** کارشناس صدا و تصویر ۴  
-**کارفرما/سفارش‌دهنده:** به سفارش معاونت فنی صدا و سیمای مرکز آذربایجان شرقی  
-
-کلیه حقوق محفوظ است © ۱۴۰۴
+© ۱۴۰۵ — سازمان صدا و سیما، شبکه استان آذربایجان شرقی  
+پشتیبانی و توسعه توسط تیم فناوری اطلاعات و ارتباطات

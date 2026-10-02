@@ -10,20 +10,19 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import {
   Bell,
   X,
   Check,
-  Trash2,
-  Filter,
   MoreVertical,
   Clock,
   Info,
   AlertTriangle,
   CheckCircle,
   MessageSquare,
+  type LucideIcon,
 } from 'lucide-react'
 
 export default function NotificationsCenterWidget() {
@@ -73,7 +72,7 @@ export default function NotificationsCenterWidget() {
 
   const [filter, setFilter] = useState<'all' | 'unread' | 'read'>('all')
 
-  const typeIcons: Record<string, any> = {
+  const typeIcons: Record<string, LucideIcon> = {
     info: Info,
     warning: AlertTriangle,
     success: CheckCircle,

@@ -24,6 +24,22 @@ export class AuthController {
     return this.authService.login(body)
   }
 
+  @Post('dev-login')
+  @ApiOperation({ summary: 'Development login without OTP (only for development)' })
+  async devLogin(@Body() body: LoginDto, @Res({ passthrough: true }) response: Response) {
+    const result = await this.authService.devLogin(body)
+    this.setRefreshCookie(response, result.refreshToken, result.refreshExpiresAt)
+    return { accessToken: result.accessToken, expiresIn: result.expiresIn, user: result.user }
+  }
+
+  @Post('keycloak-login')
+  @ApiOperation({ summary: 'Keycloak direct login (for Keycloak authentication)' })
+  async keycloakLogin(@Body() body: LoginDto, @Res({ passthrough: true }) _response: Response) {
+    const result = await this.authService.keycloakLogin(body)
+    // For Keycloak, we return the refresh token in the response body instead of cookie
+    return result
+  }
+
   @Post('verify-otp')
   @ApiOperation({ summary: 'Verify OTP code' })
   async verifyOTP(@Body() body: VerifyOtpDto, @Res({ passthrough: true }) response: Response) {

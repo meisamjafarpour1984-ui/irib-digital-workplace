@@ -1,11 +1,15 @@
+'use client'
+
+import { useTranslations } from 'next-intl'
 import { activities } from '@/lib/dashboard-data'
 
 export function ActivityList() {
+  const t = useTranslations('dashboard')
   return (
     <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
       <div className="mb-4 flex items-center gap-2">
         <span className="h-5 w-1 rounded-full bg-brand" aria-hidden />
-        <h2 className="text-sm font-bold text-foreground">آخرین فعالیت‌ها</h2>
+        <h2 className="text-sm font-bold text-foreground">{t('recentActivity')}</h2>
       </div>
       <ul className="flex flex-col">
         {activities.map((row, i) => (

@@ -5,8 +5,10 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import type { HeroSlide } from '@/lib/portal-data'
 import { useHeroSlides } from '@/hooks/use-portal-content'
 import type { WidgetProps } from './types'
+import { useTranslations } from 'next-intl'
 
 export function HeroMediaWidget({ config }: WidgetProps) {
+  const t = useTranslations('widgets.heroMedia')
   const autoPlay = (config?.autoPlay as boolean) ?? true
   const interval = (config?.interval as number) ?? 5000
   const seededSlides = config?.slides as HeroSlide[] | undefined
@@ -37,7 +39,7 @@ export function HeroMediaWidget({ config }: WidgetProps) {
 
   return (
     <section
-      aria-label="اخبار برگزیده"
+      aria-label={t('carouselLabel')}
       aria-roledescription="carousel"
       className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-border md:aspect-[21/9]"
       onMouseEnter={() => setPaused(true)}
@@ -90,7 +92,7 @@ export function HeroMediaWidget({ config }: WidgetProps) {
       <button
         type="button"
         onClick={() => go(-1)}
-        aria-label="اسلاید قبلی"
+        aria-label={t('prevSlide')}
         className="absolute end-3 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-white/10 text-white backdrop-blur-md transition-colors hover:bg-white/20"
       >
         <ChevronRight className="size-5" />
@@ -98,7 +100,7 @@ export function HeroMediaWidget({ config }: WidgetProps) {
       <button
         type="button"
         onClick={() => go(1)}
-        aria-label="اسلاید بعدی"
+        aria-label={t('nextSlide')}
         className="absolute start-3 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-white/10 text-white backdrop-blur-md transition-colors hover:bg-white/20"
       >
         <ChevronLeft className="size-5" />
@@ -111,7 +113,7 @@ export function HeroMediaWidget({ config }: WidgetProps) {
             key={s.id}
             type="button"
             onClick={() => setIndex(i)}
-            aria-label={`رفتن به اسلاید ${i + 1}`}
+            aria-label={t('goToSlide', { n: i + 1 })}
             aria-current={i === index}
             className={`h-2 rounded-full transition-all ${
               i === index ? 'w-6 bg-white' : 'w-2 bg-white/50 hover:bg-white/70'

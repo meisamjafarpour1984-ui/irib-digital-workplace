@@ -36,7 +36,14 @@ export default function LoginPage() {
         personnelCode: '123456',
         email: 'demo@irib.ir',
         departments: [{ id: 'dept-001', name: 'روابط عمومی' }],
-        roles: ['admin'],
+        roles: [
+          {
+            id: 'demo-admin-role',
+            code: 'ADMIN',
+            name: 'Administrator',
+            permissions: ['*'],
+          },
+        ],
         permissions: ['*'],
       }
       const demoToken = 'demo-token-' + Date.now()
@@ -196,9 +203,9 @@ export default function LoginPage() {
                   {t('demoLogin')}
                 </button>
                 <div className="flex items-center justify-between text-xs">
-                  <a href="#" className="text-brand hover:underline">
+                  <button type="button" className="text-brand hover:underline" onClick={() => {}}>
                     {t('forgotPassword')}
-                  </a>
+                  </button>
                   <a href="/mobile/register" className="text-brand hover:underline">
                     {t('register')}
                   </a>

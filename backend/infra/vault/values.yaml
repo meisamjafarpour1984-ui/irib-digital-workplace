@@ -1,0 +1,43 @@
+# Vault Helm Chart Values
+global:
+  enabled: true
+
+server:
+  image:
+    repository: hashicorp/vault
+    tag: "1.15.0"
+
+  dev:
+    enabled: false
+
+  ha:
+    enabled: true
+    replicas: 3
+
+  dataStorage:
+    enabled: true
+    size: 10Gi
+
+  service:
+    enabled: true
+    type: ClusterIP
+
+  ingress:
+    enabled: true
+    hosts:
+      - host: vault.irib.local
+        paths:
+          - /
+
+  extraEnvironmentVars:
+    - name: VAULT_UI
+      value: "true"
+
+ui:
+  enabled: true
+
+injector:
+  enabled: true
+
+csi:
+  enabled: true

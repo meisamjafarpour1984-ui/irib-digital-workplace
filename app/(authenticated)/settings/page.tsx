@@ -3,19 +3,28 @@
 import { useState } from 'react'
 import { DashboardSidebar } from '@/components/dashboard/dashboard-sidebar'
 import { DashboardTopbar } from '@/components/dashboard/dashboard-topbar'
-import { Sun, Moon, Bell, Globe, Monitor, Save } from 'lucide-react'
+import { Sun, Moon, Bell, Globe, Monitor, Save, Loader2 } from 'lucide-react'
 import { useTheme } from '@/components/providers'
+import { useUserSettings, type UserSettings } from '@/hooks/use-user-settings'
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme()
-  const [notifications, setNotifications] = useState({
-    email: true,
-    push: true,
-    sms: false,
-    inbox: true,
-  })
-  const [language, setLanguage] = useState('fa')
-  const [fontSize, setFontSize] = useState('medium')
+  const { settings, updateTheme, updateNotifications, updateLanguage, updateFontSize, saving } =
+    useUserSettings()
+  const [saveSuccess, setSaveSuccess] = useState(false)
+
+  const handleSave = async () => {
+    try {
+      await updateTheme(theme)
+      await updateNotifications(settings.notifications)
+      await updateLanguage(settings.language)
+      await updateFontSize(settings.fontSize)
+      setSaveSuccess(true)
+      setTimeout(() => setSaveSuccess(false), 3000)
+    } catch (err) {
+      console.error('Failed to save settings:', err)
+    }
+  }
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -75,9 +84,9 @@ export default function SettingsPage() {
                       <button
                         key={opt.id}
                         type="button"
-                        onClick={() => setFontSize(opt.id)}
+                        onClick={() => updateFontSize(opt.id as 'small' | 'medium' | 'large')}
                         className={`rounded-xl border px-4 py-2 text-sm transition-colors ${
-                          fontSize === opt.id
+                          settings.fontSize === opt.id
                             ? 'border-brand bg-brand/5 text-brand'
                             : 'border-border text-muted-foreground hover:border-brand/30'
                         }`}
@@ -114,9 +123,13 @@ export default function SettingsPage() {
                     <label className="relative inline-flex cursor-pointer items-center">
                       <input
                         type="checkbox"
-                        checked={notifications[item.key as keyof typeof notifications]}
+                        checked={
+                          settings.notifications[item.key as keyof typeof settings.notifications]
+                        }
                         onChange={(e) =>
-                          setNotifications((prev) => ({ ...prev, [item.key]: e.target.checked }))
+                          updateNotifications({ [item.key]: e.target.checked } as Partial<
+                            UserSettings['notifications']
+                          >)
                         }
                         className="peer sr-only"
                       />
@@ -136,8 +149,8 @@ export default function SettingsPage() {
               <div>
                 <label className="mb-2 block text-sm font-medium text-foreground">زبان رابط</label>
                 <select
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value)}
+                  value={settings.language}
+                  onChange={(e) => updateLanguage(e.target.value as 'fa' | 'en')}
                   className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm text-foreground outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
                 >
                   <option value="fa">فارسی</option>
@@ -148,13 +161,16 @@ export default function SettingsPage() {
             </div>
 
             {/* Save */}
-            <div className="flex justify-end">
+            <div className="flex items-center justify-end gap-3">
+              {saveSuccess && <span className="text-sm text-success">ذخیره شد!</span>}
               <button
                 type="button"
-                className="flex items-center gap-2 rounded-xl bg-brand px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-brand-hover"
+                onClick={handleSave}
+                disabled={saving}
+                className="flex items-center gap-2 rounded-xl bg-brand px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-brand-hover disabled:opacity-50"
               >
-                <Save className="size-4" aria-hidden />
-                ذخیره تنظیمات
+                {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+                {saving ? 'در حال ذخیره...' : 'ذخیره تنظیمات'}
               </button>
             </div>
           </div>

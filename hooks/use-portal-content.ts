@@ -7,7 +7,7 @@ import { formatRelativeTime } from '@/lib/jalali'
 export type PortalNewsItem = {
   id: string
   title: string
-  href: string
+  href?: string
   time: string
   publishedAt?: string
 }

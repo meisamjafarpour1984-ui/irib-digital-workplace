@@ -1,6 +1,7 @@
 'use client'
 
-import { MessageSquare, Mail } from 'lucide-react'
+import { useTranslations } from 'next-intl'
+import { MessageSquare } from 'lucide-react'
 import type { WidgetProps } from './types'
 
 const experts = [
@@ -34,16 +35,17 @@ const experts = [
   },
 ]
 
-export function DeptExpertsDirectoryWidget({ config }: WidgetProps) {
+export function DeptExpertsDirectoryWidget({ instance: _instance, config }: WidgetProps) {
+  const t = useTranslations('widgets.experts')
   const limit = (config?.limit as number) ?? 4
   return (
     <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
       <div className="mb-3 flex items-center justify-between border-b border-border pb-3">
         <div className="flex items-center gap-2">
           <span className="h-5 w-1 rounded-full bg-gold" aria-hidden />
-          <h2 className="text-sm font-bold text-foreground">کارشناسان واحد</h2>
+          <h2 className="text-sm font-bold text-foreground">{t('title')}</h2>
         </div>
-        <span className="text-xs text-muted-foreground">{experts.length} نفر</span>
+        <span className="text-xs text-muted-foreground">{t('count', { n: experts.length })}</span>
       </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {experts.slice(0, limit).map((expert) => (
@@ -71,7 +73,7 @@ export function DeptExpertsDirectoryWidget({ config }: WidgetProps) {
             <button
               type="button"
               className="flex size-7 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-brand/10 hover:text-brand"
-              aria-label="ارسال پیام"
+              aria-label={t('sendMessage')}
             >
               <MessageSquare className="size-3.5" />
             </button>

@@ -23,12 +23,12 @@ import {
 export type MicroNav = { label: string; icon: LucideIcon; active?: boolean }
 
 export const microNav: MicroNav[] = [
-  { label: 'صفحه اصلی', icon: Home, active: true },
-  { label: 'نرم‌افزارها', icon: Package },
-  { label: 'فرم‌ها', icon: FileText },
-  { label: 'رفع خدمات', icon: LifeBuoy },
-  { label: 'کارتابل', icon: BriefcaseBusiness },
-  { label: 'تماس با ما', icon: Phone },
+  { label: 'home', icon: Home, active: true },
+  { label: 'software', icon: Package },
+  { label: 'forms', icon: FileText },
+  { label: 'services', icon: LifeBuoy },
+  { label: 'inbox', icon: BriefcaseBusiness },
+  { label: 'contact', icon: Phone },
 ]
 
 export type Software = {
@@ -78,7 +78,7 @@ export type ITAnnouncement = {
 }
 
 export const itAnnouncements: ITAnnouncement[] = [
-  { id: 'i1', title: 'راه‌اندازی نسخه جدید پرتال کاربران', time: '۲ ساعت پیش', icon: Network },
+  { id: 'i1', title: 'راه‌اندازی نسخه جدید درگاه کاربران', time: '۲ ساعت پیش', icon: Network },
   { id: 'i2', title: 'تغییر رمز عبور دوره‌ای (ضروری)', time: '۲ روز پیش', icon: KeyRound },
   { id: 'i3', title: 'اطلاعیه قطعی شبکه داخلی', time: '۳ روز پیش', icon: Wifi },
   { id: 'i4', title: 'آموزش کار با سامانه جدید تیکتینگ', time: '۳ روز پیش', icon: GraduationCap },

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * IRIB Digital Workplace Platform - Workspaces Management Dashboard
  *
  * Designer & Developer: میثم جعفرپور آلانق
@@ -11,6 +11,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import {
   Boxes,
   Plus,
@@ -29,20 +30,21 @@ import { DashboardTopbar } from '@/components/dashboard/dashboard-topbar'
 import { useWorkspaces } from '@/hooks/use-workspaces'
 
 export default function WorkspacesManagementPage() {
+  const t = useTranslations('workspaces')
   const [activeTab, setActiveTab] = useState('all')
 
-  const { workspaces, stats, loading, error } = useWorkspaces()
+  const { workspaces, loading } = useWorkspaces()
 
   const tabs = [
-    { id: 'all', label: 'همه کارتابل‌ها', count: workspaces?.length || 0 },
+    { id: 'all', label: t('tabs.all'), count: workspaces?.length || 0 },
     {
       id: 'active',
-      label: 'فعال',
+      label: t('tabs.active'),
       count: workspaces?.filter((w) => w.status === 'active').length || 0,
     },
     {
       id: 'archived',
-      label: 'بایگانی شده',
+      label: t('tabs.archived'),
       count: workspaces?.filter((w) => w.status === 'archived').length || 0,
     },
   ]

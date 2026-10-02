@@ -1,8 +1,14 @@
+'use client'
+
 import { ArrowLeft, LayoutGrid } from 'lucide-react'
 import { services } from '@/lib/portal-data'
 import { AccessibleButton } from '@/components/ui/AccessibleButton'
+import { useTranslations } from 'next-intl'
 
 export function ServicesGrid() {
+  const t = useTranslations('portal.services')
+  const tHome = useTranslations('homepage')
+  const tCommon = useTranslations('common')
   return (
     <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
       <div className="mb-4 flex items-center justify-between border-b border-border pb-3">
@@ -10,13 +16,13 @@ export function ServicesGrid() {
           <span className="flex size-8 items-center justify-center rounded-lg bg-brand-light text-brand">
             <LayoutGrid className="size-4" aria-hidden />
           </span>
-          <h2 className="text-base font-bold text-foreground">خدمات و سامانه‌ها</h2>
+          <h2 className="text-base font-bold text-foreground">{tHome('services')}</h2>
         </div>
         <AccessibleButton
           href="/dashboard"
           className="text-xs font-medium text-brand hover:underline"
         >
-          مشاهده همه
+          {tCommon('viewAll')}
         </AccessibleButton>
       </div>
 
@@ -44,14 +50,12 @@ export function ServicesGrid() {
       </ul>
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-secondary p-4">
-        <p className="text-sm text-secondary-foreground">
-          سامانه‌ای که به دنبال آن هستید را پیدا نکردید؟
-        </p>
+        <p className="text-sm text-secondary-foreground">{t('notFound')}</p>
         <button
           type="button"
           className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-brand-hover"
         >
-          درخواست دسترسی جدید
+          {t('requestAccess')}
         </button>
       </div>
     </section>

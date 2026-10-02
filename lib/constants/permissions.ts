@@ -1,0 +1,215 @@
+/**
+ * IRIB Digital Workplace Platform - Permission Constants
+ *
+ * Designer & Developer: میثم جعفرپور آلانق
+ * Education: Master of Software Engineering
+ * Position: Audio and Video Expert Level 4
+ * Client: Technical Deputy of IRIB East Azerbaijan Center
+ * All rights reserved © 2026
+ *
+ * این فایل شامل ثابت‌های permission است که بین frontend و backend مشترک است.
+ * برای ایجاد هماهنگی بین frontend و backend، از این ثابت‌ها استفاده کنید.
+ */
+
+export const PERMISSIONS = {
+  // Content Management
+  CONTENT_CREATE: 'Content.CREATE',
+  CONTENT_READ: 'Content.READ',
+  CONTENT_UPDATE: 'Content.UPDATE',
+  CONTENT_DELETE: 'Content.DELETE',
+  CONTENT_PUBLISH: 'Content.PUBLISH',
+  CONTENT_APPROVE: 'Content.APPROVE',
+  CONTENT_ARCHIVE: 'Content.ARCHIVE',
+  CONTENT_MANAGE_SCOPE: 'Content.MANAGE_SCOPE',
+
+  // Form Management
+  FORM_CREATE: 'Form.CREATE',
+  FORM_READ: 'Form.READ',
+  FORM_UPDATE: 'Form.UPDATE',
+  FORM_DELETE: 'Form.DELETE',
+  FORM_MANAGE: 'Form.MANAGE',
+
+  // Form Submission
+  FORM_SUBMISSION_CREATE: 'FormSubmission.CREATE',
+  FORM_SUBMISSION_READ: 'FormSubmission.READ',
+  FORM_SUBMISSION_UPDATE: 'FormSubmission.UPDATE',
+  FORM_SUBMISSION_APPROVE: 'FormSubmission.APPROVE',
+  FORM_SUBMISSION_REJECT: 'FormSubmission.REJECT',
+
+  // Media Management
+  MEDIA_CREATE: 'Media.CREATE',
+  MEDIA_READ: 'Media.READ',
+  MEDIA_UPDATE: 'Media.UPDATE',
+  MEDIA_DELETE: 'Media.DELETE',
+
+  // User Management
+  USER_CREATE: 'User.CREATE',
+  USER_READ: 'User.READ',
+  USER_UPDATE: 'User.UPDATE',
+  USER_DELETE: 'User.DELETE',
+  USER_MANAGE: 'User.MANAGE',
+
+  // Role & Permission Management
+  ROLE_CREATE: 'Role.CREATE',
+  ROLE_READ: 'Role.READ',
+  ROLE_UPDATE: 'Role.UPDATE',
+  ROLE_DELETE: 'Role.DELETE',
+  ROLE_MANAGE: 'Role.MANAGE',
+
+  USER_ROLE_READ: 'UserRole.READ',
+  USER_ROLE_MANAGE: 'UserRole.MANAGE',
+
+  // Organization Management
+  ORGANIZATION_READ: 'Organization.READ',
+  ORGANIZATION_CREATE: 'Organization.CREATE',
+  ORGANIZATION_UPDATE: 'Organization.UPDATE',
+  ORGANIZATION_DELETE: 'Organization.DELETE',
+  ORGANIZATION_MANAGE: 'Organization.MANAGE',
+
+  // Widget & Layout Management
+  WIDGET_READ: 'Widget.READ',
+  WIDGET_MANAGE: 'Widget.MANAGE',
+
+  PAGE_LAYOUT_READ: 'PageLayout.READ',
+  PAGE_LAYOUT_CREATE: 'PageLayout.CREATE',
+  PAGE_LAYOUT_UPDATE: 'PageLayout.UPDATE',
+  PAGE_LAYOUT_PUBLISH: 'PageLayout.PUBLISH',
+
+  // Theme Management
+  THEME_READ: 'Theme.READ',
+  THEME_MANAGE: 'Theme.MANAGE',
+
+  // Conversation & Message
+  CONVERSATION_READ: 'Conversation.READ',
+  CONVERSATION_CREATE: 'Conversation.CREATE',
+  CONVERSATION_UPDATE: 'Conversation.UPDATE',
+
+  MESSAGE_READ: 'Message.READ',
+  MESSAGE_CREATE: 'Message.CREATE',
+
+  // Notification
+  NOTIFICATION_READ: 'Notification.READ',
+  NOTIFICATION_MANAGE: 'Notification.MANAGE',
+
+  // Software Management
+  SOFTWARE_READ: 'Software.READ',
+  SOFTWARE_CREATE: 'Software.CREATE',
+  SOFTWARE_UPDATE: 'Software.UPDATE',
+  SOFTWARE_DELETE: 'Software.DELETE',
+  SOFTWARE_MANAGE: 'Software.MANAGE',
+
+  // Ticket Management
+  TICKET_CREATE: 'Ticket.CREATE',
+  TICKET_READ: 'Ticket.READ',
+  TICKET_UPDATE: 'Ticket.UPDATE',
+  TICKET_MANAGE: 'Ticket.MANAGE',
+
+  // Analytics & Reporting
+  ANALYTICS_READ: 'Analytics.READ',
+  ANALYTICS_EXPORT: 'Analytics.EXPORT',
+
+  AUDIT_LOG_CREATE: 'AuditLog.CREATE',
+  AUDIT_LOG_READ: 'AuditLog.READ',
+
+  // System Settings
+  SYSTEM_SETTINGS_READ: 'SystemSettings.READ',
+  SYSTEM_SETTINGS_UPDATE: 'SystemSettings.UPDATE',
+  SYSTEM_SETTINGS_DELETE: 'SystemSettings.DELETE',
+
+  // Expert & Knowledge
+  EXPERT_READ: 'Expert.READ',
+  EXPERT_CREATE: 'Expert.CREATE',
+  EXPERT_UPDATE: 'Expert.UPDATE',
+  EXPERT_DELETE: 'Expert.DELETE',
+  EXPERT_MANAGE: 'Expert.MANAGE',
+
+  // Afish (Structured Forms)
+  AFISH_CREATE: 'Afish.CREATE',
+  AFISH_READ: 'Afish.READ',
+  AFISH_UPDATE: 'Afish.UPDATE',
+  AFISH_LOCK: 'Afish.LOCK',
+  AFISH_PRINT: 'Afish.PRINT',
+  AFISH_ARCHIVE: 'Afish.ARCHIVE',
+} as const
+
+export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS]
+
+export const ROLES = {
+  ADMIN: 'ADMIN',
+  PORTAL_MANAGER: 'PORTAL_MANAGER',
+  DEPARTMENT_OFFICER: 'DEPARTMENT_OFFICER',
+  CONTENT_MANAGER: 'CONTENT_MANAGER',
+  USER: 'USER',
+} as const
+
+export type Role = (typeof ROLES)[keyof typeof ROLES]
+
+export const PERMISSION_GROUPS = {
+  CONTENT: [
+    PERMISSIONS.CONTENT_CREATE,
+    PERMISSIONS.CONTENT_READ,
+    PERMISSIONS.CONTENT_UPDATE,
+    PERMISSIONS.CONTENT_DELETE,
+    PERMISSIONS.CONTENT_PUBLISH,
+    PERMISSIONS.CONTENT_APPROVE,
+    PERMISSIONS.CONTENT_ARCHIVE,
+    PERMISSIONS.CONTENT_MANAGE_SCOPE,
+  ],
+  FORM: [
+    PERMISSIONS.FORM_CREATE,
+    PERMISSIONS.FORM_READ,
+    PERMISSIONS.FORM_UPDATE,
+    PERMISSIONS.FORM_DELETE,
+    PERMISSIONS.FORM_MANAGE,
+  ],
+  USER: [
+    PERMISSIONS.USER_CREATE,
+    PERMISSIONS.USER_READ,
+    PERMISSIONS.USER_UPDATE,
+    PERMISSIONS.USER_DELETE,
+    PERMISSIONS.USER_MANAGE,
+  ],
+  ROLE: [
+    PERMISSIONS.ROLE_CREATE,
+    PERMISSIONS.ROLE_READ,
+    PERMISSIONS.ROLE_UPDATE,
+    PERMISSIONS.ROLE_DELETE,
+    PERMISSIONS.ROLE_MANAGE,
+  ],
+  ORGANIZATION: [
+    PERMISSIONS.ORGANIZATION_READ,
+    PERMISSIONS.ORGANIZATION_CREATE,
+    PERMISSIONS.ORGANIZATION_UPDATE,
+    PERMISSIONS.ORGANIZATION_DELETE,
+    PERMISSIONS.ORGANIZATION_MANAGE,
+  ],
+  WIDGET: [PERMISSIONS.WIDGET_READ, PERMISSIONS.WIDGET_MANAGE],
+  ANALYTICS: [PERMISSIONS.ANALYTICS_READ, PERMISSIONS.ANALYTICS_EXPORT],
+  SETTINGS: [
+    PERMISSIONS.SYSTEM_SETTINGS_READ,
+    PERMISSIONS.SYSTEM_SETTINGS_UPDATE,
+    PERMISSIONS.SYSTEM_SETTINGS_DELETE,
+  ],
+} as const
+
+export const WIDGET_PERMISSIONS = {
+  HERO_MEDIA: [],
+  QUICK_ACCESS: [],
+  INTERNET_LOGIN: [],
+  NEWS_TIMELINE: [],
+  DEPT_ANNOUNCEMENTS: [],
+  MEDIA_GALLERY: [],
+  IT_SERVICES: [],
+  DEPT_ANNOUNCEMENTS_BASIC: [],
+  RESEARCH_HIGHLIGHTS: [],
+  CALENDAR_PRAYER: [],
+  WEATHER: [],
+  ADMIN_KPI: [PERMISSIONS.ANALYTICS_READ],
+  SERVICES_GRID: [],
+  HELP_CARDS: [],
+  OCCASION_BANNER: [],
+  DEPT_DOCUMENT_CENTER: [],
+  DEPT_FORMS_CENTER: [],
+  DEPT_EXPERTS_DIRECTORY: [],
+  DEPT_SERVICE_CARDS: [],
+} as const

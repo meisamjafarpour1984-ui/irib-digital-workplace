@@ -6,6 +6,9 @@ import { Section } from '@/components/layout/section'
 import { PortalLogo } from '@/components/portal/portal-logo'
 import { QrCode, Smartphone, CheckCircle, RefreshCw, Clock } from 'lucide-react'
 
+// Force dynamic rendering to avoid SSR hydration issues
+export const dynamic = 'force-dynamic'
+
 export default function MobileLinkPage() {
   const [status, setStatus] = useState<'waiting' | 'scanned' | 'linked' | 'expired'>('waiting')
   const [countdown, setCountdown] = useState(120)

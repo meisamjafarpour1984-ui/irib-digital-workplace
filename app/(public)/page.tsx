@@ -1,8 +1,7 @@
 import { UtilityBar } from '@/components/portal/utility-bar'
-import { PortalHeader } from '@/components/portal/portal-header'
+import { PortalHeaderClient } from '@/components/portal/portal-header-client'
 import { PortalFooter } from '@/components/portal/portal-footer'
 import { WidgetRenderer } from '@/components/widgets/all-widgets'
-import type { WidgetInstance } from '@/components/widgets/types'
 import { loadHomepageWidgets } from '@/lib/homepage/load-homepage'
 
 import '@/components/widgets/manifest'
@@ -13,7 +12,7 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       <UtilityBar />
-      <PortalHeader />
+      <PortalHeaderClient />
 
       <main className="mx-auto max-w-[1440px] px-4 py-6 md:px-6">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
@@ -24,9 +23,7 @@ export default async function HomePage() {
           </div>
           <aside className="flex flex-col gap-5 lg:col-span-4 xl:col-span-3">
             <WidgetRenderer
-              instances={homepageWidgets.filter((w) =>
-                ['internet-login', 'quick-access'].includes(w.widgetId)
-              )}
+              instances={homepageWidgets.filter((w) => ['quick-access'].includes(w.widgetId))}
             />
           </aside>
         </div>

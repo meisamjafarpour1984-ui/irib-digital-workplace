@@ -251,16 +251,16 @@ export default function InboxPage() {
                     aria-label="جستجو در موضوع مکاتبات"
                   />
                 </div>
-                <div className="mt-3 flex gap-1 overflow-x-auto">
+                <div className="mt-3 flex gap-1 border-b border-border">
                   {filterTabs.map((tab) => (
                     <button
                       key={tab.label}
                       type="button"
                       onClick={() => setActiveRole(tab.role)}
-                      className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 ${
+                      className={`whitespace-nowrap px-2.5 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 ${
                         activeRole === tab.role
-                          ? 'bg-brand text-white'
-                          : 'text-muted-foreground hover:bg-muted'
+                          ? 'border-b-2 border-brand text-brand'
+                          : 'text-muted-foreground hover:text-foreground'
                       }`}
                     >
                       {tab.label}

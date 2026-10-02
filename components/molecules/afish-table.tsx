@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Plus, Trash2, Copy, Printer, Download, GripVertical } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface AfishColumn {
   id: string
@@ -27,10 +28,11 @@ interface AfishTableProps {
 export function AfishTable({
   columns,
   initialRows = [],
-  title = 'آفیش تیم',
+  title,
   locked = false,
   onChange,
 }: AfishTableProps) {
+  const t = useTranslations('afishTable')
   const [rows, setRows] = useState<AfishRow[]>(
     initialRows.length > 0 ? initialRows : [{ id: `r-${Date.now()}`, data: {} }]
   )
@@ -81,9 +83,9 @@ export function AfishTable({
       {/* Header */}
       <div className="flex items-center justify-between border-b border-border p-4 print:hidden">
         <div className="flex items-center gap-3">
-          <h3 className="text-heading-1 text-foreground">{title}</h3>
+          <h3 className="text-heading-1 text-foreground">{title ?? t('title')}</h3>
           <span className="rounded-full bg-brand/10 px-2.5 py-1 text-xs font-bold text-brand">
-            {rows.length} ردیف
+            {t('rowCount', { n: rows.length })}
           </span>
         </div>
         <div className="flex items-center gap-2">
@@ -93,7 +95,7 @@ export function AfishTable({
             className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted"
           >
             <Printer className="size-3.5" aria-hidden />
-            چاپ
+            {t('print')}
           </button>
           <button
             type="button"
@@ -121,7 +123,7 @@ export function AfishTable({
                 </th>
               ))}
               <th className="w-20 p-3 text-center text-xs font-medium text-muted-foreground print:hidden">
-                عملیات
+                {t('actions')}
               </th>
             </tr>
           </thead>
@@ -146,7 +148,7 @@ export function AfishTable({
                         onChange={(e) => updateCell(row.id, col.id, e.target.value)}
                         className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand/20"
                       >
-                        <option value="">انتخاب...</option>
+                        <option value="">{t('select')}</option>
                         {col.options?.map((opt) => (
                           <option key={opt} value={opt}>
                             {opt}
@@ -183,7 +185,7 @@ export function AfishTable({
                       type="button"
                       onClick={() => duplicateRow(row.id)}
                       className="flex size-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
-                      aria-label="کپی ردیف"
+                      aria-label={t('copyRow')}
                     >
                       <Copy className="size-3.5" />
                     </button>
@@ -192,7 +194,7 @@ export function AfishTable({
                       onClick={() => removeRow(row.id)}
                       disabled={rows.length <= 1}
                       className="flex size-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-error/10 hover:text-error disabled:opacity-30"
-                      aria-label="حذف ردیف"
+                      aria-label={t('deleteRow')}
                     >
                       <Trash2 className="size-3.5" />
                     </button>
@@ -213,7 +215,7 @@ export function AfishTable({
             className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-border py-2.5 text-sm text-muted-foreground transition-colors hover:border-brand/50 hover:text-brand"
           >
             <Plus className="size-4" aria-hidden />
-            افزودن ردیف
+            {t('addRow')}
           </button>
         </div>
       )}

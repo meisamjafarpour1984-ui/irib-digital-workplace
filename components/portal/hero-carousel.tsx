@@ -3,8 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { heroSlides } from '@/lib/portal-data'
+import { useTranslations } from 'next-intl'
 
 export function HeroCarousel() {
+  const t = useTranslations('portal.hero')
   const [index, setIndex] = useState(0)
   const [paused, setPaused] = useState(false)
   const count = heroSlides.length
@@ -22,7 +24,7 @@ export function HeroCarousel() {
 
   return (
     <section
-      aria-label="اخبار برگزیده"
+      aria-label={t('label')}
       aria-roledescription="carousel"
       className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-border md:aspect-[21/9]"
       onMouseEnter={() => setPaused(true)}
@@ -75,7 +77,7 @@ export function HeroCarousel() {
       <button
         type="button"
         onClick={() => go(-1)}
-        aria-label="اسلاید قبلی"
+        aria-label={t('prev')}
         className="absolute end-3 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-white/10 text-white backdrop-blur-md transition-colors hover:bg-white/20"
       >
         <ChevronRight className="size-5" />
@@ -83,7 +85,7 @@ export function HeroCarousel() {
       <button
         type="button"
         onClick={() => go(1)}
-        aria-label="اسلاید بعدی"
+        aria-label={t('next')}
         className="absolute start-3 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-white/10 text-white backdrop-blur-md transition-colors hover:bg-white/20"
       >
         <ChevronLeft className="size-5" />
@@ -96,7 +98,7 @@ export function HeroCarousel() {
             key={s.id}
             type="button"
             onClick={() => setIndex(i)}
-            aria-label={`رفتن به اسلاید ${i + 1}`}
+            aria-label={`${t('gotoSlide')} ${i + 1}`}
             aria-current={i === index}
             className={`h-2 rounded-full transition-all ${
               i === index ? 'w-6 bg-white' : 'w-2 bg-white/50 hover:bg-white/70'

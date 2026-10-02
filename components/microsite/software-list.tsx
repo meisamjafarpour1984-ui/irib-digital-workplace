@@ -1,11 +1,13 @@
 import { Download } from 'lucide-react'
 import { PanelHeader } from '@/components/portal/panel-header'
 import { softwareList } from '@/lib/microsite-data'
+import { useTranslations } from 'next-intl'
 
 export function SoftwareList() {
+  const t = useTranslations('microsite.softwareList')
   return (
     <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-      <PanelHeader title="مرکز نرم‌افزارها" moreLabel="مشاهده نرم‌افزارها" />
+      <PanelHeader title={t('title')} moreLabel={t('moreLabel')} />
       <ul className="flex flex-col gap-3">
         {softwareList.map((sw) => {
           const Icon = sw.icon
@@ -28,7 +30,7 @@ export function SoftwareList() {
                 className="flex shrink-0 items-center gap-1.5 rounded-lg bg-brand/10 px-3 py-2 text-xs font-bold text-brand transition-colors hover:bg-brand hover:text-white"
               >
                 <Download className="size-4" aria-hidden />
-                دانلود
+                {t('download')}
               </button>
             </li>
           )

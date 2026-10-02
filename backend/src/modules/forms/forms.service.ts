@@ -84,12 +84,16 @@ export class FormsService {
     if (!form) throw new NotFoundException('Form not found')
     if (form.createdBy !== userId) await this.requirePermission(userId, 'read')
     return this.prisma.formSubmission.findMany({
-      where: { formDefinitionId: id, status: query.status },
+      where: {
+        formDefinitionId: id,
+        ...(query.status ? { status: query.status } : {}),
+      },
       include: {
         submitter: { select: { id: true, name: true } },
         formDefinition: { select: { id: true, title: true } },
       },
       orderBy: { createdAt: 'desc' },
+      skip: ((query.page ?? 1) - 1) * query.limit,
       take: query.limit,
     })
   }
@@ -142,6 +146,33 @@ export class FormsService {
         (typeof value !== 'number' || !Number.isFinite(value))
       )
         throw new BadRequestException(`Field ${field.id} must be a number`)
+      const fieldConstraints = field as FormFieldDto & {
+        min?: number
+        max?: number
+        pattern?: string
+      }
+      if (
+        field.type === FormFieldType.NUMBER &&
+        fieldConstraints.min !== undefined &&
+        (value as number) < fieldConstraints.min
+      )
+        throw new BadRequestException(`Field ${field.id} is below minimum`)
+      if (
+        field.type === FormFieldType.NUMBER &&
+        fieldConstraints.max !== undefined &&
+        (value as number) > fieldConstraints.max
+      )
+        throw new BadRequestException(`Field ${field.id} exceeds maximum`)
+      if (fieldConstraints.pattern !== undefined) {
+        let pattern: RegExp
+        try {
+          pattern = new RegExp(fieldConstraints.pattern)
+        } catch {
+          throw new BadRequestException(`Field ${field.id} has an invalid pattern`)
+        }
+        if (typeof value !== 'string' || !pattern.test(value))
+          throw new BadRequestException(`Field ${field.id} has an invalid format`)
+      }
       if (
         [FormFieldType.CHECKBOX, FormFieldType.TOGGLE].includes(field.type) &&
         typeof value !== 'boolean'

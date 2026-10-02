@@ -1,14 +1,16 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts'
 import { trafficData } from '@/lib/dashboard-data'
 
 export function TrafficDonut() {
+  const t = useTranslations('dashboard')
   return (
     <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
       <div className="mb-4 flex items-center gap-2">
         <span className="h-5 w-1 rounded-full bg-gold" aria-hidden />
-        <h2 className="text-sm font-bold text-foreground">منابع ترافیک</h2>
+        <h2 className="text-sm font-bold text-foreground">{t('trafficSources')}</h2>
       </div>
 
       <div className="relative h-44 w-full" dir="ltr">
@@ -33,7 +35,7 @@ export function TrafficDonut() {
         </ResponsiveContainer>
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
           <span className="text-2xl font-extrabold text-foreground">۱۰۰٪</span>
-          <span className="text-xs text-muted-foreground">کل ترافیک</span>
+          <span className="text-xs text-muted-foreground">{t('totalTraffic')}</span>
         </div>
       </div>
 

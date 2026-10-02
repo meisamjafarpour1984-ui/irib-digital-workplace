@@ -49,8 +49,14 @@ export function mergeWidgetRenderData(
 
 export async function loadHomepageWidgets(): Promise<WidgetInstance[]> {
   const [layout, renderData] = await Promise.all([
-    fetchPublicApi<PageLayoutResponse>(`/widget-engine/pages/${HOMEPAGE_PAGE_KEY}`),
-    fetchPublicApi<WidgetRenderEnvelope[]>(`/widget-engine/pages/${HOMEPAGE_PAGE_KEY}/render-data`),
+    fetchPublicApi<PageLayoutResponse>(`/widget-engine/pages/${HOMEPAGE_PAGE_KEY}`, {
+      revalidate: 60,
+      fallbackOnError: true,
+    }),
+    fetchPublicApi<WidgetRenderEnvelope[]>(
+      `/widget-engine/pages/${HOMEPAGE_PAGE_KEY}/render-data`,
+      { revalidate: 60, fallbackOnError: true }
+    ),
   ])
 
   const base = layoutToInstances(layout) ?? DEFAULT_HOMEPAGE_WIDGETS

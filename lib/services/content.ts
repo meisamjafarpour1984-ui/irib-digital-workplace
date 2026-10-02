@@ -71,6 +71,8 @@ export const contentApi = {
   update: (id: string, input: ContentUpdateInput) =>
     apiClient.put<ContentRecord>(`/contents/${id}`, input),
   publish: (id: string) => apiClient.post<ContentRecord>(`/contents/${id}/publish`),
+  archive: (id: string) => apiClient.post<ContentRecord>(`/contents/${id}/archive`),
+  remove: (id: string) => apiClient.delete<ContentRecord>(`/contents/${id}`),
   listDepartments: () => apiClient.get<DepartmentOption[]>('/contents/options/departments'),
   findPublished: (slug: string) => apiClient.get<ContentRecord>(`/contents/public/${slug}`),
   listFeed: (params?: { type?: ContentType; limit?: number; page?: number }) =>
@@ -78,4 +80,46 @@ export const contentApi = {
       items: ContentRecord[]
       pagination: { page: number; limit: number; total: number }
     }>('/contents/feed', { params }),
+  list: (params?: { type?: string; status?: string; limit?: number; page?: number }) =>
+    apiClient.get<{
+      items: ContentRecord[]
+      pagination: { page: number; limit: number; total: number; totalPages: number }
+    }>('/contents', { params }),
+  findOne: (id: string) => apiClient.get<ContentRecord>(`/contents/${id}`),
+  submitForReview: (id: string) =>
+    apiClient.post<ContentRecord>(`/contents/${id}/submit-review`, undefined, {
+      suppress404Error: true,
+    }),
+  approve: (id: string) =>
+    apiClient.post<ContentRecord>(`/contents/${id}/approve`, undefined, { suppress404Error: true }),
+  reject: (id: string) =>
+    apiClient.post<ContentRecord>(`/contents/${id}/reject`, undefined, { suppress404Error: true }),
+  schedule: (id: string, scheduledAt: Date) =>
+    apiClient.post<ContentRecord>(
+      `/contents/${id}/schedule`,
+      { scheduledAt: scheduledAt.toISOString() },
+      { suppress404Error: true }
+    ),
+  unschedule: (id: string) =>
+    apiClient.post<ContentRecord>(`/contents/${id}/unschedule`, undefined, {
+      suppress404Error: true,
+    }),
+}
+
+export class ContentService {
+  getContent(slug: string) {
+    return contentApi.findPublished(slug)
+  }
+
+  createContent(input: Partial<ContentDraftInput> & { slug?: string }) {
+    return contentApi.create(input as ContentDraftInput)
+  }
+
+  updateContent(id: string, input: Partial<ContentDraftInput>) {
+    return contentApi.update(id, { ...input, expectedVersion: 1 })
+  }
+
+  async deleteContent(id: string): Promise<void> {
+    await contentApi.remove(id)
+  }
 }

@@ -31,6 +31,16 @@ pnpm deploy-staging
 pnpm deploy-staging
 ```
 
+### اعتبارسنجی بدون Deployment
+
+برای بررسی chartها، rolloutهای موجود و smoke testهای staging بدون اجرای deployment:
+
+```powershell
+pnpm validate-staging
+```
+
+این دستور وجود ابزارهای `git`، `helm` و `kubectl`، namespace `dwp-staging`، صحت Helm values، وضعیت rollout فرانت و بک‌اند، و endpointهای `health/live`، `health/ready` و frontend را بررسی می‌کند.
+
 ## مراحل Deployment
 
 ### 1. Build و Push Images

@@ -148,7 +148,7 @@ self.addEventListener('push', (event) => {
     ],
   }
   event.waitUntil(
-    self.registration.showNotification(data.title || 'پرتال IRIB', options)
+    self.registration.showNotification(data.title || 'درگاه IRIB', options)
   )
 })
 

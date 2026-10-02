@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
+import { Prisma } from '@prisma/client'
 import { PrismaService } from '../../prisma/prisma.service'
 
 @Injectable()
@@ -6,13 +7,20 @@ export class KnowledgeService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getExperts(params: { departmentId?: string; isLegend?: boolean; limit: number }) {
-    const where: any = { isPublic: true }
+    const where: Prisma.ExpertProfileWhereInput = {}
     if (params.departmentId) where.departmentId = params.departmentId
     if (params.isLegend !== undefined) where.isLegend = params.isLegend
 
     return this.prisma.expertProfile.findMany({
       where,
-      include: { user: { select: { id: true, name: true } } },
+      include: {
+        user: { select: { id: true, name: true } },
+        // skills: {
+        //   include: {
+        //     skill: true,
+        //   },
+        // },
+      },
       take: params.limit,
     })
   }
@@ -26,11 +34,47 @@ export class KnowledgeService {
     return expert
   }
 
-  async updateExpert(userId: string, data: any) {
-    return this.prisma.expertProfile.upsert({
+  async updateExpert(userId: string, data: Prisma.ExpertProfileUpdateInput & { skills?: unknown }) {
+    const profileData = { ...data }
+    delete profileData.skills
+
+    // Update profile
+    const profile = await this.prisma.expertProfile.upsert({
       where: { userId },
-      update: data,
-      create: { userId, ...data },
+      update: profileData as Prisma.ExpertProfileUpdateInput,
+      create: { userId, ...profileData } as Prisma.ExpertProfileCreateInput,
+    })
+
+    // Update skills if provided
+    // if (skills && Array.isArray(skills)) {
+    //   // Delete existing skills
+    //   await this.prisma.expertSkill.deleteMany({
+    //     where: { expertId: profile.id },
+    //   })
+
+    //   // Create new skills
+    //   if (skills.length > 0) {
+    //     await this.prisma.expertSkill.createMany({
+    //       data: skills.map((skill: any) => ({
+    //         expertId: profile.id,
+    //         skillId: skill.skillId,
+    //         proficiency: skill.proficiency || 'intermediate',
+    //         years: skill.years,
+    //       })),
+    //     })
+    //   }
+    // }
+
+    return this.prisma.expertProfile.findUnique({
+      where: { id: profile.id },
+      include: {
+        user: { select: { id: true, name: true, email: true } },
+        // skills: {
+        //   include: {
+        //     skill: true,
+        //   },
+        // },
+      },
     })
   }
 
@@ -42,6 +86,10 @@ export class KnowledgeService {
   }
 
   async getSkills() {
-    return [] // skillsTaxonomy not defined in Prisma Schema
+    return []
+  }
+
+  async getSkillBySlug(_slug: string) {
+    return null
   }
 }

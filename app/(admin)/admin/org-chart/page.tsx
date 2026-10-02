@@ -2,70 +2,27 @@
 
 import { Container } from '@/components/layout/container'
 import { Section } from '@/components/layout/section'
-import { Plus, ChevronDown, Users } from 'lucide-react'
+import { Plus, ChevronDown, Users, Loader2 } from 'lucide-react'
+import { useOrganization } from '@/hooks/use-organization'
+
+// Force dynamic rendering to avoid SSR hydration issues
+export const dynamic = 'force-dynamic'
 
 interface OrgNode {
   id: string
-  name: string
-  manager: string
-  memberCount: number
+  name: string | { fa?: string; en?: string }
+  manager?: string
+  memberCount?: number
+  members?: unknown[]
   children?: OrgNode[]
-}
-
-const orgTree: OrgNode = {
-  id: 'root',
-  name: 'صدا و سیمای آذربایجان شرقی',
-  manager: 'مدیرکل',
-  memberCount: 500,
-  children: [
-    {
-      id: 'deputy-1',
-      name: 'معاونت فناوری اطلاعات',
-      manager: 'معاون IT',
-      memberCount: 25,
-      children: [
-        { id: 'unit-1-1', name: 'واحد شبکه', manager: 'سرپرست شبکه', memberCount: 8 },
-        { id: 'unit-1-2', name: 'واحد توسعه نرم‌افزار', manager: 'سرپرست توسعه', memberCount: 10 },
-        { id: 'unit-1-3', name: 'واحد پشتیبانی', manager: 'سرپرست پشتیبانی', memberCount: 7 },
-      ],
-    },
-    {
-      id: 'deputy-2',
-      name: 'معاونت تولید',
-      manager: 'معاون تولید',
-      memberCount: 120,
-      children: [
-        { id: 'unit-2-1', name: 'گروه برنامه‌سازی', manager: 'سرپرست گروه', memberCount: 40 },
-        { id: 'unit-2-2', name: 'گروه فنی', manager: 'سرپرست گروه', memberCount: 30 },
-      ],
-    },
-    {
-      id: 'deputy-3',
-      name: 'معاونت اداری و مالی',
-      manager: 'معاون اداری',
-      memberCount: 45,
-      children: [
-        { id: 'unit-3-1', name: 'واحد حسابداری', manager: 'سرپرست حسابداری', memberCount: 12 },
-        { id: 'unit-3-2', name: 'واحد رفاه', manager: 'سرپرست رفاه', memberCount: 8 },
-      ],
-    },
-    {
-      id: 'deputy-4',
-      name: 'معاونت پژوهش',
-      manager: 'معاون پژوهش',
-      memberCount: 30,
-    },
-    {
-      id: 'deputy-5',
-      name: 'روابط عمومی',
-      manager: 'رئیس روابط عمومی',
-      memberCount: 15,
-    },
-  ],
 }
 
 function OrgNodeComponent({ node, level = 0 }: { node: OrgNode; level?: number }) {
   const hasChildren = node.children && node.children.length > 0
+  const name =
+    typeof node.name === 'string' ? node.name : node.name?.fa || node.name?.en || 'نام واحد'
+  const managerName = node.manager || 'بدون مدیر'
+  const memberCount = node.memberCount || node.members?.length || 0
 
   return (
     <div className="flex flex-col items-center">
@@ -79,12 +36,12 @@ function OrgNodeComponent({ node, level = 0 }: { node: OrgNode; level?: number }
             <Users className="size-5" aria-hidden />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-bold text-foreground">{node.name}</p>
-            <p className="text-xs text-muted-foreground">{node.manager}</p>
+            <p className="truncate text-sm font-bold text-foreground">{name}</p>
+            <p className="text-xs text-muted-foreground">{managerName}</p>
           </div>
         </div>
         <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
-          <span>{node.memberCount} نفر</span>
+          <span>{memberCount} نفر</span>
           {hasChildren && (
             <span className="flex items-center gap-1">
               {node.children!.length} واحد
@@ -98,7 +55,7 @@ function OrgNodeComponent({ node, level = 0 }: { node: OrgNode; level?: number }
         <>
           <div className="h-6 w-px bg-border" />
           <div className="flex flex-col items-center gap-4 lg:flex-row lg:items-start lg:gap-0">
-            {node.children!.map((child, i) => (
+            {node.children!.map((child: OrgNode, i: number) => (
               <div key={child.id} className="flex flex-col items-center">
                 {i > 0 && <div className="hidden h-px w-8 bg-border lg:block" />}
                 <OrgNodeComponent node={child} level={level + 1} />
@@ -112,6 +69,16 @@ function OrgNodeComponent({ node, level = 0 }: { node: OrgNode; level?: number }
 }
 
 export default function OrgChartPage() {
+  const { tree, stats, loading, error } = useOrganization()
+
+  if (loading && tree.length === 0) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-brand" />
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Section>
@@ -119,7 +86,9 @@ export default function OrgChartPage() {
           <div className="mb-6 flex items-center justify-between">
             <div>
               <h1 className="text-display-lg text-foreground">نمودار سازمانی</h1>
-              <p className="mt-1 text-body-md text-muted-foreground">مدیریت درختی ساختار سازمان</p>
+              <p className="mt-1 text-body-md text-muted-foreground">
+                {stats?.totalUnits || 0} واحد سازمانی ({stats?.totalMembers || 0} عضو)
+              </p>
             </div>
             <button
               type="button"
@@ -130,10 +99,28 @@ export default function OrgChartPage() {
             </button>
           </div>
 
-          <div className="overflow-x-auto rounded-2xl border border-border bg-card p-8 shadow-sm">
-            <div className="flex justify-center">
-              <OrgNodeComponent node={orgTree} />
+          {error && (
+            <div className="mb-4 rounded-lg bg-error/10 border border-error/20 p-3 text-sm text-error">
+              {error}
             </div>
+          )}
+
+          <div className="overflow-x-auto rounded-2xl border border-border bg-card p-8 shadow-sm">
+            {loading ? (
+              <div className="flex justify-center">
+                <Loader2 className="size-6 animate-spin text-brand" />
+              </div>
+            ) : tree.length === 0 ? (
+              <div className="flex justify-center text-muted-foreground">
+                هیچ واحد سازمانی یافت نشد
+              </div>
+            ) : (
+              <div className="flex justify-center">
+                {tree.map((node) => (
+                  <OrgNodeComponent key={node.id} node={node} />
+                ))}
+              </div>
+            )}
           </div>
         </Container>
       </Section>

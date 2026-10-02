@@ -3,27 +3,30 @@
 import { usePathname } from 'next/navigation'
 import { Home, Inbox, Grid3x3, User, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useTranslations } from 'next-intl'
 
-const navItems = [
-  { href: '/', icon: Home, label: 'خانه' },
-  { href: '/dashboard/inbox', icon: Inbox, label: 'کارتابل' },
-  { href: '/dashboard/forms/builder', icon: Plus, label: 'ایجاد', isAction: true },
-  { href: '/departments/it', icon: Grid3x3, label: 'خدمات' },
-  { href: '/dashboard', icon: User, label: 'پروفایل' },
+const navItemIds = [
+  { href: '/', icon: Home, id: 'home' },
+  { href: '/dashboard/inbox', icon: Inbox, id: 'inbox' },
+  { href: '/dashboard/forms/builder', icon: Plus, id: 'create', isAction: true },
+  { href: '/departments/it', icon: Grid3x3, id: 'services' },
+  { href: '/dashboard', icon: User, id: 'profile' },
 ]
 
 export function MobileNav() {
   const pathname = usePathname()
+  const t = useTranslations('mobileNav')
 
   return (
     <nav
       className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-card/95 backdrop-blur-md lg:hidden"
-      aria-label="ناوبری موبایل"
+      aria-label={t('ariaLabel')}
     >
       <ul className="flex items-center justify-around px-2 py-1">
-        {navItems.map((item) => {
+        {navItemIds.map((item) => {
           const isActive = pathname === item.href
           const Icon = item.icon
+          const label = t(`items.${item.id}`)
 
           if (item.isAction) {
             return (
@@ -31,7 +34,7 @@ export function MobileNav() {
                 <a
                   href={item.href}
                   className="flex size-12 -translate-y-4 items-center justify-center rounded-full bg-brand text-white shadow-lg shadow-brand/30 transition-transform hover:scale-105 active:scale-95"
-                  aria-label={item.label}
+                  aria-label={label}
                 >
                   <Icon className="size-6" aria-hidden />
                 </a>
@@ -50,7 +53,7 @@ export function MobileNav() {
                 aria-current={isActive ? 'page' : undefined}
               >
                 <Icon className="size-5" aria-hidden />
-                <span>{item.label}</span>
+                <span>{label}</span>
               </a>
             </li>
           )

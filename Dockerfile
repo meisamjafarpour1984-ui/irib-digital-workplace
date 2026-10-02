@@ -10,7 +10,7 @@
 # All rights reserved © 2026
 #
 
-FROM node:20-slim AS base
+FROM node:22-slim AS base
 
 # Install base dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -108,7 +108,7 @@ RUN pnpm build
 # Runtime stage
 # ============================================================
 
-FROM node:20-slim AS runtime
+FROM node:22-slim AS runtime
 
 # Runtime arguments
 ARG NODE_ENV=production
@@ -130,19 +130,21 @@ RUN corepack enable
 
 WORKDIR /workspace
 
+# Create non-root user before copying runtime files
+RUN useradd -m -u 1001 appuser
+
 # Copy package files
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY --chown=appuser:appuser package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 # Copy production dependencies only
-COPY --from=build /workspace/node_modules ./node_modules
+COPY --from=build --chown=appuser:appuser /workspace/node_modules ./node_modules
 
 # Copy Next.js build output and standalone files
-COPY --from=build /workspace/.next/standalone ./
-COPY --from=build /workspace/.next/static ./.next/static
-COPY --from=build /workspace/public ./public
+COPY --from=build --chown=appuser:appuser /workspace/.next/standalone ./
+COPY --from=build --chown=appuser:appuser /workspace/.next/static ./.next/static
+COPY --from=build --chown=appuser:appuser /workspace/public ./public
 
-# Create non-root user for security
-RUN useradd -m -u 1001 appuser && chown -R appuser:appuser /workspace
+# Run the application without root privileges
 USER appuser
 
 # Expose port

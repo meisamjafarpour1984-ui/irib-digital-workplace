@@ -1,0 +1,174 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+  namespace: dwp
+spec:
+  schedule: "0 2 * * *" # Daily at 2 AM
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: wal-g-backup
+              image: ghcr.io/wal-g/wal-g:latest
+              command:
+                - sh
+                - -c
+                - |
+                  # Run backup
+                  wal-g backup-push /var/lib/postgresql/data
+                  
+                  # Cleanup old backups (keep last 7 days)
+                  wal-g delete --confirm retain 7
+                  
+                  # Verify backup
+                  wal-g backup-list
+              envFrom:
+                - configMapRef:
+                    name: wal-g-config
+                - secretRef:
+                    name: wal-g-credentials
+              volumeMounts:
+                - name: postgres-data
+                  mountPath: /var/lib/postgresql/data
+                  readOnly: true
+          volumes:
+            - name: postgres-data
+              persistentVolumeClaim:
+                claimName: postgres-pvc
+          restartPolicy: OnFailure
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup-verify
+  namespace: dwp
+spec:
+  schedule: "0 4 * * *" # Daily at 4 AM
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: wal-g-verify
+              image: ghcr.io/wal-g/wal-g:latest
+              command:
+                - sh
+                - -c
+                - |
+                  # Verify latest backup
+                  wal-g backup-list
+                  
+                  # Check backup integrity
+                  wal-g backup-detail LATEST
+              envFrom:
+                - configMapRef:
+                    name: wal-g-config
+                - secretRef:
+                    name: wal-g-credentials
+          restartPolicy: OnFailure
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: redis-backup
+  namespace: dwp
+spec:
+  schedule: "0 3 * * *" # Daily at 3 AM
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: redis-backup
+              image: redis:7-alpine
+              command:
+                - sh
+                - -c
+                - |
+                  # Trigger background save
+                  redis-cli -h redis -a ${REDIS_PASSWORD} BGSAVE
+                  
+                  # Wait for save to complete
+                  sleep 10
+                  
+                  # Copy RDB file to backup location
+                  cp /data/dump.rdb /backup/redis_backup_$(date +%Y%m%d_%H%M%S).rdb
+                  
+                  # Cleanup old backups (keep last 7 days)
+                  find /backup -name "redis_backup_*.rdb" -mtime +7 -delete
+                  
+                  echo "Redis backup completed successfully"
+              env:
+                - name: REDIS_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: redis-secret
+                      key: password
+              volumeMounts:
+                - name: redis-data
+                  mountPath: /data
+                  readOnly: true
+                - name: backup-storage
+                  mountPath: /backup
+          volumes:
+            - name: redis-data
+              persistentVolumeClaim:
+                claimName: redis-pvc
+            - name: backup-storage
+              persistentVolumeClaim:
+                claimName: backup-pvc
+          restartPolicy: OnFailure
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: minio-backup
+  namespace: dwp
+spec:
+  schedule: "0 5 * * *" # Daily at 5 AM
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: minio-backup
+              image: alpine:latest
+              command:
+                - sh
+                - -c
+                - |
+                  # Create backup archive
+                  tar czf /backup/minio_backup_$(date +%Y%m%d_%H%M%S).tar.gz /data
+                  
+                  # Cleanup old backups (keep last 7 days)
+                  find /backup -name "minio_backup_*.tar.gz" -mtime +7 -delete
+                  
+                  echo "MinIO backup completed successfully"
+              volumeMounts:
+                - name: minio-data
+                  mountPath: /data
+                  readOnly: true
+                - name: backup-storage
+                  mountPath: /backup
+          volumes:
+            - name: minio-data
+              persistentVolumeClaim:
+                claimName: minio-pvc
+            - name: backup-storage
+              persistentVolumeClaim:
+                claimName: backup-pvc
+          restartPolicy: OnFailure

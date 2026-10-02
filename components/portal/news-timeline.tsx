@@ -1,11 +1,15 @@
+'use client'
+
 import { latestNews } from '@/lib/portal-data'
 import { PanelHeader } from './panel-header'
 import { AccessibleButton } from '@/components/ui/AccessibleButton'
+import { useTranslations } from 'next-intl'
 
 export function NewsTimeline() {
+  const t = useTranslations('homepage')
   return (
     <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-      <PanelHeader title="آخرین اخبار" />
+      <PanelHeader title={t('latestNews')} />
       <ul>
         {latestNews.map((item) => (
           <li key={item.id}>

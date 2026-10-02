@@ -1,12 +1,16 @@
+'use client'
+
 import { Play } from 'lucide-react'
 import { galleryItems } from '@/lib/portal-data'
 import { PanelHeader } from './panel-header'
+import { useTranslations } from 'next-intl'
 
 export function Gallery() {
+  const t = useTranslations('portal.gallery')
   const [feature, ...rest] = galleryItems
   return (
     <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-      <PanelHeader title="آخرین رویدادهای تصویری" />
+      <PanelHeader title={t('title')} />
 
       <figure className="group relative mb-2.5 overflow-hidden rounded-xl">
         <img

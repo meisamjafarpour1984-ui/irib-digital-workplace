@@ -1,0 +1,7146 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/health/live": {
+      "get": {
+        "operationId": "HealthController_live",
+        "summary": "Process liveness probe",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Health"]
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "operationId": "HealthController_ready",
+        "summary": "Process readiness probe",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Health"]
+      }
+    },
+    "/health/metrics": {
+      "get": {
+        "operationId": "HealthController_metrics",
+        "summary": "Prometheus metrics",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Health"]
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "summary": "Register new user",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["IAM"]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "summary": "Login with credentials",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["IAM"]
+      }
+    },
+    "/auth/dev-login": {
+      "post": {
+        "operationId": "AuthController_devLogin",
+        "summary": "Development login without OTP (only for development)",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["IAM"]
+      }
+    },
+    "/auth/keycloak-login": {
+      "post": {
+        "operationId": "AuthController_keycloakLogin",
+        "summary": "Keycloak direct login (for Keycloak authentication)",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["IAM"]
+      }
+    },
+    "/auth/verify-otp": {
+      "post": {
+        "operationId": "AuthController_verifyOTP",
+        "summary": "Verify OTP code",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyOtpDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["IAM"]
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "operationId": "AuthController_refresh",
+        "summary": "Refresh access token",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["IAM"]
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "summary": "Revoke the current refresh session",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["IAM"]
+      }
+    },
+    "/auth/profile": {
+      "get": {
+        "operationId": "AuthController_getProfile",
+        "summary": "Get current user profile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["IAM"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/auth/set-pin": {
+      "post": {
+        "operationId": "AuthController_setPin",
+        "summary": "Set or replace the local six-digit PIN",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetPinDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["IAM"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users": {
+      "get": {
+        "operationId": "UserManagementController_findAll",
+        "summary": "List all users",
+        "description": "Returns a paginated list of users with optional filtering by status, department, role, and search term. Requires User.READ permission.",
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Filter by user status (ACTIVE, DISABLED, PENDING)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "departmentId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by department ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (default: 1)",
+            "schema": {
+              "example": "1",
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page (default: 20)",
+            "schema": {
+              "example": "20",
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Search by name, personnel code, or email",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "roleCode",
+            "required": false,
+            "in": "query",
+            "description": "Filter by role code",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Users retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden - User.READ permission required"
+          }
+        },
+        "tags": ["User Management"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "UserManagementController_create",
+        "summary": "Create user (admin)",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["User Management"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/me": {
+      "get": {
+        "operationId": "UserManagementController_getMe",
+        "summary": "Get current user profile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["User Management"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "UserManagementController_updateMe",
+        "summary": "Update current user profile",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["User Management"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/stats": {
+      "get": {
+        "operationId": "UserManagementController_getStats",
+        "summary": "Get user statistics",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["User Management"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/personnel/{personnelCode}": {
+      "get": {
+        "operationId": "UserManagementController_findByPersonnelCode",
+        "summary": "Get user by personnel code",
+        "parameters": [
+          {
+            "name": "personnelCode",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["User Management"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "operationId": "UserManagementController_findOne",
+        "summary": "Get user by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["User Management"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "UserManagementController_update",
+        "summary": "Update user",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["User Management"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "UserManagementController_remove",
+        "summary": "Delete user (soft)",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["User Management"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/{id}/restore": {
+      "post": {
+        "operationId": "UserManagementController_restore",
+        "summary": "Restore deleted user",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["User Management"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/{id}/status": {
+      "put": {
+        "operationId": "UserManagementController_toggleStatus",
+        "summary": "Toggle user status",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["User Management"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/{id}/roles": {
+      "post": {
+        "operationId": "UserManagementController_assignRole",
+        "summary": "Assign role to user",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["User Management"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/{id}/roles/{roleId}": {
+      "put": {
+        "operationId": "UserManagementController_updateRoleAssignment",
+        "summary": "Update role assignment",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "roleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["User Management"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "UserManagementController_removeRole",
+        "summary": "Remove role from user",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "roleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["User Management"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/{id}/permissions": {
+      "get": {
+        "operationId": "UserManagementController_getPermissions",
+        "summary": "Get user effective permissions",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["User Management"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/mobile-verification/send-otp": {
+      "post": {
+        "operationId": "MobileVerificationController_sendOtp",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/mobile-verification/verify-otp": {
+      "post": {
+        "operationId": "MobileVerificationController_verifyOtp",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/mobile-verification/update-mobile": {
+      "post": {
+        "operationId": "MobileVerificationController_updateMobile",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/mobile-verification/status": {
+      "get": {
+        "operationId": "MobileVerificationController_getStatus",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/mobile-verification/provider": {
+      "get": {
+        "operationId": "MobileVerificationController_getProvider",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/sms/send": {
+      "post": {
+        "operationId": "SmsController_sendSms",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/sms/send-bulk": {
+      "post": {
+        "operationId": "SmsController_sendBulkSms",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/sms/provider/status": {
+      "get": {
+        "operationId": "SmsController_getProviderStatus",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/sms/provider/update-credit": {
+      "post": {
+        "operationId": "SmsController_updateCredit",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/sms/templates": {
+      "get": {
+        "operationId": "SmsTemplateController_getTemplates",
+        "summary": "Get all templates",
+        "parameters": [
+          {
+            "name": "category",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Templates retrieved"
+          }
+        },
+        "tags": ["SMS Templates"]
+      },
+      "post": {
+        "operationId": "SmsTemplateController_createTemplate",
+        "summary": "Create SMS template",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Template created"
+          }
+        },
+        "tags": ["SMS Templates"]
+      }
+    },
+    "/sms/templates/{code}": {
+      "get": {
+        "operationId": "SmsTemplateController_getTemplate",
+        "summary": "Get template by code",
+        "parameters": [
+          {
+            "name": "code",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Template retrieved"
+          }
+        },
+        "tags": ["SMS Templates"]
+      },
+      "patch": {
+        "operationId": "SmsTemplateController_updateTemplate",
+        "summary": "Update template",
+        "parameters": [
+          {
+            "name": "code",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Template updated"
+          }
+        },
+        "tags": ["SMS Templates"]
+      },
+      "delete": {
+        "operationId": "SmsTemplateController_deleteTemplate",
+        "summary": "Delete template",
+        "parameters": [
+          {
+            "name": "code",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Template deleted"
+          }
+        },
+        "tags": ["SMS Templates"]
+      }
+    },
+    "/sms/campaigns": {
+      "post": {
+        "operationId": "SmsCampaignController_createCampaign",
+        "summary": "Create SMS campaign",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Campaign created"
+          }
+        },
+        "tags": ["SMS Campaigns"]
+      },
+      "get": {
+        "operationId": "SmsCampaignController_getCampaigns",
+        "summary": "Get all campaigns",
+        "parameters": [
+          {
+            "name": "status",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "createdBy",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Campaigns retrieved"
+          }
+        },
+        "tags": ["SMS Campaigns"]
+      }
+    },
+    "/sms/campaigns/{id}": {
+      "get": {
+        "operationId": "SmsCampaignController_getCampaign",
+        "summary": "Get campaign by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Campaign retrieved"
+          }
+        },
+        "tags": ["SMS Campaigns"]
+      },
+      "delete": {
+        "operationId": "SmsCampaignController_deleteCampaign",
+        "summary": "Delete campaign",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Campaign deleted"
+          }
+        },
+        "tags": ["SMS Campaigns"]
+      }
+    },
+    "/sms/targeting/departments": {
+      "get": {
+        "operationId": "SmsController_getDepartments",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/sms/targeting/roles": {
+      "get": {
+        "operationId": "SmsController_getRoles",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/sms/targeting/resolve": {
+      "post": {
+        "operationId": "SmsController_resolveRecipients",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/sms/targeting/count": {
+      "post": {
+        "operationId": "SmsController_getRecipientCount",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/admin/sms/provider/status": {
+      "get": {
+        "operationId": "SmsAdminController_getProviderStatus",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/admin/sms/provider/configure": {
+      "post": {
+        "operationId": "SmsAdminController_configureProvider",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "operationId": "SmsAdminController_updateProvider",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/admin/sms/provider/update-credit": {
+      "post": {
+        "operationId": "SmsAdminController_updateCredit",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/admin/sms/provider/stats": {
+      "get": {
+        "operationId": "SmsAdminController_getProviderStats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/admin/sms/templates": {
+      "get": {
+        "operationId": "SmsAdminController_getTemplates",
+        "parameters": [
+          {
+            "name": "category",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "SmsAdminController_createTemplate",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/admin/sms/templates/{code}": {
+      "get": {
+        "operationId": "SmsAdminController_getTemplate",
+        "parameters": [
+          {
+            "name": "code",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "operationId": "SmsAdminController_updateTemplate",
+        "parameters": [
+          {
+            "name": "code",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "SmsAdminController_deleteTemplate",
+        "parameters": [
+          {
+            "name": "code",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/admin/sms/campaigns": {
+      "get": {
+        "operationId": "SmsAdminController_getCampaigns",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "SmsAdminController_createCampaign",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/admin/sms/campaigns/{id}": {
+      "get": {
+        "operationId": "SmsAdminController_getCampaign",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "SmsAdminController_deleteCampaign",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/admin/sms/campaigns/{id}/status": {
+      "put": {
+        "operationId": "SmsAdminController_updateCampaignStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/admin/sms/targeting/departments": {
+      "get": {
+        "operationId": "SmsAdminController_getDepartments",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/admin/sms/targeting/roles": {
+      "get": {
+        "operationId": "SmsAdminController_getRoles",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/admin/sms/targeting/resolve": {
+      "post": {
+        "operationId": "SmsAdminController_resolveRecipients",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/admin/sms/targeting/count": {
+      "post": {
+        "operationId": "SmsAdminController_getRecipientCount",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/admin/sms/messages": {
+      "get": {
+        "operationId": "SmsAdminController_getMessages",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/admin/sms/campaigns/{id}/delivery-stats": {
+      "get": {
+        "operationId": "SmsAdminController_getCampaignDeliveryStats",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/admin/sms/stats": {
+      "get": {
+        "operationId": "SmsAdminController_getOverallStats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/admin/sms/campaigns/{id}/update-status": {
+      "post": {
+        "operationId": "SmsAdminController_updateCampaignDeliveryStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/admin/sms/queue/stats": {
+      "get": {
+        "operationId": "SmsAdminController_getQueueStats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/admin/sms/queue/pause": {
+      "post": {
+        "operationId": "SmsAdminController_pauseQueue",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/admin/sms/queue/resume": {
+      "post": {
+        "operationId": "SmsAdminController_resumeQueue",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/sms/delivery-tracking/track/{messageId}": {
+      "post": {
+        "operationId": "DeliveryTrackingController_trackDelivery",
+        "summary": "Track delivery status for a specific message",
+        "parameters": [
+          {
+            "name": "messageId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delivery status retrieved"
+          }
+        },
+        "tags": ["SMS Delivery Tracking"]
+      }
+    },
+    "/sms/delivery-tracking/campaign/{campaignId}": {
+      "post": {
+        "operationId": "DeliveryTrackingController_updateCampaignStatus",
+        "summary": "Update delivery status for a campaign",
+        "parameters": [
+          {
+            "name": "campaignId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Campaign status updated"
+          }
+        },
+        "tags": ["SMS Delivery Tracking"]
+      }
+    },
+    "/sms/delivery-tracking/stats": {
+      "get": {
+        "operationId": "DeliveryTrackingController_getStats",
+        "summary": "Get delivery statistics",
+        "parameters": [
+          {
+            "name": "campaignId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delivery statistics"
+          }
+        },
+        "tags": ["SMS Delivery Tracking"]
+      }
+    },
+    "/sms/delivery-tracking/campaign/{campaignId}/report": {
+      "get": {
+        "operationId": "DeliveryTrackingController_getCampaignReport",
+        "summary": "Get delivery report for a campaign",
+        "parameters": [
+          {
+            "name": "campaignId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Campaign report"
+          }
+        },
+        "tags": ["SMS Delivery Tracking"]
+      }
+    },
+    "/sms/campaigns/{id}/status": {
+      "patch": {
+        "operationId": "SmsCampaignController_updateCampaignStatus",
+        "summary": "Update campaign status",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Campaign status updated"
+          }
+        },
+        "tags": ["SMS Campaigns"]
+      }
+    },
+    "/sms/campaigns/{id}/stats": {
+      "patch": {
+        "operationId": "SmsCampaignController_updateCampaignStats",
+        "summary": "Update campaign statistics",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Campaign stats updated"
+          }
+        },
+        "tags": ["SMS Campaigns"]
+      }
+    },
+    "/sms/templates/render": {
+      "post": {
+        "operationId": "SmsTemplateController_renderTemplate",
+        "summary": "Render template with parameters",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Template rendered"
+          }
+        },
+        "tags": ["SMS Templates"]
+      }
+    },
+    "/api/v1/permissions/my-permissions": {
+      "get": {
+        "operationId": "PermissionsController_getMyPermissions",
+        "summary": "Get current user permissions",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Permissions retrieved successfully"
+          }
+        },
+        "tags": ["Permissions"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/permissions/all": {
+      "get": {
+        "operationId": "PermissionsController_getAllPermissions",
+        "summary": "Get all available permissions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Permissions retrieved successfully"
+          }
+        },
+        "tags": ["Permissions"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/permissions/roles": {
+      "get": {
+        "operationId": "PermissionsController_getAllRoles",
+        "summary": "Get all roles",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Roles retrieved successfully"
+          }
+        },
+        "tags": ["Permissions"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/permissions/check": {
+      "get": {
+        "operationId": "PermissionsController_checkPermission",
+        "summary": "Check if user has permission",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "entity",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "action",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "departmentId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "unitId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ownerId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Permission check result"
+          }
+        },
+        "tags": ["Permissions"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/permissions/grant": {
+      "post": {
+        "operationId": "PermissionsController_grantPermission",
+        "summary": "Grant permission to user",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Permission granted successfully"
+          }
+        },
+        "tags": ["Permissions"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/permissions/revoke": {
+      "post": {
+        "operationId": "PermissionsController_revokePermission",
+        "summary": "Revoke permission from user",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Permission revoked successfully"
+          }
+        },
+        "tags": ["Permissions"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/permissions/roles/assign": {
+      "post": {
+        "operationId": "PermissionsController_assignRole",
+        "summary": "Assign role to user",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Role assigned successfully"
+          }
+        },
+        "tags": ["Permissions"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/permissions/roles/{userId}/{roleId}": {
+      "delete": {
+        "operationId": "PermissionsController_removeRole",
+        "summary": "Remove role from user",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "roleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Role removed successfully"
+          }
+        },
+        "tags": ["Permissions"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/permissions/create": {
+      "post": {
+        "operationId": "PermissionsController_createPermission",
+        "summary": "Create new permission",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Permission created successfully"
+          }
+        },
+        "tags": ["Permissions"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/permissions/roles/create": {
+      "post": {
+        "operationId": "PermissionsController_createRole",
+        "summary": "Create new role",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Role created successfully"
+          }
+        },
+        "tags": ["Permissions"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/permissions/roles/{roleId}/permissions/{permissionId}": {
+      "post": {
+        "operationId": "PermissionsController_addPermissionToRole",
+        "summary": "Add permission to role",
+        "parameters": [
+          {
+            "name": "roleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "permissionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Permission added to role successfully"
+          }
+        },
+        "tags": ["Permissions"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/search": {
+      "get": {
+        "operationId": "SearchController_search",
+        "summary": "Search published content",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Search"]
+      }
+    },
+    "/search/reindex": {
+      "post": {
+        "operationId": "SearchController_reindex",
+        "summary": "Reindex all published content to OpenSearch",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Search"]
+      }
+    },
+    "/search/index/{id}": {
+      "post": {
+        "operationId": "SearchController_indexContent",
+        "summary": "Index a specific content item",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Search"]
+      }
+    },
+    "/search/delete/{id}": {
+      "post": {
+        "operationId": "SearchController_deleteFromIndex",
+        "summary": "Delete content from search index",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Search"]
+      }
+    },
+    "/keycloak-migration/migrate": {
+      "post": {
+        "operationId": "KeycloakMigrationController_migrateUsers",
+        "summary": "Migrate all users from database to Keycloak",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Migration completed"
+          }
+        },
+        "tags": ["Keycloak Migration"]
+      }
+    },
+    "/keycloak-migration/sync/{userId}": {
+      "post": {
+        "operationId": "KeycloakMigrationController_syncUser",
+        "summary": "Sync single user to Keycloak",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User synced successfully"
+          }
+        },
+        "tags": ["Keycloak Migration"]
+      }
+    },
+    "/keycloak-migration/stats": {
+      "get": {
+        "operationId": "KeycloakMigrationController_getStats",
+        "summary": "Get migration statistics",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Migration statistics"
+          }
+        },
+        "tags": ["Keycloak Migration"]
+      }
+    },
+    "/keycloak/health": {
+      "get": {
+        "operationId": "KeycloakController_getHealth",
+        "summary": "Check Keycloak health status",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Health status retrieved"
+          }
+        },
+        "tags": ["Keycloak"]
+      }
+    },
+    "/keycloak/test": {
+      "get": {
+        "operationId": "KeycloakController_testConnection",
+        "summary": "Test Keycloak connection",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Connection test completed"
+          }
+        },
+        "tags": ["Keycloak"]
+      }
+    },
+    "/keycloak/available": {
+      "get": {
+        "operationId": "KeycloakController_isAvailable",
+        "summary": "Check if Keycloak is available",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Availability status"
+          }
+        },
+        "tags": ["Keycloak"]
+      }
+    },
+    "/permissions/check": {
+      "post": {
+        "operationId": "PermissionsController_checkPermission",
+        "summary": "Check if user has permission",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Access Control"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/permissions/effective": {
+      "get": {
+        "operationId": "PermissionsController_getEffectivePermissions",
+        "summary": "Get effective permissions for current user",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Access Control"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/permissions/matrix": {
+      "get": {
+        "operationId": "PermissionsController_getPermissionMatrix",
+        "summary": "Get full permission matrix (Admin only)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Access Control"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/permissions/entities": {
+      "get": {
+        "operationId": "PermissionsController_getEntities",
+        "summary": "Get all available permission entities",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Access Control"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/permissions/entity/{entity}": {
+      "get": {
+        "operationId": "PermissionsController_getPermissionsByEntity",
+        "summary": "Get permissions for a specific entity",
+        "parameters": [
+          {
+            "name": "entity",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Access Control"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/permissions": {
+      "post": {
+        "operationId": "PermissionsController_createPermission",
+        "summary": "Create new permission",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Access Control"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/permissions/{id}": {
+      "put": {
+        "operationId": "PermissionsController_updatePermission",
+        "summary": "Update permission",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Access Control"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "PermissionsController_deletePermission",
+        "summary": "Delete permission",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Access Control"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/roles": {
+      "get": {
+        "operationId": "RolesController_findAll",
+        "summary": "List all roles",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Roles"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "RolesController_create",
+        "summary": "Create new role",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Roles"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/roles/matrix": {
+      "get": {
+        "operationId": "RolesController_getMatrix",
+        "summary": "Get permission matrix for all roles",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Roles"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/roles/{id}": {
+      "get": {
+        "operationId": "RolesController_findOne",
+        "summary": "Get role by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Roles"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "RolesController_update",
+        "summary": "Update role",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Roles"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "RolesController_remove",
+        "summary": "Delete role",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Roles"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/roles/{id}/permissions": {
+      "post": {
+        "operationId": "RolesController_assignPermission",
+        "summary": "Assign permission to role",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Roles"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/roles/{id}/permissions/batch": {
+      "post": {
+        "operationId": "RolesController_assignPermissions",
+        "summary": "Assign multiple permissions to role",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Roles"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/roles/{id}/permissions/{permissionId}": {
+      "delete": {
+        "operationId": "RolesController_removePermission",
+        "summary": "Remove permission from role",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "permissionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Roles"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/organization/tree": {
+      "get": {
+        "operationId": "OrganizationController_getTree",
+        "summary": "Get organization tree",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Organization"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/organization/tree/flat": {
+      "get": {
+        "operationId": "OrganizationController_getTreeFlat",
+        "summary": "Get flat organization tree",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Organization"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/organization/stats": {
+      "get": {
+        "operationId": "OrganizationController_getStats",
+        "summary": "Get organization statistics",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Organization"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/organization/units/{slug}": {
+      "get": {
+        "operationId": "OrganizationController_getUnit",
+        "summary": "Get unit by slug",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Organization"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/organization/units/id/{id}": {
+      "get": {
+        "operationId": "OrganizationController_getUnitById",
+        "summary": "Get unit by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Organization"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/organization/units": {
+      "post": {
+        "operationId": "OrganizationController_createUnit",
+        "summary": "Create organization unit",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Organization"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/organization/units/{id}": {
+      "put": {
+        "operationId": "OrganizationController_updateUnit",
+        "summary": "Update organization unit",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Organization"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "OrganizationController_deleteUnit",
+        "summary": "Delete organization unit",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Organization"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/organization/units/{id}/move": {
+      "post": {
+        "operationId": "OrganizationController_moveUnit",
+        "summary": "Move unit to new parent",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Organization"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/organization/units/{id}/manager": {
+      "post": {
+        "operationId": "OrganizationController_assignManager",
+        "summary": "Assign manager to unit",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Organization"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/organization/units/{id}/members": {
+      "post": {
+        "operationId": "OrganizationController_addMember",
+        "summary": "Add member to unit",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Organization"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/organization/units/{id}/members/{userId}": {
+      "delete": {
+        "operationId": "OrganizationController_removeMember",
+        "summary": "Remove member from unit",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Organization"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/organization/microsites/{slug}": {
+      "get": {
+        "operationId": "OrganizationController_getMicrosite",
+        "summary": "Get microsite config",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Organization"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/organization/microsites/{unitId}": {
+      "put": {
+        "operationId": "OrganizationController_updateMicrosite",
+        "summary": "Update microsite config",
+        "parameters": [
+          {
+            "name": "unitId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Organization"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/contents/options/departments": {
+      "get": {
+        "operationId": "ContentController_listDepartments",
+        "summary": "List active departments for content scope selection",
+        "description": "Retrieves a list of active departments that can be used as content scope options. This is typically used in dropdown selectors when creating or editing content. Returns an array of department objects with ID and name.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Departments list retrieved successfully"
+          }
+        },
+        "tags": ["Content"]
+      }
+    },
+    "/contents/feed": {
+      "get": {
+        "operationId": "ContentController_listPublicFeed",
+        "summary": "List published content for portal widgets (public)",
+        "description": "Retrieves a paginated list of published content items suitable for portal widgets. This endpoint is publicly accessible and supports filtering by content type. Returns an array of content items with pagination metadata.",
+        "parameters": [
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "description": "Filter content by type (e.g., news, announcement, event)",
+            "schema": {
+              "example": "news",
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Maximum number of items to return per page",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number for pagination (starts from 1)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Content list retrieved successfully"
+          },
+          "400": {
+            "description": "Invalid query parameters"
+          }
+        },
+        "tags": ["Content"]
+      }
+    },
+    "/contents/public/{slug}": {
+      "get": {
+        "operationId": "ContentController_findPublished",
+        "summary": "Get published content by slug",
+        "description": "Retrieves a published content item by its unique slug. This endpoint is publicly accessible and does not require authentication. Returns the content details including title, body, metadata, and related information.",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "description": "The unique URL-friendly identifier for the content item",
+            "schema": {
+              "example": "welcome-to-portal",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Content retrieved successfully"
+          },
+          "404": {
+            "description": "Content not found with the given slug"
+          }
+        },
+        "tags": ["Content"]
+      }
+    },
+    "/contents": {
+      "get": {
+        "operationId": "ContentController_findAll",
+        "summary": "List manageable content items",
+        "description": "Retrieves a paginated list of content items that the authenticated user has permission to manage. Supports filtering by various criteria including status, type, department, and search terms. Returns an array of content items with pagination metadata.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Content list retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized - authentication required"
+          },
+          "403": {
+            "description": "Forbidden - insufficient permissions"
+          }
+        },
+        "tags": ["Content"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "ContentController_create",
+        "summary": "Create a content draft",
+        "description": "Creates a new content item in draft status. The content will not be visible to the public until published. The creator is automatically assigned as the owner. Returns the created content item with its generated ID.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Content data including title, body, type, department, and metadata",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateContentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Content draft created successfully"
+          },
+          "400": {
+            "description": "Invalid request body or validation errors"
+          },
+          "401": {
+            "description": "Unauthorized - authentication required"
+          },
+          "403": {
+            "description": "Forbidden - insufficient permissions to create content"
+          }
+        },
+        "tags": ["Content"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/contents/{id}": {
+      "get": {
+        "operationId": "ContentController_findOne",
+        "summary": "Get content by ID",
+        "description": "Retrieves a specific content item by its unique ID. The user must have permission to view the content. Returns the complete content details including all metadata, version history, and related information.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "The unique identifier of the content item",
+            "schema": {
+              "example": "cm123456789",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Content retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized - authentication required"
+          },
+          "403": {
+            "description": "Forbidden - insufficient permissions to view this content"
+          },
+          "404": {
+            "description": "Content not found"
+          }
+        },
+        "tags": ["Content"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "ContentController_update",
+        "summary": "Update content and preserve a version snapshot",
+        "description": "Updates an existing content item and automatically creates a version snapshot before applying changes. This allows for rollback to previous versions. The user must have edit permissions for the content.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "The unique identifier of the content item to update",
+            "schema": {
+              "example": "cm123456789",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Updated content data. Only provided fields will be modified.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateContentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Content updated successfully with version snapshot created"
+          },
+          "400": {
+            "description": "Invalid request body or validation errors"
+          },
+          "401": {
+            "description": "Unauthorized - authentication required"
+          },
+          "403": {
+            "description": "Forbidden - insufficient permissions to edit this content"
+          },
+          "404": {
+            "description": "Content not found"
+          }
+        },
+        "tags": ["Content"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "ContentController_remove",
+        "summary": "Soft-delete content",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Content"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/contents/{id}/publish": {
+      "post": {
+        "operationId": "ContentController_publish",
+        "summary": "Publish content",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Content"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/contents/{id}/archive": {
+      "post": {
+        "operationId": "ContentController_archive",
+        "summary": "Archive content",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Content"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/contents/{id}/submit-review": {
+      "post": {
+        "operationId": "ContentController_submitForReview",
+        "summary": "Submit content for review",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Content"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/contents/{id}/approve": {
+      "post": {
+        "operationId": "ContentController_approveContent",
+        "summary": "Approve content in review",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Content"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/contents/{id}/reject": {
+      "post": {
+        "operationId": "ContentController_rejectContent",
+        "summary": "Reject content in review",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Content"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/contents/{id}/schedule": {
+      "post": {
+        "operationId": "ContentController_scheduleContent",
+        "summary": "Schedule content for future publication",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "scheduledAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "ISO 8601 datetime string for when to publish"
+                  }
+                },
+                "required": ["scheduledAt"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Content"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/contents/{id}/unschedule": {
+      "post": {
+        "operationId": "ContentController_unscheduleContent",
+        "summary": "Remove scheduled publication",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Content"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/media/upload": {
+      "post": {
+        "operationId": "MediaController_upload",
+        "summary": "Upload media file",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Media"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/media/{id}": {
+      "get": {
+        "operationId": "MediaController_findOne",
+        "summary": "Get media by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Media"]
+      },
+      "delete": {
+        "operationId": "MediaController_remove",
+        "summary": "Delete media",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Media"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/media/stats/upload": {
+      "get": {
+        "operationId": "MediaController_getStats",
+        "summary": "Get upload statistics",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Media"]
+      }
+    },
+    "/widget-engine/registry": {
+      "get": {
+        "operationId": "WidgetController_getRegistry",
+        "summary": "Get widget registry",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Widget Engine"]
+      }
+    },
+    "/widget-engine/pages/{pageKey}": {
+      "get": {
+        "operationId": "WidgetController_getPageLayout",
+        "summary": "Get page layout",
+        "parameters": [
+          {
+            "name": "pageKey",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Widget Engine"]
+      },
+      "post": {
+        "operationId": "WidgetController_saveLayout",
+        "summary": "Save page layout",
+        "parameters": [
+          {
+            "name": "pageKey",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Widget Engine"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/widget-engine/pages/{pageKey}/render-data": {
+      "get": {
+        "operationId": "WidgetController_getRenderData",
+        "summary": "Get aggregated data for all widgets in a layout",
+        "parameters": [
+          {
+            "name": "pageKey",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Widget Engine"]
+      }
+    },
+    "/widget-engine/pages/{pageKey}/publish": {
+      "post": {
+        "operationId": "WidgetController_publishLayout",
+        "summary": "Publish page layout",
+        "parameters": [
+          {
+            "name": "pageKey",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Widget Engine"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/widget-engine/theme/tokens": {
+      "get": {
+        "operationId": "WidgetController_getThemeTokens",
+        "summary": "Get theme tokens",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Widget Engine"]
+      },
+      "put": {
+        "operationId": "WidgetController_updateThemeTokens",
+        "summary": "Update theme tokens",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Widget Engine"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/forms/public/{slug}": {
+      "get": {
+        "operationId": "FormsController_getActive",
+        "summary": "Get an active form definition",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Forms"]
+      }
+    },
+    "/forms": {
+      "get": {
+        "operationId": "FormsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Forms"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "FormsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFormDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Forms"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/forms/{id}/activate": {
+      "post": {
+        "operationId": "FormsController_activate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Forms"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/forms/{slug}/submissions": {
+      "post": {
+        "operationId": "FormsController_submit",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitFormDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Forms"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/forms/{id}/submissions": {
+      "get": {
+        "operationId": "FormsController_listSubmissions",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Forms"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/afish": {
+      "post": {
+        "operationId": "AfishController_create",
+        "summary": "Create a new Afish record",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Afish"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "AfishController_list",
+        "summary": "List Afish records",
+        "parameters": [
+          {
+            "name": "formDefinitionId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Afish"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/afish/{id}": {
+      "get": {
+        "operationId": "AfishController_get",
+        "summary": "Get Afish record by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Afish"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/afish/{id}/lock": {
+      "put": {
+        "operationId": "AfishController_lock",
+        "summary": "Lock an Afish record for editing",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Afish"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/afish/{id}/unlock": {
+      "put": {
+        "operationId": "AfishController_unlock",
+        "summary": "Unlock an Afish record",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Afish"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/afish/{id}/submit": {
+      "put": {
+        "operationId": "AfishController_submit",
+        "summary": "Submit Afish record for approval",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Afish"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/afish/{id}/approve": {
+      "put": {
+        "operationId": "AfishController_approve",
+        "summary": "Approve an Afish record",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Afish"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/afish/{id}/reject": {
+      "put": {
+        "operationId": "AfishController_reject",
+        "summary": "Reject an Afish record",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Afish"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/afish/{id}/archive": {
+      "put": {
+        "operationId": "AfishController_archive",
+        "summary": "Archive an Afish record",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Afish"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/afish/{id}/data": {
+      "put": {
+        "operationId": "AfishController_updateData",
+        "summary": "Update Afish record data",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Afish"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/afish/{id}/pdf": {
+      "put": {
+        "operationId": "AfishController_updatePdf",
+        "summary": "Update PDF URL for Afish record",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Afish"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/experts": {
+      "get": {
+        "operationId": "KnowledgeController_findAll",
+        "summary": "List experts",
+        "description": "Returns a list of experts with optional filtering by department and legend status. Results can be limited to a specific number of items.",
+        "parameters": [
+          {
+            "name": "departmentId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by department ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "isLegend",
+            "required": false,
+            "in": "query",
+            "description": "Filter for legends only (true/false)",
+            "schema": {
+              "example": "false",
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Maximum number of experts to return",
+            "schema": {
+              "example": "20",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Experts list retrieved successfully"
+          }
+        },
+        "tags": ["Knowledge"]
+      }
+    },
+    "/experts/legends": {
+      "get": {
+        "operationId": "KnowledgeController_getLegends",
+        "summary": "List legends",
+        "description": "Returns a list of legendary experts who have made significant contributions to the organization.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Legends list retrieved successfully"
+          }
+        },
+        "tags": ["Knowledge"]
+      }
+    },
+    "/experts/skills/list": {
+      "get": {
+        "operationId": "KnowledgeController_getSkills",
+        "summary": "List skills taxonomy",
+        "description": "Returns the complete taxonomy of skills available in the expert database.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Skills taxonomy retrieved successfully"
+          }
+        },
+        "tags": ["Knowledge"]
+      }
+    },
+    "/experts/skills/{slug}": {
+      "get": {
+        "operationId": "KnowledgeController_getSkillBySlug",
+        "summary": "Get skill by slug",
+        "description": "Returns detailed information about a specific skill by its slug identifier.",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "description": "Skill slug (URL-friendly identifier)",
+            "schema": {
+              "example": "video-editing",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Skill details retrieved successfully"
+          },
+          "404": {
+            "description": "Skill not found"
+          }
+        },
+        "tags": ["Knowledge"]
+      }
+    },
+    "/experts/{id}": {
+      "get": {
+        "operationId": "KnowledgeController_findOne",
+        "summary": "Get expert by ID",
+        "description": "Returns detailed profile information for a specific expert by their ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Expert ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Expert profile retrieved successfully"
+          },
+          "404": {
+            "description": "Expert not found"
+          }
+        },
+        "tags": ["Knowledge"]
+      },
+      "put": {
+        "operationId": "KnowledgeController_update",
+        "summary": "Update expert profile",
+        "description": "Updates an expert profile information. Requires authentication.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Expert ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Expert profile updated successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Expert not found"
+          }
+        },
+        "tags": ["Knowledge"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/software": {
+      "get": {
+        "operationId": "SoftwareController_findAll",
+        "summary": "List software",
+        "description": "Returns a list of available software with optional filtering by category. Results can be limited to a specific number of items.",
+        "parameters": [
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "description": "Filter by software category",
+            "schema": {
+              "example": "Utility",
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Maximum number of items to return",
+            "schema": {
+              "example": "20",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Software list retrieved successfully"
+          }
+        },
+        "tags": ["Software"]
+      }
+    },
+    "/software/{id}": {
+      "get": {
+        "operationId": "SoftwareController_findOne",
+        "summary": "Get software by ID",
+        "description": "Returns detailed information about a specific software item by its ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Software ID",
+            "schema": {
+              "example": "123e4567-e89b-12d3-a456-426614174000",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Software details retrieved successfully"
+          },
+          "404": {
+            "description": "Software not found"
+          }
+        },
+        "tags": ["Software"]
+      }
+    },
+    "/software/stats": {
+      "get": {
+        "operationId": "SoftwareController_getStats",
+        "summary": "Get software center statistics",
+        "description": "Returns aggregate statistics for software entries, versions, and downloads.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Statistics retrieved successfully"
+          }
+        },
+        "tags": ["Software"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/software/upload": {
+      "post": {
+        "operationId": "SoftwareController_upload",
+        "summary": "Upload new software version",
+        "description": "Creates a new software entry or adds a new version to an existing one.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "version", "size", "filename", "storageKey", "sha256"],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "object"
+                  },
+                  "icon": {
+                    "type": "string"
+                  },
+                  "category": {
+                    "type": "string"
+                  },
+                  "version": {
+                    "type": "string"
+                  },
+                  "size": {
+                    "type": "number"
+                  },
+                  "filename": {
+                    "type": "string"
+                  },
+                  "storageKey": {
+                    "type": "string"
+                  },
+                  "sha256": {
+                    "type": "string"
+                  },
+                  "changelog": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Software uploaded successfully"
+          }
+        },
+        "tags": ["Software"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/software/downloads/log": {
+      "post": {
+        "operationId": "SoftwareController_logDownload",
+        "summary": "Log software download",
+        "description": "Logs a software download event for analytics and tracking. Requires authentication.",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Download logged successfully"
+          }
+        },
+        "tags": ["Software"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/software/tickets": {
+      "get": {
+        "operationId": "SoftwareController_getTickets",
+        "summary": "List support tickets",
+        "description": "Returns a list of software support tickets with optional filtering by status.",
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Filter by ticket status",
+            "schema": {
+              "example": "OPEN",
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Maximum number of tickets",
+            "schema": {
+              "example": "20",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tickets retrieved successfully"
+          }
+        },
+        "tags": ["Software"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "SoftwareController_createTicket",
+        "summary": "Create support ticket",
+        "description": "Creates a new software support ticket. Requires authentication.",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Ticket created successfully"
+          }
+        },
+        "tags": ["Software"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/conversations": {
+      "get": {
+        "operationId": "CommunicationController_list",
+        "summary": "List user conversations",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Communication"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "CommunicationController_create",
+        "summary": "Create a new conversation",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateConversationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Communication"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/conversations/{id}/messages": {
+      "get": {
+        "operationId": "CommunicationController_messages",
+        "summary": "Get conversation messages",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Communication"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "CommunicationController_send",
+        "summary": "Send a message to conversation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendMessageDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Communication"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/conversations/{id}/read": {
+      "post": {
+        "operationId": "CommunicationController_read",
+        "summary": "Mark conversation as read",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Communication"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/conversations/stats/connections": {
+      "get": {
+        "operationId": "CommunicationController_getConnectionStats",
+        "summary": "Get WebSocket connection statistics",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Communication"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/auth/mobile/register": {
+      "post": {
+        "operationId": "MobileIdentityController_register",
+        "summary": "Register mobile device",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Mobile Identity"]
+      }
+    },
+    "/auth/mobile/verify-otp": {
+      "post": {
+        "operationId": "MobileIdentityController_verifyOtp",
+        "summary": "Verify OTP for mobile",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Mobile Identity"]
+      }
+    },
+    "/auth/mobile/link-device": {
+      "post": {
+        "operationId": "MobileIdentityController_linkDevice",
+        "summary": "Link desktop device via QR",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Mobile Identity"]
+      }
+    },
+    "/auth/mobile/push/subscribe": {
+      "post": {
+        "operationId": "MobileIdentityController_subscribePush",
+        "summary": "Register push subscription",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Mobile Identity"]
+      }
+    },
+    "/notifications": {
+      "get": {
+        "operationId": "NotificationController_getNotifications",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/notifications/stats": {
+      "get": {
+        "operationId": "NotificationController_getStats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/notifications/{id}/read": {
+      "post": {
+        "operationId": "NotificationController_markAsRead",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/notifications/read-all": {
+      "post": {
+        "operationId": "NotificationController_markAllAsRead",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/notifications/send": {
+      "post": {
+        "operationId": "NotificationController_sendNotification",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/notifications/send-bulk": {
+      "post": {
+        "operationId": "NotificationController_sendBulkNotification",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/analytics/kpi": {
+      "get": {
+        "operationId": "AnalyticsController_getKPIs",
+        "summary": "Get KPI metrics",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Analytics"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/analytics/content-stats": {
+      "get": {
+        "operationId": "AnalyticsController_getContentStats",
+        "summary": "Get content statistics",
+        "parameters": [
+          {
+            "name": "period",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Analytics"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/analytics/audit-logs": {
+      "get": {
+        "operationId": "AnalyticsController_getAuditLogs",
+        "summary": "Get audit logs",
+        "parameters": [
+          {
+            "name": "entityType",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Analytics"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/analytics/page-views": {
+      "post": {
+        "operationId": "AnalyticsController_logPageView",
+        "summary": "Log page view",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Analytics"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/integrations/connectors": {
+      "get": {
+        "operationId": "IntegrationController_getConnectors",
+        "summary": "List legacy connectors",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Integration"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/integrations/connectors/{id}/sync": {
+      "post": {
+        "operationId": "IntegrationController_syncLegacy",
+        "summary": "Trigger legacy data sync",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Integration"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/integrations/webhooks": {
+      "get": {
+        "operationId": "IntegrationController_getWebhooks",
+        "summary": "List webhooks",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Integration"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "IntegrationController_createWebhook",
+        "summary": "Create webhook",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Integration"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/integrations/webhooks/{id}": {
+      "delete": {
+        "operationId": "IntegrationController_deleteWebhook",
+        "summary": "Delete webhook",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Integration"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/pdf/generate": {
+      "post": {
+        "operationId": "PdfGeneratorController_generatePdf",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeneratePdfDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/pdf/generate-from-url": {
+      "post": {
+        "operationId": "PdfGeneratorController_generateFromUrl",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/pdf/generate-from-html": {
+      "post": {
+        "operationId": "PdfGeneratorController_generateFromHtml",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/tickets": {
+      "get": {
+        "operationId": "TicketsController_findAll",
+        "summary": "List all tickets",
+        "parameters": [
+          {
+            "name": "status",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "priority",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "departmentId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "assigneeId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Tickets"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "TicketsController_create",
+        "summary": "Create new ticket",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Tickets"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/tickets/stats": {
+      "get": {
+        "operationId": "TicketsController_getStats",
+        "summary": "Get ticket statistics",
+        "parameters": [
+          {
+            "name": "departmentId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "assigneeId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Tickets"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/tickets/{id}": {
+      "get": {
+        "operationId": "TicketsController_findOne",
+        "summary": "Get ticket by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Tickets"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "TicketsController_update",
+        "summary": "Update ticket",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Tickets"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "TicketsController_remove",
+        "summary": "Delete ticket (soft delete)",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Tickets"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/tickets/{id}/status": {
+      "put": {
+        "operationId": "TicketsController_changeStatus",
+        "summary": "Change ticket status",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Tickets"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/tickets/{id}/assign": {
+      "put": {
+        "operationId": "TicketsController_assignTicket",
+        "summary": "Assign ticket to user",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Tickets"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/tickets/{id}/comments": {
+      "post": {
+        "operationId": "TicketsController_addComment",
+        "summary": "Add comment to ticket",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Tickets"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admin/settings": {
+      "get": {
+        "operationId": "SystemSettingsController_getSettings",
+        "summary": "Get all settings",
+        "description": "Returns all system settings with optional filtering by category and public visibility. Requires SystemSettings.READ permission.",
+        "parameters": [
+          {
+            "name": "isPublic",
+            "required": false,
+            "in": "query",
+            "description": "Filter for public settings only (true/false)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "description": "Filter by setting category",
+            "schema": {
+              "enum": ["GENERAL", "SECURITY", "NOTIFICATION", "INTEGRATION", "UI"],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Settings retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden - SystemSettings.READ permission required"
+          }
+        },
+        "tags": ["System Settings"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "SystemSettingsController_upsertSetting",
+        "summary": "Create or update setting",
+        "description": "Creates a new setting or updates an existing one. Requires SystemSettings.UPDATE permission and ADMIN or MANAGER role.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "description": "Setting key (unique identifier)",
+                    "example": "site.name"
+                  },
+                  "category": {
+                    "type": "string",
+                    "description": "Setting category",
+                    "enum": ["GENERAL", "SECURITY", "NOTIFICATION", "INTEGRATION", "UI"]
+                  },
+                  "value": {
+                    "description": "Setting value (any type)",
+                    "example": "IRIB Digital Workplace"
+                  },
+                  "type": {
+                    "type": "string",
+                    "description": "Data type",
+                    "example": "string"
+                  },
+                  "description": {
+                    "description": "Setting description (can be localized)",
+                    "example": "{ fa: \"نام سایت\", en: \"Site name\" }"
+                  },
+                  "isPublic": {
+                    "type": "boolean",
+                    "description": "Whether setting is publicly accessible",
+                    "example": false
+                  },
+                  "isEditable": {
+                    "type": "boolean",
+                    "description": "Whether setting can be edited by users",
+                    "example": true
+                  },
+                  "updatedBy": {
+                    "type": "string",
+                    "description": "User ID who made the change"
+                  }
+                },
+                "required": ["key", "category", "value"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Setting saved successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden - SystemSettings.UPDATE permission and ADMIN/MANAGER role required"
+          }
+        },
+        "tags": ["System Settings"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admin/settings/category/{category}": {
+      "get": {
+        "operationId": "SystemSettingsController_getSettingsByCategory",
+        "summary": "Get settings by category",
+        "description": "Returns all settings belonging to a specific category. Requires SystemSettings.READ permission.",
+        "parameters": [
+          {
+            "name": "category",
+            "required": true,
+            "in": "path",
+            "description": "Setting category",
+            "schema": {
+              "enum": ["GENERAL", "SECURITY", "NOTIFICATION", "INTEGRATION", "UI"],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Settings retrieved successfully"
+          },
+          "404": {
+            "description": "Category not found"
+          }
+        },
+        "tags": ["System Settings"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admin/settings/{key}": {
+      "get": {
+        "operationId": "SystemSettingsController_getSetting",
+        "summary": "Get setting by key",
+        "description": "Returns a specific setting by its unique key. Requires SystemSettings.READ permission.",
+        "parameters": [
+          {
+            "name": "key",
+            "required": true,
+            "in": "path",
+            "description": "Setting key (unique identifier)",
+            "schema": {
+              "example": "site.name",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Setting retrieved successfully"
+          },
+          "404": {
+            "description": "Setting not found"
+          }
+        },
+        "tags": ["System Settings"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "SystemSettingsController_deleteSetting",
+        "summary": "Delete setting",
+        "description": "Deletes a system setting by its key. Requires SystemSettings.DELETE permission.",
+        "parameters": [
+          {
+            "name": "key",
+            "required": true,
+            "in": "path",
+            "description": "Setting key to delete",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Setting deleted successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden - SystemSettings.DELETE permission required"
+          },
+          "404": {
+            "description": "Setting not found"
+          }
+        },
+        "tags": ["System Settings"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admin/settings/{key}/history": {
+      "get": {
+        "operationId": "SystemSettingsController_getSettingHistory",
+        "summary": "Get setting change history",
+        "description": "Returns the change history for a specific setting. Requires SystemSettings.READ permission.",
+        "parameters": [
+          {
+            "name": "key",
+            "required": true,
+            "in": "path",
+            "description": "Setting key",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Setting history retrieved successfully"
+          },
+          "404": {
+            "description": "Setting not found"
+          }
+        },
+        "tags": ["System Settings"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admin/settings/initialize": {
+      "post": {
+        "operationId": "SystemSettingsController_initializeDefaults",
+        "summary": "Initialize default settings",
+        "description": "Initializes the system with default settings values. Requires SystemSettings.UPDATE permission and ADMIN role.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Default settings initialized successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden - SystemSettings.UPDATE permission and ADMIN role required"
+          }
+        },
+        "tags": ["System Settings"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admin/settings/export": {
+      "post": {
+        "operationId": "SystemSettingsController_exportSettings",
+        "summary": "Export all settings",
+        "description": "Exports all system settings to a backup format. Requires SystemSettings.READ permission.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Settings exported successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden - SystemSettings.READ permission required"
+          }
+        },
+        "tags": ["System Settings"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admin/settings/import": {
+      "post": {
+        "operationId": "SystemSettingsController_importSettings",
+        "summary": "Import settings from backup",
+        "description": "Imports system settings from a backup file. Requires SystemSettings.UPDATE permission.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "settings": {
+                    "type": "array",
+                    "description": "Array of setting objects to import"
+                  },
+                  "updatedBy": {
+                    "type": "string",
+                    "description": "User ID who is performing the import"
+                  }
+                },
+                "required": ["settings"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Settings imported successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden - SystemSettings.UPDATE permission required"
+          }
+        },
+        "tags": ["System Settings"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/storage/stats": {
+      "get": {
+        "operationId": "StorageController_getStats",
+        "summary": "Get storage statistics",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Storage"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/storage/test-connection": {
+      "get": {
+        "operationId": "StorageController_testConnection",
+        "summary": "Test storage connection",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Storage"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/storage/upload": {
+      "post": {
+        "operationId": "StorageController_uploadFile",
+        "summary": "Upload single file",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Storage"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/storage/upload/multiple": {
+      "post": {
+        "operationId": "StorageController_uploadMultipleFiles",
+        "summary": "Upload multiple files",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Storage"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/storage/file/{id}": {
+      "get": {
+        "operationId": "StorageController_getFile",
+        "summary": "Get file by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Storage"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "StorageController_deleteFile",
+        "summary": "Delete file",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Storage"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/storage/file/{id}/url": {
+      "get": {
+        "operationId": "StorageController_getFileUrl",
+        "summary": "Get file URL",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Storage"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/storage/file/{id}/download": {
+      "get": {
+        "operationId": "StorageController_downloadFile",
+        "summary": "Download file",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Storage"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/storage/config": {
+      "post": {
+        "operationId": "StorageController_updateConfig",
+        "summary": "Update storage configuration",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStorageConfigDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Storage"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "StorageController_getConfig",
+        "summary": "Get current storage configuration",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Storage"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/theme/tokens": {
+      "get": {
+        "operationId": "ThemeController_getAllTokens",
+        "summary": "Get all theme tokens",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Theme"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "ThemeController_createToken",
+        "summary": "Create theme token",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateThemeTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Theme"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/theme/tokens/category/{category}": {
+      "get": {
+        "operationId": "ThemeController_getTokensByCategory",
+        "summary": "Get tokens by category",
+        "parameters": [
+          {
+            "name": "category",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Theme"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/theme/tokens/{id}": {
+      "get": {
+        "operationId": "ThemeController_getToken",
+        "summary": "Get token by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Theme"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "ThemeController_updateToken",
+        "summary": "Update theme token",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateThemeTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Theme"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "ThemeController_deleteToken",
+        "summary": "Delete theme token",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Theme"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/theme/active": {
+      "get": {
+        "operationId": "ThemeController_getActiveThemes",
+        "summary": "Get active themes",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Theme"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/theme/scheduled": {
+      "get": {
+        "operationId": "ThemeController_getScheduledThemes",
+        "summary": "Get scheduled themes",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Theme"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/theme/stats": {
+      "get": {
+        "operationId": "ThemeController_getStats",
+        "summary": "Get theme statistics",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Theme"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/theme/tokens/{id}/activate": {
+      "post": {
+        "operationId": "ThemeController_activateTheme",
+        "summary": "Activate scheduled theme",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Theme"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/theme/preview": {
+      "post": {
+        "operationId": "ThemeController_getPreview",
+        "summary": "Get theme preview",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ThemePreviewDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Theme"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/theme/export": {
+      "get": {
+        "operationId": "ThemeController_exportTheme",
+        "summary": "Export theme",
+        "parameters": [
+          {
+            "name": "category",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Theme"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/theme/import": {
+      "post": {
+        "operationId": "ThemeController_importTheme",
+        "summary": "Import theme",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportThemeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Theme"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/audit/user/{userId}": {
+      "get": {
+        "operationId": "AuditController_getUserActivity",
+        "summary": "Get user activity",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Audit"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/audit/entity/{entity}": {
+      "get": {
+        "operationId": "AuditController_getEntityActivity",
+        "summary": "Get entity activity",
+        "parameters": [
+          {
+            "name": "entity",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "entityId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Audit"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/audit/stats": {
+      "get": {
+        "operationId": "AuditController_getStats",
+        "summary": "Get audit statistics",
+        "parameters": [
+          {
+            "name": "startDate",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Audit"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/audit/search": {
+      "get": {
+        "operationId": "AuditController_getLogs",
+        "summary": "Search audit logs",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "action",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "entity",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "startDate",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Audit"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/audit/log/{id}": {
+      "get": {
+        "operationId": "AuditController_getLogById",
+        "summary": "Get audit log by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Audit"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/audit/export": {
+      "post": {
+        "operationId": "AuditController_exportLogs",
+        "summary": "Export audit logs",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Audit"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/audit/cleanup": {
+      "delete": {
+        "operationId": "AuditController_cleanupOldLogs",
+        "summary": "Cleanup old audit logs",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Audit"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/analytics/dashboard/overview": {
+      "get": {
+        "operationId": "AnalyticsDashboardController_getOverview",
+        "summary": "Get dashboard overview stats",
+        "parameters": [
+          {
+            "name": "period",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Analytics Dashboard"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/analytics/dashboard/user-activity": {
+      "get": {
+        "operationId": "AnalyticsDashboardController_getUserActivity",
+        "summary": "Get user activity trends",
+        "parameters": [
+          {
+            "name": "period",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Analytics Dashboard"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/analytics/dashboard/content-performance": {
+      "get": {
+        "operationId": "AnalyticsDashboardController_getContentPerformance",
+        "summary": "Get content performance metrics",
+        "parameters": [
+          {
+            "name": "period",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Analytics Dashboard"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/analytics/dashboard/system-health": {
+      "get": {
+        "operationId": "AnalyticsDashboardController_getSystemHealth",
+        "summary": "Get system health metrics",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Analytics Dashboard"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/page-builder/pages": {
+      "get": {
+        "operationId": "PageBuilderController_getAllPages",
+        "summary": "Get all pages",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Page Builder"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "PageBuilderController_createPage",
+        "summary": "Create page",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Page Builder"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/page-builder/pages/{id}": {
+      "get": {
+        "operationId": "PageBuilderController_getPage",
+        "summary": "Get page by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Page Builder"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "PageBuilderController_updatePage",
+        "summary": "Update page",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Page Builder"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "PageBuilderController_deletePage",
+        "summary": "Delete page",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Page Builder"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/page-builder/pages/slug/{slug}": {
+      "get": {
+        "operationId": "PageBuilderController_getPageBySlug",
+        "summary": "Get page by slug",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Page Builder"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/page-builder/pages/{id}/publish": {
+      "post": {
+        "operationId": "PageBuilderController_publishPage",
+        "summary": "Publish page",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Page Builder"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/page-builder/pages/{id}/unpublish": {
+      "post": {
+        "operationId": "PageBuilderController_unpublishPage",
+        "summary": "Unpublish page",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["Page Builder"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admin/wizard/steps": {
+      "get": {
+        "operationId": "WizardController_getSteps",
+        "summary": "Get all wizard steps based on environment",
+        "parameters": [
+          {
+            "name": "mode",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Wizard steps retrieved"
+          }
+        },
+        "tags": ["System Wizard"]
+      }
+    },
+    "/admin/wizard/steps/{stepId}/execute": {
+      "post": {
+        "operationId": "WizardController_executeStep",
+        "summary": "Execute a wizard step",
+        "parameters": [
+          {
+            "name": "stepId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Step executed"
+          }
+        },
+        "tags": ["System Wizard"]
+      }
+    },
+    "/admin/wizard/management/reset-database": {
+      "post": {
+        "operationId": "WizardController_resetDatabase",
+        "summary": "Reset database (DESTRUCTIVE)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Database reset"
+          }
+        },
+        "tags": ["System Wizard"]
+      }
+    },
+    "/admin/wizard/management/reset-redis": {
+      "post": {
+        "operationId": "WizardController_resetRedis",
+        "summary": "Flush Redis cache",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Redis flushed"
+          }
+        },
+        "tags": ["System Wizard"]
+      }
+    },
+    "/admin/wizard/management/reset-all": {
+      "post": {
+        "operationId": "WizardController_resetAll",
+        "summary": "Reset entire system (DESTRUCTIVE)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Full reset"
+          }
+        },
+        "tags": ["System Wizard"]
+      }
+    },
+    "/admin/wizard/management/backup": {
+      "post": {
+        "operationId": "WizardController_backup",
+        "summary": "Backup current state",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Backup created"
+          }
+        },
+        "tags": ["System Wizard"]
+      }
+    },
+    "/admin/wizard/management/restore": {
+      "post": {
+        "operationId": "WizardController_restore",
+        "summary": "Restore from backup",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Restore completed"
+          }
+        },
+        "tags": ["System Wizard"]
+      }
+    },
+    "/admin/wizard/management/stop-services": {
+      "post": {
+        "operationId": "WizardController_stopServices",
+        "summary": "Stop all services",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Services stopped"
+          }
+        },
+        "tags": ["System Wizard"]
+      }
+    },
+    "/admin/wizard/management/restart-services": {
+      "post": {
+        "operationId": "WizardController_restartServices",
+        "summary": "Restart all services",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Services restarted"
+          }
+        },
+        "tags": ["System Wizard"]
+      }
+    },
+    "/admin/wizard/management/clean-everything": {
+      "post": {
+        "operationId": "WizardController_cleanEverything",
+        "summary": "Clean everything (DESTRUCTIVE)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Everything cleaned"
+          }
+        },
+        "tags": ["System Wizard"]
+      }
+    },
+    "/admin/wizard/health": {
+      "get": {
+        "operationId": "WizardController_getHealth",
+        "summary": "Get system health status",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Health status retrieved"
+          }
+        },
+        "tags": ["System Wizard"]
+      }
+    },
+    "/admin/wizard/docker/containers": {
+      "get": {
+        "operationId": "WizardController_getDockerContainers",
+        "summary": "Get all Docker containers",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Containers retrieved"
+          }
+        },
+        "tags": ["System Wizard"]
+      }
+    },
+    "/admin/wizard/docker/containers/{id}/start": {
+      "post": {
+        "operationId": "WizardController_startContainer",
+        "summary": "Start a Docker container",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Container started"
+          }
+        },
+        "tags": ["System Wizard"]
+      }
+    },
+    "/admin/wizard/docker/containers/{id}/stop": {
+      "post": {
+        "operationId": "WizardController_stopContainer",
+        "summary": "Stop a Docker container",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Container stopped"
+          }
+        },
+        "tags": ["System Wizard"]
+      }
+    },
+    "/admin/wizard/docker/containers/{id}/restart": {
+      "post": {
+        "operationId": "WizardController_restartContainer",
+        "summary": "Restart a Docker container",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Container restarted"
+          }
+        },
+        "tags": ["System Wizard"]
+      }
+    },
+    "/admin/wizard/docker/containers/{id}/logs": {
+      "get": {
+        "operationId": "WizardController_getContainerLogs",
+        "summary": "Get container logs",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tail",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logs retrieved"
+          }
+        },
+        "tags": ["System Wizard"]
+      }
+    },
+    "/admin/wizard/docker/compose": {
+      "post": {
+        "operationId": "WizardController_executeDockerCompose",
+        "summary": "Execute docker-compose command",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Command executed"
+          }
+        },
+        "tags": ["System Wizard"]
+      }
+    },
+    "/admin/wizard/docker/backend-command": {
+      "post": {
+        "operationId": "WizardController_executeBackendCommand",
+        "summary": "Execute command in backend container",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Command executed"
+          }
+        },
+        "tags": ["System Wizard"]
+      }
+    },
+    "/admin/wizard/docker/info": {
+      "get": {
+        "operationId": "WizardController_getDockerInfo",
+        "summary": "Get Docker system information",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Docker info retrieved"
+          }
+        },
+        "tags": ["System Wizard"]
+      }
+    },
+    "/admin/wizard/project-changes": {
+      "get": {
+        "operationId": "WizardController_detectProjectChanges",
+        "summary": "Detect project structure changes",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Project changes detected"
+          }
+        },
+        "tags": ["System Wizard"]
+      }
+    },
+    "/admin/wizard/restart-action": {
+      "post": {
+        "operationId": "WizardController_executeRestartAction",
+        "summary": "Execute restart action",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Action executed"
+          }
+        },
+        "tags": ["System Wizard"]
+      }
+    }
+  },
+  "info": {
+    "title": "IRIB DWP API",
+    "description": "IRIB East Azerbaijan Digital Workplace Platform API",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "IAM",
+      "description": "Identity & Access Management"
+    },
+    {
+      "name": "Access Control",
+      "description": "Roles & Permissions"
+    },
+    {
+      "name": "Organization",
+      "description": "Org structure & microsites"
+    },
+    {
+      "name": "Content",
+      "description": "Content Management System"
+    },
+    {
+      "name": "Widget Engine",
+      "description": "Widget Engine & Page Layouts"
+    },
+    {
+      "name": "Forms",
+      "description": "Forms & Workflow Engine"
+    },
+    {
+      "name": "Communication",
+      "description": "Smart Communication Workspace"
+    },
+    {
+      "name": "Media",
+      "description": "Media & Storage"
+    },
+    {
+      "name": "Knowledge",
+      "description": "Experts & Legends"
+    },
+    {
+      "name": "Software",
+      "description": "Software Center & IT Support"
+    },
+    {
+      "name": "Search",
+      "description": "Unified search"
+    },
+    {
+      "name": "Mobile Identity",
+      "description": "Mobile OTP & QR linking"
+    },
+    {
+      "name": "Analytics",
+      "description": "Analytics & Reports"
+    },
+    {
+      "name": "Integration",
+      "description": "Legacy connectors & webhooks"
+    },
+    {
+      "name": "User Management",
+      "description": "Administration"
+    }
+  ],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "RegisterDto": {
+        "type": "object",
+        "properties": {
+          "personnelCode": {
+            "type": "string",
+            "description": "Personnel code for registration",
+            "example": "12345"
+          },
+          "mobile": {
+            "type": "string",
+            "description": "Mobile phone number for registration",
+            "example": "09123456789"
+          },
+          "name": {
+            "type": "string",
+            "description": "Full name of the user",
+            "example": "John Doe"
+          }
+        },
+        "required": ["personnelCode", "mobile"]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "personnelCode": {
+            "type": "string",
+            "description": "Personnel code for login",
+            "example": "12345"
+          },
+          "password": {
+            "type": "string",
+            "description": "Password for login",
+            "example": "password123"
+          }
+        },
+        "required": ["personnelCode", "password"]
+      },
+      "VerifyOtpDto": {
+        "type": "object",
+        "properties": {
+          "challengeId": {
+            "type": "string",
+            "description": "Challenge ID for OTP verification",
+            "example": "abc123xyz"
+          },
+          "code": {
+            "type": "string",
+            "description": "6-digit OTP code",
+            "example": "123456"
+          }
+        },
+        "required": ["challengeId", "code"]
+      },
+      "SetPinDto": {
+        "type": "object",
+        "properties": {
+          "pin": {
+            "type": "string",
+            "description": "6-digit PIN code",
+            "example": "123456"
+          }
+        },
+        "required": ["pin"]
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Full name of the user",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email address of the user",
+            "example": "john.doe@example.com"
+          },
+          "mobile": {
+            "type": "string",
+            "description": "Mobile phone number",
+            "example": "09123456789"
+          },
+          "nameFa": {
+            "type": "string",
+            "description": "Persian name of the user",
+            "example": "جان دو"
+          },
+          "nationalCode": {
+            "type": "string",
+            "description": "National code",
+            "example": "1234567890"
+          },
+          "departmentIds": {
+            "description": "Array of department IDs",
+            "example": ["dept-1", "dept-2"],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {
+          "personnelCode": {
+            "type": "string",
+            "description": "Personnel code for the user",
+            "example": "12345"
+          },
+          "name": {
+            "type": "string",
+            "description": "Full name of the user",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email address of the user",
+            "example": "john.doe@example.com"
+          },
+          "mobile": {
+            "type": "string",
+            "description": "Mobile phone number",
+            "example": "09123456789"
+          },
+          "nameFa": {
+            "type": "string",
+            "description": "Persian name of the user",
+            "example": "جان دو"
+          },
+          "nationalCode": {
+            "type": "string",
+            "description": "National code",
+            "example": "1234567890"
+          },
+          "departmentIds": {
+            "description": "Array of department IDs",
+            "example": ["dept-1", "dept-2"],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "initialStatus": {
+            "type": "string",
+            "description": "Initial status of the user",
+            "example": "ACTIVE"
+          }
+        },
+        "required": ["personnelCode", "name"]
+      },
+      "CreateContentDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateContentDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateFormDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "SubmitFormDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateConversationDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "SendMessageDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "GeneratePdfDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateStorageConfigDto": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string"
+          },
+          "bucket": {
+            "type": "string"
+          },
+          "accessKey": {
+            "type": "string"
+          },
+          "secretKey": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateThemeTokenDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "tokens": {
+            "type": "object"
+          },
+          "isDefault": {
+            "type": "boolean"
+          },
+          "scheduledAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "expiresAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": ["name", "category", "tokens"]
+      },
+      "UpdateThemeTokenDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "tokens": {
+            "type": "object"
+          },
+          "isDefault": {
+            "type": "boolean"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "scheduledAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "expiresAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        }
+      },
+      "ThemePreviewDto": {
+        "type": "object",
+        "properties": {
+          "tokens": {
+            "type": "object"
+          }
+        },
+        "required": ["tokens"]
+      },
+      "ImportThemeDto": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string"
+          },
+          "tokens": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": ["category", "tokens"]
+      }
+    }
+  }
+}

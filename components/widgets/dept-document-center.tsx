@@ -2,19 +2,14 @@
 
 import { Download, Eye, FileText, FileSpreadsheet, Image, File } from 'lucide-react'
 import type { WidgetProps } from './types'
+import { useTranslations } from 'next-intl'
 
 const documents = [
-  { id: 'd1', title: 'دستورالعمل امنیت اطلاعات', type: 'PDF', size: '۲.۴ MB', date: '۱۴۰۴/۰۳/۱۰' },
-  {
-    id: 'd2',
-    title: 'راهنمای استفاده از سامانه تیکتینگ',
-    type: 'PDF',
-    size: '۱.۸ MB',
-    date: '۱۴۰۴/۰۳/۰۸',
-  },
-  { id: 'd3', title: 'فهرست نرم‌افزارهای مجاز', type: 'Excel', size: '۵۶۰ KB', date: '۱۴۰۴/۰۳/۰۵' },
-  { id: 'd4', title: 'گزارش عملکرد فصل اول', type: 'Word', size: '۳.۲ MB', date: '۱۴۰۴/۰۲/۲۸' },
-  { id: 'd5', title: 'تصاویر نشست مدیران', type: 'ZIP', size: '۱۵ MB', date: '۱۴۰۴/۰۲/۲۰' },
+  { id: 'd1', type: 'PDF', size: '۲.۴ MB', date: '۱۴۰۴/۰۳/۱۰' },
+  { id: 'd2', type: 'PDF', size: '۱.۸ MB', date: '۱۴۰۴/۰۳/۰۸' },
+  { id: 'd3', type: 'Excel', size: '۵۶۰ KB', date: '۱۴۰۴/۰۳/۰۵' },
+  { id: 'd4', type: 'Word', size: '۳.۲ MB', date: '۱۴۰۴/۰۲/۲۸' },
+  { id: 'd5', type: 'ZIP', size: '۱۵ MB', date: '۱۴۰۴/۰۲/۲۰' },
 ]
 
 const typeIcons: Record<string, typeof FileText> = {
@@ -33,26 +28,35 @@ const typeColors: Record<string, string> = {
   Image: 'bg-brand/10 text-brand',
 }
 
-export function DeptDocumentCenterWidget({ config }: WidgetProps) {
+export function DeptDocumentCenterWidget({ instance: _instance, config: _config }: WidgetProps) {
+  const t = useTranslations('widgets.deptDocumentCenter')
   return (
     <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
       <div className="mb-3 flex items-center justify-between border-b border-border pb-3">
         <div className="flex items-center gap-2">
           <span className="h-5 w-1 rounded-full bg-brand" aria-hidden />
-          <h2 className="text-sm font-bold text-foreground">مرکز اسناد</h2>
+          <h2 className="text-sm font-bold text-foreground">{t('title')}</h2>
         </div>
-        <span className="text-xs text-muted-foreground">{documents.length} سند</span>
+        <span className="text-xs text-muted-foreground">{t('count', { n: documents.length })}</span>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border">
-              <th className="p-2.5 text-right text-xs font-medium text-muted-foreground">عنوان</th>
-              <th className="p-2.5 text-right text-xs font-medium text-muted-foreground">نوع</th>
-              <th className="p-2.5 text-right text-xs font-medium text-muted-foreground">حجم</th>
-              <th className="p-2.5 text-right text-xs font-medium text-muted-foreground">تاریخ</th>
+              <th className="p-2.5 text-right text-xs font-medium text-muted-foreground">
+                {t('columnTitle')}
+              </th>
+              <th className="p-2.5 text-right text-xs font-medium text-muted-foreground">
+                {t('columnType')}
+              </th>
+              <th className="p-2.5 text-right text-xs font-medium text-muted-foreground">
+                {t('columnSize')}
+              </th>
+              <th className="p-2.5 text-right text-xs font-medium text-muted-foreground">
+                {t('columnDate')}
+              </th>
               <th className="p-2.5 text-center text-xs font-medium text-muted-foreground">
-                عملیات
+                {t('columnActions')}
               </th>
             </tr>
           </thead>
@@ -68,7 +72,7 @@ export function DeptDocumentCenterWidget({ config }: WidgetProps) {
                       >
                         <Icon className="size-3.5" aria-hidden />
                       </div>
-                      <span className="text-sm text-foreground">{doc.title}</span>
+                      <span className="text-sm text-foreground">{t(`items.${doc.id}.title`)}</span>
                     </div>
                   </td>
                   <td className="p-2.5 text-xs text-muted-foreground">{doc.type}</td>
@@ -79,14 +83,14 @@ export function DeptDocumentCenterWidget({ config }: WidgetProps) {
                       <button
                         type="button"
                         className="flex size-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
-                        aria-label="مشاهده"
+                        aria-label={t('view')}
                       >
                         <Eye className="size-3.5" />
                       </button>
                       <button
                         type="button"
                         className="flex size-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
-                        aria-label="دانلود"
+                        aria-label={t('download')}
                       >
                         <Download className="size-3.5" />
                       </button>

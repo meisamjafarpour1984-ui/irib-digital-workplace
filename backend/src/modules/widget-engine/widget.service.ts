@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
 import { ContentType, ContentStatus } from '@prisma/client'
 import { PrismaService } from '../../prisma/prisma.service'
 import type {
@@ -20,13 +20,51 @@ function localizedText(value: unknown): string {
 export class WidgetService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getRegistry() {
-    return this.prisma.widgetManifest.findMany()
+  async getRegistry(category?: string) {
+    return this.prisma.widgetManifest.findMany({
+      where: category ? { category } : {},
+      orderBy: { category: 'asc' },
+    })
+  }
+
+  async getWidgetByKey(widgetKey: string) {
+    const widget = await this.prisma.widgetManifest.findUnique({ where: { widgetKey } })
+    if (!widget) throw new NotFoundException('Widget not found')
+    return widget
+  }
+
+  async registerWidget(data: Record<string, unknown>) {
+    const widgetKey = data.widgetKey as string
+    const existing = await this.prisma.widgetManifest.findUnique({ where: { widgetKey } })
+    if (existing) throw new ConflictException('Widget already exists')
+    return this.prisma.widgetManifest.create({ data: data as never })
+  }
+
+  async updateWidget(widgetKey: string, data: Record<string, unknown>) {
+    await this.getWidgetByKey(widgetKey)
+    return this.prisma.widgetManifest.update({ where: { widgetKey }, data: data as never })
+  }
+
+  async deleteWidget(widgetKey: string) {
+    await this.getWidgetByKey(widgetKey)
+    return this.prisma.widgetManifest.delete({ where: { widgetKey } })
   }
 
   async getPageLayout(pageKey: string) {
     const layout = await this.findPublishedLayout(pageKey)
-    if (!layout) throw new NotFoundException('Page layout not found')
+    if (!layout) {
+      // Return default empty layout for homepage if not found
+      if (pageKey === 'homepage') {
+        return {
+          pageKey: 'homepage',
+          layoutConfig: [],
+          widgets: [],
+          instances: [],
+          isDefault: true,
+        }
+      }
+      throw new NotFoundException('Page layout not found')
+    }
     return {
       ...layout,
       instances: this.toInstances(layout),
@@ -35,7 +73,13 @@ export class WidgetService {
 
   async resolvePageInstances(pageKey: string): Promise<ResolvedWidgetInstance[] | null> {
     const layout = await this.findPublishedLayout(pageKey)
-    if (!layout) return null
+    if (!layout) {
+      // Return empty array for homepage if not found
+      if (pageKey === 'homepage') {
+        return []
+      }
+      return null
+    }
     return this.toInstances(layout)
   }
 
@@ -69,7 +113,7 @@ export class WidgetService {
     return envelopes
   }
 
-  async savePageLayout(pageKey: string, config: unknown, userId: string) {
+  async savePageLayout(pageKey: string, config: unknown, userId = 'system') {
     return this.prisma.pageLayout.create({
       data: {
         pageKey,
@@ -114,23 +158,16 @@ export class WidgetService {
 
   private async findPublishedLayout(pageKey: string) {
     return this.prisma.pageLayout.findFirst({
-      where: { pageKey, isDraft: false, deletedAt: null },
+      where: { pageKey, isDraft: false },
       orderBy: { version: 'desc' },
       include: { widgets: true },
     })
   }
 
-  private toInstances(layout: {
-    layoutConfig: unknown
-    widgets: Array<{
-      instanceId: string
-      widgetKey: string
-      config: unknown
-      gridPosition: unknown
-    }>
-  }): ResolvedWidgetInstance[] {
-    if (layout.widgets.length > 0) {
-      return layout.widgets.map((widget) => ({
+  private toInstances(layout: any): ResolvedWidgetInstance[] {
+    // If layout has widgets array, use it
+    if (layout.widgets && layout.widgets.length > 0) {
+      return layout.widgets.map((widget: any) => ({
         instanceId: widget.instanceId,
         widgetKey: widget.widgetKey,
         config: (widget.config as Record<string, unknown>) ?? {},
@@ -138,6 +175,7 @@ export class WidgetService {
       }))
     }
 
+    // Otherwise, try to parse from layoutConfig
     if (!Array.isArray(layout.layoutConfig)) return []
 
     return (layout.layoutConfig as LayoutConfigEntry[]).map((entry) => ({

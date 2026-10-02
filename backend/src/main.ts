@@ -1,27 +1,51 @@
+/**
+ * IRIB Digital Workplace Platform - Backend Main Entry Point
+ *
+ * Designer & Developer: میثم جعفرپور آلانق
+ * Education: Master of Software Engineering
+ * Position: Audio and Video Expert Level 4
+ * Client: Technical Deputy of IRIB East Azerbaijan Center
+ * All rights reserved © 2026
+ */
+
+import 'dotenv/config'
 import { NestFactory } from '@nestjs/core'
 import { ValidationPipe } from '@nestjs/common'
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
+import { SwaggerModule } from '@nestjs/swagger'
 import helmet from 'helmet'
-import * as cookieParser from 'cookie-parser'
+import cookieParser from 'cookie-parser'
 import { AppModule } from './app.module'
+import { buildOpenApiDocument } from './common/swagger/openapi'
+import { initTracing, shutdownTracing } from './common/tracing/tracing'
 
 async function bootstrap() {
+  // ⚠️ OpenTelemetry MUST be initialised BEFORE NestFactory.create()
+  // because auto-instrumentations wrap HTTP / Nest modules at require-time.
+  await initTracing()
+
   const app = await NestFactory.create(AppModule)
   app.enableShutdownHooks()
   app.use(helmet())
   app.use(cookieParser())
 
+  // Ensure SDK shuts down & flushes spans when Nest signals close
+  app.getHttpServer().on('close', () => {
+    void shutdownTracing()
+  })
+
   // Global prefix
   app.setGlobalPrefix('api/v1')
 
   // CORS
-  const allowedOrigins = (process.env.CORS_ORIGINS ?? 'http://localhost:3000')
+  const allowedOrigins = (process.env.CORS_ORIGINS ?? 'http://localhost:3000,http://localhost:3002')
     .split(',')
     .map((origin) => origin.trim())
     .filter(Boolean)
   app.enableCors({
     origin: allowedOrigins,
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 
   // Validation
@@ -37,29 +61,7 @@ async function bootstrap() {
   )
 
   // Swagger
-  const config = new DocumentBuilder()
-    .setTitle('IRIB DWP API')
-    .setDescription('IRIB East Azerbaijan Digital Workplace Platform API')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .addTag('IAM', 'Identity & Access Management')
-    .addTag('Access Control', 'Roles & Permissions')
-    .addTag('Organization', 'Org structure & microsites')
-    .addTag('Content', 'Content Management System')
-    .addTag('Widget Engine', 'Widget Engine & Page Layouts')
-    .addTag('Forms', 'Forms & Workflow Engine')
-    .addTag('Communication', 'Smart Communication Workspace')
-    .addTag('Media', 'Media & Storage')
-    .addTag('Knowledge', 'Experts & Legends')
-    .addTag('Software', 'Software Center & IT Support')
-    .addTag('Search', 'Unified search')
-    .addTag('Mobile Identity', 'Mobile OTP & QR linking')
-    .addTag('Analytics', 'Analytics & Reports')
-    .addTag('Integration', 'Legacy connectors & webhooks')
-    .addTag('User Management', 'Administration')
-    .build()
-
-  const document = SwaggerModule.createDocument(app, config)
+  const document = buildOpenApiDocument(app)
   SwaggerModule.setup('api/docs', app, document)
 
   // Start

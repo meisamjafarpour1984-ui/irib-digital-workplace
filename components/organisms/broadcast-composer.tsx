@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Send, Users, Building2, Briefcase, X, Search } from 'lucide-react'
 import { RichTextEditor } from '@/components/molecules/rich-text-editor'
 import { cn } from '@/lib/utils'
+import { useTranslations } from 'next-intl'
 
 interface BroadcastRecipient {
   type: 'all' | 'department' | 'unit' | 'role' | 'custom'
@@ -21,29 +22,26 @@ interface BroadcastComposerProps {
 }
 
 const departments = [
-  { id: 'it', name: 'فناوری اطلاعات' },
-  { id: 'production', name: 'تولید' },
-  { id: 'admin', name: 'اداری و مالی' },
-  { id: 'research', name: 'پژوهش' },
-  { id: 'pr', name: 'روابط عمومی' },
-  { id: 'edu', name: 'آموزش' },
+  { id: 'it' },
+  { id: 'production' },
+  { id: 'admin' },
+  { id: 'research' },
+  { id: 'pr' },
+  { id: 'edu' },
 ]
 
 const roles = [
-  { id: 'p2', name: 'کارمند' },
-  { id: 'p3', name: 'کارشناس' },
-  { id: 'p4', name: 'مدیر معاونت' },
-  { id: 'p5', name: 'مدیر ارشد' },
-  { id: 'p6', name: 'مدیر IT' },
+  { id: 'employee' },
+  { id: 'expert' },
+  { id: 'manager' },
+  { id: 'senior_manager' },
+  { id: 'it_manager' },
 ]
 
-const employmentTypes = [
-  { id: 'official', name: 'رسمی' },
-  { id: 'contractor', name: 'قراردادی' },
-  { id: 'company', name: 'شرکتی' },
-]
+const employmentTypes = [{ id: 'official' }, { id: 'contractor' }, { id: 'company' }]
 
 export function BroadcastComposer({ onSend, onClose }: BroadcastComposerProps) {
+  const t = useTranslations('broadcastComposer')
   const [subject, setSubject] = useState('')
   const [body, setBody] = useState('')
   const [recipientType, setRecipientType] = useState<BroadcastRecipient['type']>('all')
@@ -73,22 +71,27 @@ export function BroadcastComposer({ onSend, onClose }: BroadcastComposerProps) {
   }
 
   const recipientTypes = [
-    { id: 'all' as const, label: 'همه کاربران', icon: Users, count: 500 },
-    { id: 'department' as const, label: 'معاونت‌ها', icon: Building2, count: departments.length },
-    { id: 'role' as const, label: 'نقش‌ها', icon: Briefcase, count: roles.length },
-    { id: 'custom' as const, label: 'سفارشی', icon: Search, count: 0 },
+    { id: 'all' as const, label: t('recipientTypes.all'), icon: Users, count: 500 },
+    {
+      id: 'department' as const,
+      label: t('recipientTypes.department'),
+      icon: Building2,
+      count: departments.length,
+    },
+    { id: 'role' as const, label: t('recipientTypes.role'), icon: Briefcase, count: roles.length },
+    { id: 'custom' as const, label: t('recipientTypes.custom'), icon: Search, count: 0 },
   ]
 
   return (
     <div className="rounded-2xl border border-border bg-card shadow-lg">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-border p-4">
-        <h2 className="text-heading-1 text-foreground">ارسال پیام هدفمند</h2>
+        <h2 className="text-heading-1 text-foreground">{t('title')}</h2>
         <button
           type="button"
           onClick={onClose}
           className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
-          aria-label="بستن"
+          aria-label={t('close')}
         >
           <X className="size-4" />
         </button>
@@ -97,30 +100,30 @@ export function BroadcastComposer({ onSend, onClose }: BroadcastComposerProps) {
       <div className="p-4 space-y-4">
         {/* Subject */}
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-foreground">موضوع</label>
+          <label className="mb-1.5 block text-sm font-medium text-foreground">{t('subject')}</label>
           <input
             type="text"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
-            placeholder="موضوع پیام..."
+            placeholder={t('subjectPlaceholder')}
             className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
           />
         </div>
 
         {/* Body */}
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-foreground">متن پیام</label>
+          <label className="mb-1.5 block text-sm font-medium text-foreground">{t('body')}</label>
           <RichTextEditor
             content={body}
             onChange={setBody}
-            placeholder="متن پیام خود را بنویسید..."
+            placeholder={t('bodyPlaceholder')}
             className="min-h-[200px]"
           />
         </div>
 
         {/* Audience Builder */}
         <div>
-          <label className="mb-2 block text-sm font-medium text-foreground">مخاطبان</label>
+          <label className="mb-2 block text-sm font-medium text-foreground">{t('audience')}</label>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {recipientTypes.map((rt) => {
               const Icon = rt.icon
@@ -157,11 +160,11 @@ export function BroadcastComposer({ onSend, onClose }: BroadcastComposerProps) {
               />
               <input
                 type="search"
-                placeholder="جستجو..."
+                placeholder={t('search')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full rounded-lg border border-input bg-card py-2 pr-9 pl-3 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
-                aria-label="جستجو"
+                aria-label={t('search')}
               />
             </div>
             <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
@@ -171,7 +174,7 @@ export function BroadcastComposer({ onSend, onClose }: BroadcastComposerProps) {
                   ? roles
                   : employmentTypes
               )
-                .filter((item) => item.name.includes(searchTerm))
+                .filter((item) => t(`items.${item.id}`).includes(searchTerm))
                 .map((item) => (
                   <button
                     key={item.id}
@@ -184,7 +187,7 @@ export function BroadcastComposer({ onSend, onClose }: BroadcastComposerProps) {
                         : 'bg-muted text-muted-foreground hover:bg-muted/80'
                     )}
                   >
-                    {item.name}
+                    {t(`items.${item.id}`)}
                   </button>
                 ))}
             </div>
@@ -194,12 +197,12 @@ export function BroadcastComposer({ onSend, onClose }: BroadcastComposerProps) {
         {/* Send Options */}
         <div className="flex items-center justify-between rounded-xl border border-border bg-background p-3">
           <div className="flex items-center gap-4">
-            <label className="text-sm font-medium text-foreground">ارسال از طریق:</label>
+            <label className="text-sm font-medium text-foreground">{t('sendVia')}</label>
             <div className="flex gap-2">
               {[
-                { id: 'in_app' as const, label: 'پورتال' },
-                { id: 'push' as const, label: 'Push' },
-                { id: 'both' as const, label: 'هر دو' },
+                { id: 'in_app' as const, label: t('sendOptions.inApp') },
+                { id: 'push' as const, label: t('sendOptions.push') },
+                { id: 'both' as const, label: t('sendOptions.both') },
               ].map((opt) => (
                 <label key={opt.id} className="flex items-center gap-1.5 text-xs text-foreground">
                   <input
@@ -215,7 +218,8 @@ export function BroadcastComposer({ onSend, onClose }: BroadcastComposerProps) {
             </div>
           </div>
           <div className="text-sm text-muted-foreground">
-            <span className="font-bold text-foreground">{estimatedRecipients}</span> مخاطب تخمینی
+            <span className="font-bold text-foreground">{estimatedRecipients}</span>{' '}
+            {t('estimatedRecipients')}
           </div>
         </div>
       </div>
@@ -227,7 +231,7 @@ export function BroadcastComposer({ onSend, onClose }: BroadcastComposerProps) {
           onClick={onClose}
           className="rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground hover:bg-muted"
         >
-          انصراف
+          {t('cancel')}
         </button>
         <button
           type="button"
@@ -236,7 +240,7 @@ export function BroadcastComposer({ onSend, onClose }: BroadcastComposerProps) {
           className="flex items-center gap-2 rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-brand-hover disabled:opacity-50"
         >
           <Send className="size-4" aria-hidden />
-          ارسال پیام
+          {t('send')}
         </button>
       </div>
     </div>

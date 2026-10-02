@@ -25,15 +25,17 @@ import {
 export type NavItem = { label: string; href: string; active?: boolean }
 
 export const navItems: NavItem[] = [
-  { label: 'صفحه اصلی', href: '#', active: true },
-  { label: 'معاونت‌ها', href: '#' },
-  { label: 'اخبار', href: '#' },
-  { label: 'خدمات و سامانه‌ها', href: '#' },
-  { label: 'آموزش', href: '#' },
-  { label: 'فرهنگ و هنر', href: '#' },
+  { label: 'صفحه اصلی', href: '/', active: true },
+  { label: 'معاونت‌ها', href: '/departments' },
+  { label: 'اخبار', href: '/news' },
+  { label: 'خدمات و سامانه‌ها', href: '/it' },
+  { label: 'متخصصین', href: '/experts' },
+  { label: 'جستجو', href: '/search' },
+  { label: 'آموزش', href: '/departments/research' },
+  { label: 'فرهنگ و هنر', href: '/departments/production' },
   { label: 'فناوری اطلاعات', href: '/it' },
-  { label: 'درباره ما', href: '#' },
-  { label: 'تماس با ما', href: '#' },
+  { label: 'درباره ما', href: '/about' },
+  { label: 'تماس با ما', href: '/contact' },
 ]
 
 export const navIcons: LucideIcon[] = [
@@ -87,14 +89,14 @@ export const heroSlides: HeroSlide[] = [
 export type QuickLink = { label: string; icon: LucideIcon; href: string }
 
 export const quickLinks: QuickLink[] = [
-  { label: 'پیوند دیجیتال', icon: Network, href: '#' },
-  { label: 'آرشیو خبری', icon: Newspaper, href: '#' },
-  { label: 'آرشیو تصویر', icon: ImageIcon, href: '#' },
-  { label: 'تقویم و وقایع', icon: CalendarClock, href: '#' },
-  { label: 'دسترسی اداری', icon: FileText, href: '#' },
-  { label: 'اتوماسیون اداری', icon: LayoutGrid, href: '#' },
-  { label: 'سامانه مکاتبات', icon: Mail, href: '#' },
-  { label: 'دسترسی‌های دیگر', icon: MessageSquare, href: '#' },
+  { label: 'پیوند دیجیتال', icon: Network, href: '/it' },
+  { label: 'آرشیو خبری', icon: Newspaper, href: '/news' },
+  { label: 'آرشیو تصویر', icon: ImageIcon, href: '/dashboard/media' },
+  { label: 'تقویم و وقایع', icon: CalendarClock, href: '/departments' },
+  { label: 'دسترسی اداری', icon: FileText, href: '/it' },
+  { label: 'اتوماسیون اداری', icon: LayoutGrid, href: '/it' },
+  { label: 'سامانه مکاتبات', icon: Mail, href: '/dashboard/inbox' },
+  { label: 'دسترسی‌های دیگر', icon: MessageSquare, href: '/it' },
 ]
 
 export type NewsItem = {
@@ -102,6 +104,7 @@ export type NewsItem = {
   title: string
   time: string
   tag: 'اخبار مرکز' | 'روابط عمومی' | 'اداری و مالی'
+  href?: string
 }
 
 export const latestNews: NewsItem[] = [
@@ -110,30 +113,35 @@ export const latestNews: NewsItem[] = [
     title: 'برگزاری نشست هم‌اندیشی مدیران صدا و سیمای استان',
     time: '۳ ساعت پیش',
     tag: 'اخبار مرکز',
+    href: '/news/n1',
   },
   {
     id: 'n2',
     title: 'انعقاد تفاهم‌نامه همکاری با دانشگاه تبریز',
     time: '۵ ساعت پیش',
     tag: 'روابط عمومی',
+    href: '/news/n2',
   },
   {
     id: 'n3',
     title: 'بازدید رئیس سازمان از شبکه استانی سهند',
     time: '۲ روز پیش',
     tag: 'اخبار مرکز',
+    href: '/news/n3',
   },
   {
     id: 'n4',
     title: 'برنامه ویژه عید سعید غدیر خم از شبکه سما و رادیو',
     time: '۲ روز پیش',
     tag: 'روابط عمومی',
+    href: '/news/n4',
   },
   {
     id: 'n5',
     title: 'اجرای طرح آراستگی محیط اداری در معاونت‌ها',
     time: '۳ روز پیش',
     tag: 'اداری و مالی',
+    href: '/news/n5',
   },
 ]
 
@@ -184,7 +192,7 @@ export const services: ServiceLink[] = [
   { label: 'سامانه مالی و پشتیبانی', icon: LayoutGrid, action: 'ورود به سامانه' },
   { label: 'سامانه مکاتبات', icon: MessageSquare, action: 'ورود به سامانه' },
   { label: 'سامانه آموزش آنلاین', icon: GraduationCap, action: 'ورود به سامانه' },
-  { label: 'پرتال پژوهش', icon: Users, action: 'ورود به سامانه' },
+  { label: 'درگاه پژوهش', icon: Users, action: 'ورود به سامانه' },
   { label: 'پرسش‌های متداول', icon: HelpCircle, action: 'مشاهده' },
 ]
 

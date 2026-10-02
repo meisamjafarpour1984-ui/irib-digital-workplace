@@ -1,11 +1,13 @@
+'use client'
+
 import { quickLinks } from '@/lib/portal-data'
+import { useTranslations } from 'next-intl'
 
 export function QuickAccess() {
+  const t = useTranslations('homepage')
   return (
     <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-      <h2 className="mb-4 text-center text-base font-bold text-foreground">
-        دسترسی سریع به سامانه‌ها
-      </h2>
+      <h2 className="mb-4 text-center text-base font-bold text-foreground">{t('quickAccess')}</h2>
       <ul className="grid grid-cols-4 gap-2.5 sm:grid-cols-4">
         {quickLinks.map(({ label, icon: Icon, href }) => (
           <li key={label}>

@@ -25,7 +25,7 @@
     "prisma:migrate:prod": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
     "prisma:seed": "ts-node prisma/seed.ts",
-    "swagger:export": "ts-node-esm scripts/export-swagger.ts",
+    "swagger:export": "ts-node --transpile-only -r tsconfig-paths/register scripts/export-swagger.ts",
     "db:migrate": "bash scripts/migrate.sh",
     "db:rollback": "bash scripts/rollback.sh"
   },
@@ -71,6 +71,7 @@
     "class-validator": "^0.14.1",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.7",
+    "dotenv": "^16.6.1",
     "helmet": "^7.1.0",
     "ioredis": "^5.3.2",
     "jsonwebtoken": "^9.0.2",

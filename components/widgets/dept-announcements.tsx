@@ -1,18 +1,16 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { announcements } from '@/lib/portal-data'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { AccessibleButton } from '@/components/ui/AccessibleButton'
+import type { WidgetProps } from './types'
 
-const departments = [
-  { id: 'admin', label: 'اداری' },
-  { id: 'it', label: 'فناوری اطلاعات' },
-  { id: 'edu', label: 'آموزش' },
-  { id: 'research', label: 'پژوهش' },
-]
+const departmentIds = ['admin', 'it', 'edu', 'research'] as const
 
-export function DeptAnnouncementsWidget() {
+export function DeptAnnouncementsWidget({ instance: _instance, config: _config }: WidgetProps) {
+  const t = useTranslations('widgets.deptAnnouncements')
   const [activeTab, setActiveTab] = useState('admin')
 
   return (
@@ -20,25 +18,25 @@ export function DeptAnnouncementsWidget() {
       <div className="mb-3 flex items-center justify-between border-b border-border pb-3">
         <div className="flex items-center gap-2">
           <span className="h-5 w-1 rounded-full bg-brand" aria-hidden />
-          <h2 className="text-heading-1 text-foreground">اطلاعیه‌های واحدها</h2>
+          <h2 className="text-heading-1 text-foreground">{t('title')}</h2>
         </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="mb-3 w-full justify-start gap-1 bg-muted p-1">
-          {departments.map((dept) => (
+          {departmentIds.map((id) => (
             <TabsTrigger
-              key={dept.id}
-              value={dept.id}
+              key={id}
+              value={id}
               className="text-xs data-[state=active]:bg-brand data-[state=active]:text-white"
             >
-              {dept.label}
+              {t(`departments.${id}`)}
             </TabsTrigger>
           ))}
         </TabsList>
 
-        {departments.map((dept) => (
-          <TabsContent key={dept.id} value={dept.id}>
+        {departmentIds.map((id) => (
+          <TabsContent key={id} value={id}>
             <ul>
               {announcements.slice(0, 4).map((item) => (
                 <li key={item.id}>

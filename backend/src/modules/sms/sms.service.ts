@@ -37,7 +37,7 @@ export class SmsService {
   async send(
     recipient: string,
     message: string,
-    options?: { templateCode?: string; params?: Record<string, any> }
+    _options?: { templateCode?: string; params?: Record<string, any> }
   ): Promise<SmsSendResult> {
     try {
       // Get active provider config
@@ -56,7 +56,11 @@ export class SmsService {
 
       // Send via appropriate adapter
       const adapter = this.useMockAdapter ? this.mockSmsAdapter : this.idehPayamAdapter
-      const result = await adapter.send(recipient, content, providerConfig)
+      const normalizedProviderConfig = {
+        ...providerConfig,
+        apiUrl: providerConfig.apiUrl ?? 'https://87.248.137.76/api/v1/rest',
+      }
+      const result = await adapter.send(recipient, content, normalizedProviderConfig)
 
       // Log message to database
       await this.repository.createMessage({
@@ -65,8 +69,8 @@ export class SmsService {
         content,
         status: result.success ? 'SENT' : 'FAILED',
         providerMessageId: result.messageId,
-        error: 'error' in result ? result.error : null,
-        cost: 'cost' in result ? result.cost : null,
+        error: 'error' in result ? result.error : undefined,
+        cost: 'cost' in result ? result.cost : undefined,
         sentAt: new Date(),
       })
 
@@ -84,9 +88,9 @@ export class SmsService {
    * Send bulk SMS (queued - disabled)
    */
   async sendBulk(
-    recipients: string[],
-    message: string,
-    options?: { templateCode?: string; params?: Record<string, any> }
+    _recipients: string[],
+    _message: string,
+    _options?: { templateCode?: string; params?: Record<string, any> }
   ) {
     // return this.queueService.enqueueBulk(recipients, message, options)
     return { success: false, error: 'Bulk SMS not available - queue service disabled' }
@@ -112,7 +116,11 @@ export class SmsService {
       return { connected: false, provider: null }
     }
 
-    const credit = await this.idehPayamAdapter.getCredit(providerConfig)
+    const normalizedProviderConfig = {
+      ...providerConfig,
+      apiUrl: providerConfig.apiUrl ?? 'https://87.248.137.76/api/v1/rest',
+    }
+    const credit = await this.idehPayamAdapter.getCredit(normalizedProviderConfig)
 
     return {
       connected: true,
@@ -131,7 +139,11 @@ export class SmsService {
       throw new Error('No active SMS provider configured')
     }
 
-    const credit = await this.idehPayamAdapter.getCredit(providerConfig)
+    const normalizedProviderConfig = {
+      ...providerConfig,
+      apiUrl: providerConfig.apiUrl ?? 'https://87.248.137.76/api/v1/rest',
+    }
+    const credit = await this.idehPayamAdapter.getCredit(normalizedProviderConfig)
     await this.repository.updateProviderCredit(providerConfig.id, credit)
 
     return { credit }

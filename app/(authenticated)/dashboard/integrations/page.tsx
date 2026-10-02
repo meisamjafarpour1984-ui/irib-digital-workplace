@@ -1,4 +1,4 @@
-/**
+﻿/**
  * IRIB Digital Workplace Platform - Integration Management Dashboard
  *
  * Designer & Developer: میثم جعفرپور آلانق
@@ -20,9 +20,7 @@ import {
   MoreVertical,
   Play,
   Pause,
-  Trash2,
   CheckCircle,
-  XCircle,
   Clock,
   Loader2,
 } from 'lucide-react'
@@ -34,7 +32,7 @@ export default function IntegrationsPage() {
   const [activeTab, setActiveTab] = useState('connectors')
   const [searchQuery, setSearchQuery] = useState('')
 
-  const { connectors, webhooks, syncHistory, stats, loading, error } = useIntegrations()
+  const { connectors, webhooks, syncHistory, stats, loading } = useIntegrations()
 
   const tabs = [
     { id: 'connectors', label: 'کانکتورهای Legacy', count: stats?.totalConnectors || 0 },

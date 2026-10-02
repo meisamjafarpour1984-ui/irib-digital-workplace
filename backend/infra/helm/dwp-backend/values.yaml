@@ -4,6 +4,13 @@
 
 replicaCount: 2
 
+uploads:
+  persistence:
+    enabled: false
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    storageClassName: ""
+
 image:
   repository: ghcr.io/irib-digital-workplace/irib-digital-workplace-backend
   pullPolicy: IfNotPresent

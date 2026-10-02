@@ -1,0 +1,14 @@
+apiVersion: v2
+name: dwp-frontend
+description: IRIB DWP Frontend Application (Next.js)
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - irib
+  - dwp
+  - frontend
+  - nextjs
+maintainers:
+  - name: IRIB IT Department
+    email: it@iribtabriz.ir

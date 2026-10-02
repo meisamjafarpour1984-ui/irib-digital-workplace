@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Search, X, Clock, TrendingUp } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useDebounce } from '@/hooks/use-debounce'
+import { useTranslations } from 'next-intl'
 
 interface SearchBarProps {
   placeholder?: string
@@ -15,13 +16,14 @@ interface SearchBarProps {
 }
 
 export function SearchBar({
-  placeholder = 'جستجو...',
+  placeholder,
   onSearch,
   onSelect,
   suggestions = [],
   recentSearches = [],
   className,
 }: SearchBarProps) {
+  const t = useTranslations('searchBar')
   const [query, setQuery] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
@@ -68,9 +70,9 @@ export function SearchBar({
           onFocus={() => setIsOpen(true)}
           onBlur={() => setTimeout(() => setIsOpen(false), 200)}
           onKeyDown={handleKeyDown}
-          placeholder={placeholder}
+          placeholder={placeholder ?? t('placeholder')}
           className="w-full rounded-xl border border-input bg-card py-2.5 pr-10 pl-9 text-sm text-foreground outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
-          aria-label={placeholder}
+          aria-label={placeholder ?? t('placeholder')}
           aria-expanded={isOpen}
           aria-autocomplete="list"
         />
@@ -82,7 +84,7 @@ export function SearchBar({
               inputRef.current?.focus()
             }}
             className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-            aria-label="پاک کردن"
+            aria-label={t('clear')}
           >
             <X className="size-4" />
           </button>
@@ -96,7 +98,7 @@ export function SearchBar({
         >
           {!query && recentSearches.length > 0 && (
             <li className="px-3 py-1.5 text-[10px] font-medium text-muted-foreground">
-              جستجوهای اخیر
+              {t('recentSearches')}
             </li>
           )}
           {filteredSuggestions.map((item, i) => (

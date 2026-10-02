@@ -1,11 +1,16 @@
+'use client'
+
 import { itInfo } from '@/lib/portal-data'
 import { PanelHeader } from './panel-header'
 import { AccessibleButton } from '@/components/ui/AccessibleButton'
+import { useTranslations } from 'next-intl'
 
 export function ITInfo() {
+  const tHome = useTranslations('homepage')
+  const tCommon = useTranslations('common')
   return (
     <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-      <PanelHeader title="فناوری اطلاعات" moreLabel="مشاهده همه" moreHref="/it-info" />
+      <PanelHeader title={tHome('itInfo')} moreLabel={tCommon('viewAll')} moreHref="/it-info" />
       <ul>
         {itInfo.map(({ id, title, time, icon: Icon }) => (
           <li key={id}>

@@ -21,7 +21,7 @@ export default function MobileWelcomePage() {
               <div className="mx-auto flex size-20 items-center justify-center rounded-full bg-brand/10">
                 <Smartphone className="size-10 text-brand" aria-hidden />
               </div>
-              <h1 className="mt-6 text-display-lg text-foreground">پرتال IRIB در موبایل</h1>
+              <h1 className="mt-6 text-display-lg text-foreground">درگاه IRIB در موبایل</h1>
               <p className="mt-3 text-body-lg text-muted-foreground">
                 دسترسی سریع و آسان به تمام سرویس‌های سازمانی از گوشی خود
               </p>
@@ -68,7 +68,7 @@ export default function MobileWelcomePage() {
                 <ArrowLeft className="size-4" aria-hidden />
               </a>
               <p className="text-xs text-muted-foreground">
-                قبلاً ثبت‌نام کرده‌اید؟ از پرتال دسکتاپ وارد شوید
+                قبلاً ثبت‌نام کرده‌اید؟ از درگاه دسکتاپ وارد شوید
               </p>
             </div>
           </div>

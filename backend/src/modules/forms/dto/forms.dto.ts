@@ -32,6 +32,9 @@ export class FormFieldDto {
   @IsString() @MinLength(1) @MaxLength(200) label!: string
   @IsBoolean() required!: boolean
   @IsOptional() @IsString() @MaxLength(300) placeholder?: string
+  @IsOptional() @Type(() => Number) @Min(0) min?: number
+  @IsOptional() @Type(() => Number) @Max(1000000000) max?: number
+  @IsOptional() @IsString() @MaxLength(500) pattern?: string
   @IsOptional()
   @IsArray()
   @ArrayMaxSize(100)
@@ -57,5 +60,6 @@ export class SubmitFormDto {
 
 export class SubmissionListQueryDto {
   @IsOptional() @IsEnum(SubmissionStatus) status?: SubmissionStatus
+  @IsOptional() @Type(() => Number) @IsInt() @Min(1) page = 1
   @IsOptional() @Type(() => Number) @IsInt() @Min(1) @Max(100) limit = 50
 }

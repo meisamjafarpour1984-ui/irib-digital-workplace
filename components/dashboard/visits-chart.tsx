@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import {
   Area,
   AreaChart,
@@ -12,21 +13,22 @@ import {
 import { visitsData } from '@/lib/dashboard-data'
 
 export function VisitsChart() {
+  const t = useTranslations('dashboard')
   return (
     <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="h-5 w-1 rounded-full bg-brand" aria-hidden />
-          <h2 className="text-sm font-bold text-foreground">نمودار بازدیدها</h2>
+          <h2 className="text-sm font-bold text-foreground">{t('visitChart')}</h2>
         </div>
         <div className="flex items-center gap-4 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <span className="size-2.5 rounded-full bg-chart-1" aria-hidden />
-            کل بازدید
+            {t('totalVisits')}
           </span>
           <span className="flex items-center gap-1.5">
             <span className="size-2.5 rounded-full bg-chart-2" aria-hidden />
-            بازدید یکتا
+            {t('uniqueVisits')}
           </span>
         </div>
       </div>

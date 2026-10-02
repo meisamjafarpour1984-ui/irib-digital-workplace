@@ -4,39 +4,44 @@ import {
   HttpStatus,
   Injectable,
   UnauthorizedException,
+  Logger,
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { createHash, randomBytes, randomInt } from 'node:crypto'
+import { createHash, randomBytes } from 'node:crypto'
 import * as bcrypt from 'bcrypt'
 import * as jwt from 'jsonwebtoken'
 import { PrismaService } from '../../prisma/prisma.service'
 import type { LoginDto, RegisterDto, VerifyOtpDto } from './dto/auth.dto'
+import { MobileVerificationService } from '../mobile-verification/mobile-verification.service'
+import { KeycloakService } from './keycloak.service'
 
 const ACCESS_TTL_SECONDS = 15 * 60
 const REFRESH_TTL_MS = 7 * 24 * 60 * 60 * 1000
-const OTP_TTL_MS = 2 * 60 * 1000
-const OTP_RATE_WINDOW_MS = 10 * 60 * 1000
-const OTP_RATE_LIMIT = 5
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name)
   private readonly jwtSecret: string
   private readonly issuer: string
   private readonly audience: string
   private readonly isProduction: boolean
+  private readonly useKeycloak: boolean
 
   constructor(
     private readonly prisma: PrismaService,
-    config: ConfigService
+    private readonly mobileVerificationService: MobileVerificationService,
+    private readonly keycloakService: KeycloakService,
+    private readonly config: ConfigService
   ) {
-    const secret = config.get<string>('JWT_SECRET')
+    const secret = this.config.get<string>('JWT_SECRET')
     if (!secret || secret.length < 32) {
       throw new Error('JWT_SECRET must contain at least 32 characters')
     }
     this.jwtSecret = secret
-    this.issuer = config.get<string>('JWT_ISSUER', 'irib-dwp')
-    this.audience = config.get<string>('JWT_AUDIENCE', 'irib-dwp-web')
-    this.isProduction = config.get<string>('NODE_ENV') === 'production'
+    this.issuer = this.config.get<string>('JWT_ISSUER', 'irib-dwp')
+    this.audience = this.config.get<string>('JWT_AUDIENCE', 'irib-dwp-web')
+    this.isProduction = this.config.get<string>('NODE_ENV') === 'production'
+    this.useKeycloak = this.config.get<string>('AUTH_TYPE', 'local') === 'keycloak'
   }
 
   async register(data: RegisterDto) {
@@ -67,6 +72,12 @@ export class AuthService {
   }
 
   async login(data: LoginDto) {
+    // If Keycloak is enabled, use Keycloak login
+    if (this.useKeycloak) {
+      return this.keycloakLogin(data)
+    }
+
+    // Otherwise, use local JWT login
     const user = await this.prisma.user.findUnique({ where: { personnelCode: data.personnelCode } })
     if (!user?.passwordHash || user.status !== 'ACTIVE') {
       throw new UnauthorizedException('Invalid credentials')
@@ -77,34 +88,136 @@ export class AuthService {
     return this.createOtpChallenge(user.id, 'login')
   }
 
-  async verifyOtp(data: VerifyOtpDto) {
-    const challenge = await this.prisma.otpChallenge.findUnique({ where: { id: data.challengeId } })
-    if (!challenge || challenge.consumedAt || challenge.expiresAt <= new Date()) {
-      throw new UnauthorizedException('OTP challenge has expired')
+  async keycloakLogin(data: LoginDto) {
+    try {
+      const keycloakUrl = this.config.get<string>('KEYCLOAK_URL', 'http://localhost:8080')
+      const keycloakRealm = this.config.get<string>('KEYCLOAK_REALM', 'irib-dwp')
+      const keycloakClientId = this.config.get<string>('KEYCLOAK_CLIENT_ID', 'irib-dwp-web')
+      const keycloakClientSecret = this.config.get<string>(
+        'KEYCLOAK_CLIENT_SECRET',
+        'irib-dwp-client-secret'
+      )
+
+      // Try to authenticate with Keycloak
+      const response = await fetch(
+        `${keycloakUrl}/realms/${keycloakRealm}/protocol/openid-connect/token`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({
+            grant_type: 'password',
+            client_id: keycloakClientId,
+            client_secret: keycloakClientSecret,
+            username: data.personnelCode,
+            password: data.password,
+          }),
+        }
+      )
+
+      if (!response.ok) {
+        throw new UnauthorizedException('Invalid Keycloak credentials')
+      }
+
+      const keycloakResponse = await response.json()
+
+      // Get user info from Keycloak
+      const userInfo = await this.keycloakService.getUserInfo(keycloakResponse.access_token)
+
+      // Find or create user in database
+      let user = await this.prisma.user.findFirst({
+        where: { keycloakId: userInfo.id },
+      })
+
+      if (!user) {
+        // Create user if not exists
+        user = await this.prisma.user.create({
+          data: {
+            personnelCode: userInfo.username,
+            name: userInfo.givenName || userInfo.name,
+            nameFa: userInfo.familyName || '',
+            email: userInfo.email,
+            status: 'ACTIVE',
+            keycloakId: userInfo.id,
+            keycloakSyncedAt: new Date(),
+          },
+        })
+      }
+
+      // Update last login
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { lastLoginAt: new Date() },
+      })
+
+      // Return Keycloak tokens
+      return {
+        accessToken: keycloakResponse.access_token,
+        refreshToken: keycloakResponse.refresh_token,
+        expiresIn: keycloakResponse.expires_in,
+        user: {
+          id: user.id,
+          personnelCode: user.personnelCode,
+          name: user.name,
+          nameFa: user.nameFa,
+          email: user.email,
+          roles: userInfo.roles,
+        },
+      }
+    } catch (error) {
+      this.logger.error('Keycloak login error:', error)
+      throw new UnauthorizedException('Keycloak authentication failed')
     }
-    if (challenge.attempts >= challenge.maxAttempts) {
-      throw new HttpException('OTP attempt limit exceeded', HttpStatus.TOO_MANY_REQUESTS)
+  }
+
+  async devLogin(data: LoginDto) {
+    // Development-only login without OTP
+    if (this.isProduction) {
+      throw new UnauthorizedException('Dev login is only available in development mode')
     }
 
-    const valid = await bcrypt.compare(data.code, challenge.codeHash)
-    if (!valid) {
-      await this.prisma.otpChallenge.update({
-        where: { id: challenge.id },
-        data: { attempts: { increment: 1 } },
-      })
-      throw new UnauthorizedException('Invalid OTP')
+    const user = await this.prisma.user.findUnique({ where: { personnelCode: data.personnelCode } })
+    if (!user?.passwordHash || user.status !== 'ACTIVE') {
+      throw new UnauthorizedException('Invalid credentials')
     }
+    const valid = await bcrypt.compare(data.password, user.passwordHash)
+    if (!valid) throw new UnauthorizedException('Invalid credentials')
 
-    const user = await this.prisma.$transaction(async (tx) => {
-      await tx.otpChallenge.update({
-        where: { id: challenge.id },
-        data: { consumedAt: new Date() },
-      })
-      return tx.user.update({
-        where: { id: challenge.userId },
-        data: { status: 'ACTIVE', lastLoginAt: new Date() },
-      })
+    // Update last login
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { lastLoginAt: new Date() },
     })
+
+    // Create session directly without OTP
+    return this.createSession(user.id)
+  }
+
+  async verifyOtp(data: VerifyOtpDto) {
+    // Delegate OTP verification to MobileVerificationService
+    const verification = await this.mobileVerificationService.verifyOtp(data.challengeId, data.code)
+
+    if (!verification.success) {
+      throw new UnauthorizedException('OTP verification failed')
+    }
+
+    // Update user status and create session
+    const challenge = await this.prisma.otpChallenge.findUnique({
+      where: { id: data.challengeId },
+    })
+    if (!challenge) {
+      throw new UnauthorizedException('Invalid challenge')
+    }
+
+    const user = await this.prisma.user.update({
+      where: { id: challenge.userId },
+      data: {
+        status: 'ACTIVE',
+        lastLoginAt: new Date(),
+      },
+    })
+
     return this.createSession(user.id)
   }
 
@@ -132,7 +245,7 @@ export class AuthService {
   }
 
   async setPin(userId: string, pin: string) {
-    const passwordHash = await bcrypt.hash(pin, 12)
+    const passwordHash = await bcrypt.hash(pin, 10)
     await this.prisma.user.update({ where: { id: userId }, data: { passwordHash } })
   }
 
@@ -168,38 +281,17 @@ export class AuthService {
   }
 
   private async createOtpChallenge(userId: string, purpose: string) {
-    const recentChallenges = await this.prisma.otpChallenge.count({
-      where: {
-        userId,
-        purpose,
-        createdAt: { gte: new Date(Date.now() - OTP_RATE_WINDOW_MS) },
-      },
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { mobile: true },
     })
-    if (recentChallenges >= OTP_RATE_LIMIT) {
-      throw new HttpException('OTP request limit exceeded', HttpStatus.TOO_MANY_REQUESTS)
+
+    if (!user?.mobile) {
+      throw new HttpException('Mobile number not found', HttpStatus.BAD_REQUEST)
     }
 
-    await this.prisma.otpChallenge.updateMany({
-      where: { userId, purpose, consumedAt: null },
-      data: { consumedAt: new Date() },
-    })
-
-    const code = this.isProduction ? randomInt(100000, 1000000).toString() : '123456'
-    const challenge = await this.prisma.otpChallenge.create({
-      data: {
-        userId,
-        purpose,
-        codeHash: await bcrypt.hash(code, 10),
-        expiresAt: new Date(Date.now() + OTP_TTL_MS),
-      },
-    })
-
-    // The production SMS provider will consume this code in the Keycloak/provider phase.
-    return {
-      challengeId: challenge.id,
-      expiresIn: OTP_TTL_MS / 1000,
-      ...(!this.isProduction && { devOtp: code }),
-    }
+    // Delegate OTP creation and SMS sending to MobileVerificationService
+    return this.mobileVerificationService.sendOtp(userId, user.mobile, purpose)
   }
 
   private async createSession(userId: string) {

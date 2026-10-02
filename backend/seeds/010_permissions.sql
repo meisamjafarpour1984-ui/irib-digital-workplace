@@ -2,7 +2,7 @@
 -- IRIB DWP Database — Seeds: Atomic Permissions
 -- ============================================================
 
-INSERT INTO atomic_permissions (entity, action, description) VALUES
+INSERT INTO "AtomicPermission" (entity, action, description) VALUES
 -- Content Management
 ('Content', 'CREATE', 'ایجاد محتوای جدید'),
 ('Content', 'READ', 'مشاهده محتوا'),
@@ -103,8 +103,9 @@ INSERT INTO atomic_permissions (entity, action, description) VALUES
 ('AuditLog', 'READ', 'مشاهده لاگ فعالیت'),
 
 -- System Settings
-('SystemSetting', 'READ', 'مشاهده تنظیمات سیستم'),
-('SystemSetting', 'MANAGE', 'تغییر تنظیمات سیستم'),
+('SystemSettings', 'READ', 'مشاهده تنظیمات سیستم'),
+('SystemSettings', 'UPDATE', 'تغییر تنظیمات سیستم'),
+('SystemSettings', 'DELETE', 'حذف تنظیمات سیستم'),
 
 -- Expert & Knowledge
 ('Expert', 'READ', 'مشاهده پروفایل کارشناس'),

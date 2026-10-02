@@ -1,69 +1,20 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { DashboardSidebar } from '@/components/dashboard/dashboard-sidebar'
 import { DashboardTopbar } from '@/components/dashboard/dashboard-topbar'
-import { Bell, Check, CheckCheck, FileText, MessageSquare, Ticket, Settings } from 'lucide-react'
-
-interface Notification {
-  id: string
-  type: 'content' | 'message' | 'ticket' | 'system'
-  title: string
-  body: string
-  time: string
-  read: boolean
-}
-
-const mockNotifications: Notification[] = [
-  {
-    id: '1',
-    type: 'message',
-    title: 'پیام جدید از رضا کریمی',
-    body: 'دسترسی شما به آرشیو تصویری فعال شد.',
-    time: '۵ دقیقه پیش',
-    read: false,
-  },
-  {
-    id: '2',
-    type: 'ticket',
-    title: 'تیکت #۱۲۳۴ بسته شد',
-    body: 'درخواست شما با موفقیت انجام شد.',
-    time: '۱۵ دقیقه پیش',
-    read: false,
-  },
-  {
-    id: '3',
-    type: 'content',
-    title: 'خبر جدید منتشر شد',
-    body: 'برگزاری نشست هم‌اندیشی مدیران',
-    time: '۱ ساعت پیش',
-    read: true,
-  },
-  {
-    id: '4',
-    type: 'system',
-    title: 'به‌روزرسانی سیستم',
-    body: 'نسخه جدید پرتال فعال شد.',
-    time: '۳ ساعت پیش',
-    read: true,
-  },
-  {
-    id: '5',
-    type: 'message',
-    title: 'پاسخ به فرم نظرسنجی',
-    body: 'نتایج نظرسنجی رضایت کارکنان منتشر شد.',
-    time: '۵ ساعت پیش',
-    read: true,
-  },
-  {
-    id: '6',
-    type: 'ticket',
-    title: 'تیکت جدید ثبت شد',
-    body: 'تیکت پشتیبانی شما با شماره #۱۲۳۵ ثبت شد.',
-    time: '۱ روز پیش',
-    read: true,
-  },
-]
+import {
+  Bell,
+  Check,
+  CheckCheck,
+  FileText,
+  MessageSquare,
+  Ticket,
+  Settings,
+  Loader2,
+} from 'lucide-react'
+import { useNotifications } from '@/hooks/use-notifications'
 
 const typeIcons: Record<string, typeof FileText> = {
   content: FileText,
@@ -80,16 +31,23 @@ const typeColors: Record<string, string> = {
 }
 
 export default function NotificationsPage() {
-  const [notifications, setNotifications] = useState(mockNotifications)
+  const t = useTranslations('notifications')
+  const {
+    notifications,
+    stats,
+    loading,
+    markAsRead: markAsReadApi,
+    markAllAsRead: markAllAsReadApi,
+  } = useNotifications()
   const [filter, setFilter] = useState('all')
-  const unreadCount = notifications.filter((n) => !n.read).length
+  const unreadCount = stats?.unread || 0
 
   const markAsRead = (id: string) => {
-    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)))
+    markAsReadApi(id)
   }
 
   const markAllAsRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
+    markAllAsReadApi()
   }
 
   const filtered = notifications.filter((n) => {
@@ -97,6 +55,20 @@ export default function NotificationsPage() {
     if (filter === 'unread') return !n.read
     return n.type === filter
   })
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen bg-background">
+        <DashboardSidebar />
+        <div className="flex min-w-0 flex-1 flex-col">
+          <DashboardTopbar />
+          <main className="flex-1 flex items-center justify-center p-6">
+            <Loader2 className="size-8 animate-spin text-muted-foreground" />
+          </main>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -108,8 +80,10 @@ export default function NotificationsPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-heading-1 text-foreground">اعلان‌ها</h1>
-                <p className="text-sm text-muted-foreground">{unreadCount} اعلان خوانده نشده</p>
+                <h1 className="text-heading-1 text-foreground">{t('title')}</h1>
+                <p className="text-sm text-muted-foreground">
+                  {t('unreadCount', { count: unreadCount })}
+                </p>
               </div>
               {unreadCount > 0 && (
                 <button
@@ -118,7 +92,7 @@ export default function NotificationsPage() {
                   className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs font-medium text-foreground hover:bg-muted"
                 >
                   <CheckCheck className="size-3.5" aria-hidden />
-                  همه خوانده شد
+                  {t('markAllRead')}
                 </button>
               )}
             </div>
@@ -126,12 +100,12 @@ export default function NotificationsPage() {
             {/* Filters */}
             <div className="flex gap-2 overflow-x-auto">
               {[
-                { id: 'all', label: 'همه' },
-                { id: 'unread', label: 'خوانده نشده' },
-                { id: 'message', label: 'پیام‌ها' },
-                { id: 'ticket', label: 'تیکت‌ها' },
-                { id: 'content', label: 'محتوا' },
-                { id: 'system', label: 'سیستم' },
+                { id: 'all', label: t('filterAll') },
+                { id: 'unread', label: t('filterUnread') },
+                { id: 'message', label: t('filterMessages') },
+                { id: 'ticket', label: t('filterTickets') },
+                { id: 'content', label: t('filterContent') },
+                { id: 'system', label: t('filterSystem') },
               ].map((f) => (
                 <button
                   key={f.id}
@@ -185,7 +159,7 @@ export default function NotificationsPage() {
                         type="button"
                         onClick={() => markAsRead(notif.id)}
                         className="flex size-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
-                        aria-label="خوانده شد"
+                        aria-label={t('markRead')}
                       >
                         <Check className="size-4" />
                       </button>
@@ -197,7 +171,7 @@ export default function NotificationsPage() {
               {filtered.length === 0 && (
                 <div className="rounded-2xl border border-border bg-card p-12 text-center">
                   <Bell className="mx-auto size-12 text-muted-foreground/30" aria-hidden />
-                  <p className="mt-4 text-body-lg text-muted-foreground">اعلانی وجود ندارد</p>
+                  <p className="mt-4 text-body-lg text-muted-foreground">{t('empty')}</p>
                 </div>
               )}
             </div>

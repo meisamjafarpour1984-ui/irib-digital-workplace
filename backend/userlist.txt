@@ -1,1 +1,0 @@
-"irib_admin" "irib_secret_2024"

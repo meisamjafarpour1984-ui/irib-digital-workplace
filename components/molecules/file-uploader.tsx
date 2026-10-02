@@ -3,6 +3,7 @@
 import { useCallback, useState } from 'react'
 import { Upload, X, FileText, Image, File, CheckCircle, AlertCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useTranslations } from 'next-intl'
 
 interface UploadedFile {
   id: string
@@ -46,6 +47,7 @@ export function FileUploader({
   const [files, setFiles] = useState<UploadedFile[]>([])
   const [isDragging, setIsDragging] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const t = useTranslations('fileUploader')
 
   const simulateUpload = useCallback((file: File): UploadedFile => {
     const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`
@@ -89,14 +91,14 @@ export function FileUploader({
 
       // Validate count
       if (files.length + newFiles.length > maxFiles) {
-        setError(`حداکثر ${maxFiles} فایل مجاز است`)
+        setError(t('maxFilesError', { max: maxFiles }))
         return
       }
 
       // Validate sizes
       const oversized = newFiles.find((f) => f.size > maxSize)
       if (oversized) {
-        setError(`فایل "${oversized.name}" بیش از ${formatSize(maxSize)} است`)
+        setError(t('maxSizeError', { name: oversized.name, size: formatSize(maxSize) }))
         return
       }
 
@@ -146,9 +148,9 @@ export function FileUploader({
           className={cn('size-8', isDragging ? 'text-brand' : 'text-muted-foreground/30')}
           aria-hidden
         />
-        <p className="mt-2 text-sm text-muted-foreground">فایل‌ها را اینجا رها کنید یا کلیک کنید</p>
+        <p className="mt-2 text-sm text-muted-foreground">{t('dropzone')}</p>
         <p className="mt-1 text-xs text-muted-foreground/60">
-          حداکثر {formatSize(maxSize)} · حداکثر {maxFiles} فایل
+          {t('limits', { size: formatSize(maxSize), max: maxFiles })}
         </p>
         <input
           id="file-input"
@@ -204,7 +206,7 @@ export function FileUploader({
                     type="button"
                     onClick={() => removeFile(file.id)}
                     className="flex size-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-error/10 hover:text-error"
-                    aria-label={`حذف ${file.name}`}
+                    aria-label={t('removeFile', { name: file.name })}
                   >
                     <X className="size-3.5" />
                   </button>

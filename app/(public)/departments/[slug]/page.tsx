@@ -57,7 +57,7 @@ export async function generateMetadata({ params }: DepartmentPageProps) {
   const dept = departments[slug]
   if (!dept) return { title: 'صفحه یافت نشد' }
   return {
-    title: `معاونت ${dept.name} | پرتال دیجیتال کارکنان`,
+    title: `معاونت ${dept.name} | درگاه دیجیتال کارکنان`,
     description: dept.description,
   }
 }

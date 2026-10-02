@@ -10,7 +10,7 @@
 # All rights reserved © 2026
 #
 
-FROM node:20-slim AS base
+FROM node:22-slim AS base
 
 # Install base dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -47,6 +47,7 @@ ARG ENVIRONMENT=development
 ENV NODE_ENV=${NODE_ENV}
 ENV ENVIRONMENT=${ENVIRONMENT}
 ENV PNPM_IGNORE_SCRIPTS=false
+ENV PUPPETEER_SKIP_DOWNLOAD=true
 
 # Copy package files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
@@ -94,6 +95,7 @@ ARG ENVIRONMENT=production
 ENV NODE_ENV=${NODE_ENV}
 ENV ENVIRONMENT=${ENVIRONMENT}
 ENV PNPM_IGNORE_SCRIPTS=false
+ENV PUPPETEER_SKIP_DOWNLOAD=true
 
 # Install build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -151,7 +153,7 @@ RUN npm run build
 # Runtime stage
 # ============================================================
 
-FROM node:20-slim AS runtime
+FROM node:22-slim AS runtime
 
 # Runtime arguments
 ARG NODE_ENV=production
@@ -161,6 +163,7 @@ ARG PORT=3001
 ENV NODE_ENV=${NODE_ENV}
 ENV PORT=${PORT}
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+ENV HOME=/home/appuser
 
 # Install runtime dependencies including Puppeteer and build tools for bcrypt
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -180,25 +183,24 @@ RUN corepack enable
 
 WORKDIR /workspace
 
+# Create non-root user before copying runtime files
+RUN useradd -m -u 1001 appuser
+
 # Copy backend package file for runtime
-COPY backend/package.json ./backend/
+COPY --chown=appuser:appuser backend/package.json ./backend/
 
 # Copy backend dependencies and build output
-COPY --from=build /workspace/node_modules ./node_modules
-COPY --from=build /workspace/backend/node_modules ./backend/node_modules
-COPY --from=build /workspace/backend/dist ./backend/dist
-COPY --from=build /workspace/backend/prisma ./backend/prisma
+COPY --from=build --chown=appuser:appuser /workspace/node_modules ./node_modules
+COPY --from=build --chown=appuser:appuser /workspace/backend/node_modules ./backend/node_modules
+COPY --from=build --chown=appuser:appuser /workspace/backend/dist ./backend/dist
+COPY --from=build --chown=appuser:appuser /workspace/backend/prisma ./backend/prisma
+RUN mkdir -p /workspace/backend/uploads && chown appuser:appuser /workspace/backend/uploads
 
 WORKDIR /workspace/backend
 
 # Rebuild bcrypt native module for runtime using pnpm in both locations
-RUN pnpm rebuild bcrypt || true
-RUN find /workspace/node_modules/.pnpm -type d -name "bcrypt@*" -exec sh -c 'cd "$1" && pnpm rebuild bcrypt || npm rebuild bcrypt' _ {} \;
-RUN cd /workspace && pnpm rebuild bcrypt || true
-RUN cd /workspace && find /workspace/node_modules/.pnpm -type d -name "bcrypt@*" -exec sh -c 'cd "$1" && pnpm rebuild bcrypt || npm rebuild bcrypt' _ {} \;
 
-# Create non-root user for security
-RUN useradd -m -u 1001 appuser && chown -R appuser:appuser /workspace
+# Run the application without root privileges
 USER appuser
 
 # Expose port

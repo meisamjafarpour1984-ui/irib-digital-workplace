@@ -16,24 +16,51 @@ import {
   Bell,
   UserCheck,
   Activity as ActivityIcon,
+  MessageSquare,
+  Inbox,
+  Package,
+  Smartphone,
+  Building2,
+  File,
+  Link2,
+  Table2,
+  Palette,
+  Award,
 } from 'lucide-react'
 
-export type SidebarItem = { label: string; icon: LucideIcon; active?: boolean; badge?: string }
+export type SidebarItem = {
+  label: string
+  icon: LucideIcon
+  active?: boolean
+  badge?: string
+  href?: string
+}
 
 export const sidebarItems: SidebarItem[] = [
-  { label: 'داشبورد', icon: LayoutDashboard, active: true },
-  { label: 'محتوا', icon: FileText },
-  { label: 'صفحه‌ها', icon: FileStack },
-  { label: 'رسانه', icon: Radio },
-  { label: 'فرم‌ها', icon: ClipboardList },
-  { label: 'کاربران', icon: Users, badge: '۲۰۳' },
-  { label: 'نقش‌ها و دسترسی‌ها', icon: ShieldCheck },
-  { label: 'ویجت‌ها', icon: Blocks },
-  { label: 'اطلاعیه‌ها', icon: Megaphone },
-  { label: 'کارتابل‌ها', icon: Boxes },
-  { label: 'تیکت‌ها', icon: Ticket, badge: '۷' },
-  { label: 'تحلیل و آمار', icon: BarChart3 },
-  { label: 'تنظیمات سیستم', icon: Settings },
+  { label: 'داشبورد', icon: LayoutDashboard, active: true, href: '/dashboard' },
+  { label: 'محتوا', icon: FileText, href: '/dashboard/content' },
+  { label: 'صفحه‌ها', icon: FileStack, href: '/dashboard/pages' },
+  { label: 'رسانه', icon: Radio, href: '/dashboard/media' },
+  { label: 'فرم‌ها', icon: ClipboardList, href: '/dashboard/forms' },
+  { label: 'ارسال‌های فرم', icon: ClipboardList, href: '/dashboard/forms/submissions' },
+  { label: 'کارتابل ارتباطات', icon: Inbox, href: '/dashboard/inbox' },
+  { label: 'کاربران', icon: Users, badge: '۲۰۳', href: '/dashboard/users' },
+  { label: 'نقش‌ها و دسترسی‌ها', icon: ShieldCheck, href: '/dashboard/roles' },
+  { label: 'ویجت‌ها', icon: Blocks, href: '/dashboard/widgets' },
+  { label: 'اطلاعیه‌ها', icon: Megaphone, href: '/dashboard/announcements' },
+  { label: 'کارتابل‌ها', icon: Boxes, href: '/dashboard/workspaces' },
+  { label: 'تیکت‌ها', icon: Ticket, badge: '۷', href: '/dashboard/tickets' },
+  { label: 'پیامک', icon: MessageSquare, href: '/dashboard/sms' },
+  { label: 'مدیریت سازمان', icon: Building2, href: '/dashboard/organization' },
+  { label: 'متخصصین', icon: Award, href: '/dashboard/experts' },
+  { label: 'دستگاه‌های موبایل', icon: Smartphone, href: '/dashboard/mobile' },
+  { label: 'مرکز نرم‌افزار', icon: Package, href: '/dashboard/software' },
+  { label: 'تولید PDF', icon: File, href: '/dashboard/pdf' },
+  { label: 'سیستم Afish', icon: Table2, href: '/dashboard/afish' },
+  { label: 'یکپارچه‌سازی', icon: Link2, href: '/dashboard/integrations' },
+  { label: 'مدیریت Theme', icon: Palette, href: '/dashboard/theme' },
+  { label: 'تحلیل و آمار', icon: BarChart3, href: '/dashboard/analytics' },
+  { label: 'تنظیمات سیستم', icon: Settings, href: '/dashboard/settings' },
 ]
 
 export type Kpi = {
@@ -107,3 +134,31 @@ export const tickets: TicketRow[] = [
   { id: 'tk3', title: 'درخواست دسترسی به آرشیو تصویری', status: 'پاسخ داده شد', time: '۰۹:۱۰' },
   { id: 'tk4', title: 'کندی سرعت شبکه در طبقه سوم', status: 'در حال بررسی', time: '۰۸:۴۰' },
 ]
+
+export type DashboardData = {
+  dailyVisits: number
+  activeUsers: number
+  announcements: number
+  polls: number
+  recentActivity: unknown[]
+  recentTickets: unknown[]
+}
+
+let dashboardCache: DashboardData | null = null
+
+export function clearDashboardDataCache() {
+  dashboardCache = null
+}
+
+export async function getDashboardData(): Promise<DashboardData> {
+  if (dashboardCache) return dashboardCache
+
+  const response = await globalThis.fetch('/api/v1/analytics/dashboard/overview')
+  if (!response.ok) {
+    throw new Error(`Dashboard request failed: ${response.status}`)
+  }
+
+  const data = (await response.json()) as DashboardData
+  dashboardCache = data
+  return data
+}

@@ -67,7 +67,7 @@ export default function SearchContent() {
     <div className="py-8">
       <div className="mb-8">
         <h1 className="text-display-lg text-foreground">جستجو</h1>
-        <p className="mt-2 text-body-md text-muted-foreground">جستجو در محتوای منتشرشدهٔ پرتال</p>
+        <p className="mt-2 text-body-md text-muted-foreground">جستجو در محتوای منتشرشدهٔ درگاه</p>
       </div>
       <div className="relative mb-6">
         <Search

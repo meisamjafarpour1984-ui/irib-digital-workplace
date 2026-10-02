@@ -1,25 +1,21 @@
-import { Suspense } from 'react'
-import SearchContent from './search-content'
-import { UtilityBar } from '@/components/portal/utility-bar'
-import { PortalHeader } from '@/components/portal/portal-header'
-import { PortalFooter } from '@/components/portal/portal-footer'
-import { Container } from '@/components/layout/container'
+/**
+ * IRIB Digital Workplace Platform - Advanced Search Page
+ *
+ * Designer & Developer: میثم جعفرپور آلانق
+ * Education: Master of Software Engineering
+ * Position: Audio and Video Expert Level 4
+ * Client: Technical Deputy of IRIB East Azerbaijan Center
+ * All rights reserved © 2026
+ */
+
+import { Metadata } from 'next'
+import { SearchClient } from './search-client'
+
+export const metadata: Metadata = {
+  title: 'جستجوی پیشرفته | درگاه دیجیتال کارکنان',
+  description: 'جستجوی پیشرفته در محتوای درگاه',
+}
 
 export default function SearchPage() {
-  return (
-    <div className="min-h-screen bg-background">
-      <UtilityBar />
-      <PortalHeader />
-      <Container>
-        <Suspense
-          fallback={
-            <div className="py-8 text-center text-muted-foreground">در حال بارگذاری...</div>
-          }
-        >
-          <SearchContent />
-        </Suspense>
-      </Container>
-      <PortalFooter />
-    </div>
-  )
+  return <SearchClient />
 }

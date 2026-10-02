@@ -1,0 +1,17 @@
+{{- if .Values.uploads.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "dwp-backend.fullname" . }}-uploads
+  labels:
+    {{- include "dwp-backend.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.uploads.persistence.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.uploads.persistence.size }}
+  {{- with .Values.uploads.persistence.storageClassName }}
+  storageClassName: {{ . | quote }}
+  {{- end }}
+{{- end }}

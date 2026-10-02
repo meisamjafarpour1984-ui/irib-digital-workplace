@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { Container } from '@/components/layout/container'
@@ -25,7 +25,7 @@ export default function ThemeManagerPage() {
   const handleExport = async () => {
     try {
       await exportTheme()
-    } catch (err) {
+    } catch {
       alert('خطا در خروجی گرفتن')
     }
   }
@@ -33,7 +33,7 @@ export default function ThemeManagerPage() {
   const handleActivate = async (id: string) => {
     try {
       await activateTheme(id)
-    } catch (err) {
+    } catch {
       alert('خطا در فعال‌سازی تم')
     }
   }

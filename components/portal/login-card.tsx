@@ -40,7 +40,7 @@ export function LoginCard() {
           {t('login')}
         </button>
         <a
-          href="#"
+          href="/help"
           className="flex items-center justify-center gap-1.5 text-xs font-medium text-brand hover:underline"
         >
           <LifeBuoy className="size-3.5" aria-hidden />

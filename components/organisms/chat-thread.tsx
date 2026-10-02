@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Send, Paperclip, AtSign } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useTranslations } from 'next-intl'
 
 interface Message {
   id: string
@@ -28,6 +29,7 @@ export function ChatThread({
   onSend,
   className,
 }: ChatThreadProps) {
+  const t = useTranslations('chatThread')
   const [input, setInput] = useState('')
   const [showMentions, setShowMentions] = useState(false)
   const [mentionQuery, setMentionQuery] = useState('')
@@ -146,7 +148,7 @@ export function ChatThread({
           <button
             type="button"
             className="flex size-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
-            aria-label="پیوست"
+            aria-label={t('attach')}
           >
             <Paperclip className="size-4" />
           </button>
@@ -154,7 +156,7 @@ export function ChatThread({
             <textarea
               value={input}
               onChange={(e) => handleInput(e.target.value)}
-              placeholder="پیام بنویسید... (@ برای اشاره)"
+              placeholder={t('placeholder')}
               rows={1}
               className="w-full resize-none rounded-xl border border-input bg-background px-3 py-2.5 text-sm text-foreground outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
               onKeyDown={(e) => {
@@ -163,7 +165,7 @@ export function ChatThread({
                   handleSend()
                 }
               }}
-              aria-label="متن پیام"
+              aria-label={t('messageLabel')}
             />
           </div>
           <button
@@ -171,7 +173,7 @@ export function ChatThread({
             onClick={handleSend}
             disabled={!input.trim()}
             className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand text-white transition-colors hover:bg-brand-hover disabled:opacity-50"
-            aria-label="ارسال"
+            aria-label={t('send')}
           >
             <Send className="size-4" />
           </button>

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * IRIB Digital Workplace Platform - Users Management Dashboard
  *
  * Designer & Developer: میثم جعفرپور آلانق
@@ -13,14 +13,12 @@
 import { useState } from 'react'
 import {
   Users,
-  Plus,
   Search,
   Filter,
   MoreVertical,
   UserPlus,
   Shield,
   Edit,
-  Trash2,
   CheckCircle,
   XCircle,
   Loader2,
@@ -28,24 +26,30 @@ import {
 import { DashboardSidebar } from '@/components/dashboard/dashboard-sidebar'
 import { DashboardTopbar } from '@/components/dashboard/dashboard-topbar'
 import { useUsers } from '@/hooks/use-users'
+import { useTranslations } from 'next-intl'
 
 export default function UsersPage() {
+  const t = useTranslations('users')
   const [activeTab, setActiveTab] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
 
-  const { users, loading, error } = useUsers()
+  const { users, loading } = useUsers()
 
   const tabs = [
-    { id: 'all', label: 'همه کاربران', count: users?.length || 0 },
-    { id: 'active', label: 'فعال', count: users?.filter((u) => u.status === 'active').length || 0 },
+    { id: 'all', label: t('tabs.all'), count: users?.length || 0 },
+    {
+      id: 'active',
+      label: t('tabs.active'),
+      count: users?.filter((u) => u.status === 'active').length || 0,
+    },
     {
       id: 'pending',
-      label: 'در انتظار',
+      label: t('tabs.pending'),
       count: users?.filter((u) => u.status === 'pending').length || 0,
     },
     {
       id: 'disabled',
-      label: 'غیرفعال',
+      label: t('tabs.disabled'),
       count: users?.filter((u) => u.status === 'disabled').length || 0,
     },
   ]
@@ -71,9 +75,9 @@ export default function UsersPage() {
   }
 
   const statusLabels: Record<string, string> = {
-    active: 'فعال',
-    pending: 'در انتظار',
-    disabled: 'غیرفعال',
+    active: t('active'),
+    pending: t('pending'),
+    disabled: t('disabled'),
   }
 
   return (
@@ -84,12 +88,12 @@ export default function UsersPage() {
         <main className="flex-1 space-y-6 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-heading-1 text-foreground">مدیریت کاربران</h1>
-              <p className="text-sm text-muted-foreground">مدیریت کاربران و دسترسی‌ها</p>
+              <h1 className="text-heading-1 text-foreground">{t('title')}</h1>
+              <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
             </div>
             <button className="flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand/90">
               <UserPlus className="size-4" />
-              افزودن کاربر
+              {t('addUser')}
             </button>
           </div>
 
@@ -101,7 +105,7 @@ export default function UsersPage() {
                   <Users className="size-5 text-brand" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">کل کاربران</p>
+                  <p className="text-sm text-muted-foreground">{t('totalUsers')}</p>
                   <p className="text-lg font-bold text-foreground">۲۰۳</p>
                 </div>
               </div>
@@ -230,15 +234,17 @@ export default function UsersPage() {
                       </td>
                       <td className="px-4 py-3 text-sm text-muted-foreground">{user.email}</td>
                       <td className="px-4 py-3 text-sm text-muted-foreground">{user.mobile}</td>
-                      <td className="px-4 py-3 text-sm text-foreground">{user.department}</td>
+                      <td className="px-4 py-3 text-sm text-foreground">
+                        {user.departments?.[0]?.department.name || '-'}
+                      </td>
                       <td className="px-4 py-3">
                         <div className="flex flex-wrap gap-1">
-                          {user.roles.map((role) => (
+                          {user.roles?.map((role) => (
                             <span
-                              key={role}
+                              key={role.role.id}
                               className="rounded-full bg-accent px-2 py-0.5 text-xs text-foreground"
                             >
-                              {role}
+                              {role.role.name}
                             </span>
                           ))}
                         </div>
@@ -250,7 +256,11 @@ export default function UsersPage() {
                           {statusLabels[user.status]}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-sm text-muted-foreground">{user.lastLogin}</td>
+                      <td className="px-4 py-3 text-sm text-muted-foreground">
+                        {user.createdAt
+                          ? new Date(user.createdAt).toLocaleDateString('fa-IR')
+                          : '-'}
+                      </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-1">
                           <button

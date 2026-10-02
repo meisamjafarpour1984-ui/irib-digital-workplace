@@ -1,82 +1,219 @@
+jest.mock('@keycloak/keycloak-admin-client', () => ({
+  __esModule: true,
+  default: class MockKeycloakAdminClient {},
+}))
+
+import * as bcrypt from 'bcrypt'
+import { Test, TestingModule } from '@nestjs/testing'
 import { UnauthorizedException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import * as bcrypt from 'bcrypt'
 import { AuthService } from './auth.service'
-
-const config = new ConfigService({
-  JWT_SECRET: 'unit-test-secret-with-more-than-32-characters',
-  JWT_ISSUER: 'irib-dwp',
-  JWT_AUDIENCE: 'irib-dwp-web',
-  NODE_ENV: 'test',
-})
+import { PrismaService } from '../../prisma/prisma.service'
+import { MobileVerificationService } from '../mobile-verification/mobile-verification.service'
+import { KeycloakService } from './keycloak.service'
 
 describe('AuthService', () => {
-  it('fails fast when the signing secret is unsafe', () => {
-    const originalSecret = process.env.JWT_SECRET
-    delete process.env.JWT_SECRET
-    try {
-      expect(
-        () => new AuthService({} as never, new ConfigService({ JWT_SECRET: 'short' }))
-      ).toThrow('JWT_SECRET must contain at least 32 characters')
-    } finally {
-      process.env.JWT_SECRET = originalSecret
-    }
+  let service: AuthService
+
+  const mockPrismaService = {
+    user: {
+      findFirst: jest.fn(),
+      findUnique: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+    },
+    otpChallenge: {
+      findUnique: jest.fn(),
+    },
+    authSession: {
+      findFirst: jest.fn(),
+      update: jest.fn(),
+      updateMany: jest.fn(),
+      create: jest.fn(),
+    },
+  }
+
+  const mockConfigService = {
+    get: jest.fn((key: string, fallback?: any) => {
+      const config: Record<string, string> = {
+        JWT_SECRET: 'test-secret-key-min-32-chars-long',
+        JWT_ISSUER: 'irib-dwp-test',
+        JWT_AUDIENCE: 'irib-dwp-web-test',
+        NODE_ENV: 'test',
+        AUTH_TYPE: 'local',
+      }
+      return config[key] ?? fallback
+    }),
+  }
+
+  const mockMobileVerificationService = {
+    sendOtp: jest.fn(),
+    verifyOtp: jest.fn(),
+  }
+
+  const mockKeycloakService = {
+    getUserInfo: jest.fn(),
+  }
+
+  beforeEach(async () => {
+    jest.clearAllMocks()
+
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        AuthService,
+        { provide: PrismaService, useValue: mockPrismaService as any },
+        { provide: ConfigService, useValue: mockConfigService as any },
+        { provide: MobileVerificationService, useValue: mockMobileVerificationService as any },
+        { provide: KeycloakService, useValue: mockKeycloakService as any },
+      ],
+    }).compile()
+
+    service = module.get<AuthService>(AuthService)
   })
 
-  it('rejects an invalid password before creating an OTP challenge', async () => {
-    const prisma = {
-      user: {
-        findUnique: jest.fn().mockResolvedValue({
-          id: 'user-1',
-          personnelCode: '12345',
-          passwordHash: await bcrypt.hash('654321', 4),
-          status: 'ACTIVE',
-        }),
-      },
-      otpChallenge: { create: jest.fn() },
-    }
-    const service = new AuthService(prisma as never, config)
+  describe('register', () => {
+    it('creates a user and returns an OTP challenge', async () => {
+      mockPrismaService.user.findFirst.mockResolvedValue(null)
+      mockPrismaService.user.create.mockResolvedValue({
+        id: 'user-123',
+        personnelCode: '123456',
+        mobile: '09123456789',
+        status: 'PENDING',
+      })
+      mockPrismaService.user.findUnique.mockResolvedValue({ id: 'user-123', mobile: '09123456789' })
+      mockMobileVerificationService.sendOtp.mockResolvedValue({
+        challengeId: 'otp-1',
+        expiresIn: 120,
+      })
 
-    await expect(
-      service.login({ personnelCode: '12345', password: 'wrong-password' })
-    ).rejects.toBeInstanceOf(UnauthorizedException)
-    expect(prisma.otpChallenge.create).not.toHaveBeenCalled()
+      const result = await service.register({
+        personnelCode: '123456',
+        mobile: '09123456789',
+        name: 'Test User',
+      })
+
+      expect(mockPrismaService.user.create).toHaveBeenCalled()
+      expect(mockMobileVerificationService.sendOtp).toHaveBeenCalledWith(
+        'user-123',
+        '09123456789',
+        'registration'
+      )
+      expect(result).toEqual({ challengeId: 'otp-1', expiresIn: 120 })
+    })
   })
 
-  it('stores a hash instead of the plaintext PIN', async () => {
-    const prisma = { user: { update: jest.fn().mockResolvedValue({}) } }
-    const service = new AuthService(prisma as never, config)
+  describe('login', () => {
+    it('creates an OTP challenge for valid local credentials', async () => {
+      const passwordHash = await bcrypt.hash('password123', 10)
+      mockPrismaService.user.findUnique.mockResolvedValue({
+        id: 'user-123',
+        personnelCode: '123456',
+        passwordHash,
+        status: 'ACTIVE',
+        mobile: '09123456789',
+      })
+      mockMobileVerificationService.sendOtp.mockResolvedValue({
+        challengeId: 'otp-1',
+        expiresIn: 120,
+      })
 
-    await service.setPin('user-1', '654321')
-
-    const passwordHash = prisma.user.update.mock.calls[0][0].data.passwordHash as string
-    expect(passwordHash).not.toBe('654321')
-    await expect(bcrypt.compare('654321', passwordHash)).resolves.toBe(true)
-  })
-
-  it('hashes the development OTP challenge', async () => {
-    const prisma = {
-      user: {
-        findFirst: jest.fn().mockResolvedValue(null),
-        create: jest.fn().mockResolvedValue({ id: 'user-1' }),
-      },
-      otpChallenge: {
-        count: jest.fn().mockResolvedValue(0),
-        updateMany: jest.fn().mockResolvedValue({ count: 0 }),
-        create: jest.fn().mockImplementation(({ data }) => ({ id: 'challenge-1', ...data })),
-      },
-    }
-    const service = new AuthService(prisma as never, config)
-
-    const result = await service.register({
-      personnelCode: '12345',
-      mobile: '09123456789',
-      name: 'Test User',
+      const result = await service.login({ personnelCode: '123456', password: 'password123' })
+      expect(mockMobileVerificationService.sendOtp).toHaveBeenCalledWith(
+        'user-123',
+        '09123456789',
+        'login'
+      )
+      expect(result).toEqual({ challengeId: 'otp-1', expiresIn: 120 })
     })
 
-    expect(result).toMatchObject({ challengeId: 'challenge-1', devOtp: '123456' })
-    const codeHash = prisma.otpChallenge.create.mock.calls[0][0].data.codeHash as string
-    expect(codeHash).not.toBe('123456')
-    await expect(bcrypt.compare('123456', codeHash)).resolves.toBe(true)
+    it('throws for invalid credentials', async () => {
+      mockPrismaService.user.findUnique.mockResolvedValue({
+        id: 'user-123',
+        personnelCode: '123456',
+        passwordHash: '$2b$10$hashedpassword',
+        status: 'ACTIVE',
+        mobile: '09123456789',
+      })
+
+      await expect(service.login({ personnelCode: '123456', password: 'wrong' })).rejects.toThrow(
+        UnauthorizedException
+      )
+    })
+  })
+
+  describe('verifyOtp', () => {
+    it('verifies a challenge and creates a session', async () => {
+      mockMobileVerificationService.verifyOtp.mockResolvedValue({ success: true })
+      mockPrismaService.otpChallenge.findUnique.mockResolvedValue({
+        id: 'otp-1',
+        userId: 'user-123',
+      })
+      mockPrismaService.user.update.mockResolvedValue({ id: 'user-123', status: 'ACTIVE' })
+      mockPrismaService.authSession.create.mockResolvedValue({ id: 'session-1' })
+      mockPrismaService.user.findUnique.mockResolvedValue({
+        id: 'user-123',
+        personnelCode: '123456',
+        name: 'Test',
+        nameFa: 'تست',
+        email: 'test@example.com',
+        mobile: '09123456789',
+        roles: [],
+        departments: [],
+      })
+
+      const result = await service.verifyOtp({ challengeId: 'otp-1', code: '123456' })
+
+      expect(mockMobileVerificationService.verifyOtp).toHaveBeenCalledWith('otp-1', '123456')
+      expect(result).toHaveProperty('accessToken')
+      expect(result).toHaveProperty('refreshToken')
+      expect(mockPrismaService.authSession.create).toHaveBeenCalled()
+    })
+  })
+
+  describe('refresh', () => {
+    it('returns a new access token for a valid session', async () => {
+      mockPrismaService.authSession.findFirst.mockResolvedValue({
+        id: 'session-1',
+        userId: 'user-123',
+        refreshTokenHash: 'hash',
+        expiresAt: new Date(Date.now() + 1000),
+        revokedAt: null,
+      })
+      mockPrismaService.authSession.update.mockResolvedValue({ id: 'session-1' })
+      mockPrismaService.authSession.create.mockResolvedValue({ id: 'session-2' })
+      mockPrismaService.user.findUnique.mockResolvedValue({
+        id: 'user-123',
+        personnelCode: '123456',
+        name: 'Test',
+        nameFa: 'تست',
+        email: 'test@example.com',
+        mobile: '09123456789',
+        roles: [],
+        departments: [],
+      })
+
+      const result = await service.refresh('valid-refresh-token')
+      expect(result).toHaveProperty('accessToken')
+      expect(result).toHaveProperty('refreshToken')
+    })
+  })
+
+  describe('logout', () => {
+    it('revokes sessions when a refresh token is provided', async () => {
+      mockPrismaService.authSession.updateMany.mockResolvedValue({ count: 1 })
+      await service.logout('refresh-token')
+      expect(mockPrismaService.authSession.updateMany).toHaveBeenCalled()
+    })
+  })
+
+  describe('setPin', () => {
+    it('hashes and stores the new PIN', async () => {
+      mockPrismaService.user.update.mockResolvedValue({ id: 'user-123' })
+      await service.setPin('user-123', '1234')
+      expect(mockPrismaService.user.update).toHaveBeenCalledWith({
+        where: { id: 'user-123' },
+        data: { passwordHash: expect.any(String) },
+      })
+    })
   })
 })

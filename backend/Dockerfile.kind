@@ -1,0 +1,9 @@
+FROM irib-dwp-backend:staging
+
+USER root
+ENV HOME=/home/appuser
+COPY backend/dist /workspace/backend/dist
+RUN mkdir -p /workspace/backend/uploads && chown -R appuser:appuser /workspace/backend/uploads /workspace/backend/dist
+USER appuser
+
+CMD ["node", "dist/main"]

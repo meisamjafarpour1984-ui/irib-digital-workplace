@@ -1,0 +1,350 @@
+﻿node.exe : npm warn Unknown project config "only-built-dependencies". This 
+will stop working in the next major version of npm. See `npm help npmrc` for 
+supported config options.
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Users\meisam_jaf\AppData\Roa ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (npm warn Unknow...config options. 
+   :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+npm warn Unknown project config "overrides.hono". This will stop working in 
+the next major version of npm. See `npm help npmrc` for supported config 
+options.
+npm notice run irib-dwp-frontend@0.1.0 npx
+npm notice run eslint . --max-warnings=999
+
+D:\irib-digital-workplace\app\(admin)\admin\audit\page.tsx
+  36:14  warning  '_err' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\(admin)\admin\org-chart\page.tsx
+  11:56  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  48:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\irib-digital-workplace\app\(admin)\admin\rbac\page.tsx
+  28:14  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\(admin)\admin\storage\page.tsx
+  15:18  warning  'loading' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  15:34  warning  'uploading' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  24:14  warning  '_err' is defined but never used                @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\(admin)\admin\themes\page.tsx
+  28:14  warning  '_err' is defined but never used  @typescript-eslint/no-unused-vars
+  36:14  warning  '_err' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\(admin)\admin\users\page.tsx
+  13:41  warning  'fetchUsers' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  30:16  warning  '_err' is defined but never used                 @typescript-eslint/no-unused-vars
+  40:14  warning  '_err' is defined but never used                 @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\(authenticated)\admin\settings\page.tsx
+   13:10  warning  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+   15:16  warning  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+   26:12  warning  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+   27:12  warning  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+   30:46  warning  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+   52:92  warning  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+   54:10  warning  'saving' is assigned a value but never used              @typescript-eslint/no-unused-vars
+   54:18  warning  'setSaving' is assigned a value but never used           @typescript-eslint/no-unused-vars
+   58:10  warning  'selectedSetting' is assigned a value but never used     @typescript-eslint/no-unused-vars
+   58:27  warning  'setSelectedSetting' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  131:41  warning  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+  158:79  warning  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+
+D:\irib-digital-workplace\app\(authenticated)\dashboard\afish\page.tsx
+  48:58  warning  Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+  52:47  warning  'error' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\(authenticated)\dashboard\analytics\page.tsx
+  23:11  warning  'kpi' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  23:16  warning  'stats' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  23:23  warning  'loading' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  23:32  warning  'error' is assigned a value but never used    @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\(authenticated)\dashboard\announcements\page.tsx
+  23:42  warning  'error' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\(authenticated)\dashboard\content\editor\page.tsx
+   21:27  warning  'ContentDraftInput' is defined but never used                                      @typescript-eslint/no-unused-vars
+  200:10  warning  'loadingDepartments' is assigned a value but never used                            @typescript-eslint/no-unused-vars
+  200:30  warning  'setLoadingDepartments' is assigned a value but never used                         @typescript-eslint/no-unused-vars
+  208:32  warning  'setAvailableDepartments' is assigned a value but never used                       @typescript-eslint/no-unused-vars
+  234:57  warning  Unexpected any. Specify a different type                                           @typescript-eslint/no-explicit-any
+  308:49  warning  Unexpected any. Specify a different type                                           @typescript-eslint/no-explicit-any
+  330:51  warning  Unexpected any. Specify a different type                                           @typescript-eslint/no-explicit-any
+  389:49  warning  Unexpected any. Specify a different type                                           @typescript-eslint/no-explicit-any
+  421:49  warning  Unexpected any. Specify a different type                                           @typescript-eslint/no-explicit-any
+  443:51  warning  Unexpected any. Specify a different type                                           @typescript-eslint/no-explicit-any
+  469:78  warning  'templateName' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+  818:40  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+D:\irib-digital-workplace\app\(authenticated)\dashboard\content\page.tsx
+   43:37  warning  'contentHtml' is defined but never used              @typescript-eslint/no-unused-vars
+   98:10  warning  'mapContentToRow' is defined but never used          @typescript-eslint/no-unused-vars
+  108:30  warning  Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  108:70  warning  Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  153:56  warning  Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  182:58  warning  Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  185:56  warning  Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  217:46  warning  Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  269:21  warning  Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  283:21  warning  Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  298:23  warning  Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  321:23  warning  Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  337:23  warning  Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  361:21  warning  Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  504:15  warning  'isReviewTab' is assigned a value but never used     @typescript-eslint/no-unused-vars
+  505:15  warning  'isScheduledTab' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\(authenticated)\dashboard\content\preview\page.tsx
+  48:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\irib-digital-workplace\app\(authenticated)\dashboard\experts\page.tsx
+  23:44  warning  'loading' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  23:53  warning  'error' is assigned a value but never used    @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\(authenticated)\dashboard\integrations\page.tsx
+  35:62  warning  'error' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\(authenticated)\dashboard\media\page.tsx
+  26:34  warning  'uploading' is assigned a value but never used                           @typescript-eslint/no-unused-vars
+  26:45  warning  'fetchStats' is assigned a value but never used                          @typescript-eslint/no-unused-vars
+  35:55  warning  'index' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\(authenticated)\dashboard\organization\page.tsx
+  24:34  warning  'error' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  53:29  warning  Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+  92:40  warning  Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+
+D:\irib-digital-workplace\app\(authenticated)\dashboard\pages\page.tsx
+  23:34  warning  'error' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\(authenticated)\dashboard\pdf\page.tsx
+  22:10  warning  'selectedTemplate' is assigned a value but never used     @typescript-eslint/no-unused-vars
+  22:28  warning  'setSelectedTemplate' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  22:60  warning  Unexpected any. Specify a different type                  @typescript-eslint/no-explicit-any
+
+D:\irib-digital-workplace\app\(authenticated)\dashboard\roles\page.tsx
+  23:40  warning  'error' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\(authenticated)\dashboard\settings\page.tsx
+  21:11  warning  'settings' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  21:21  warning  'loading' is assigned a value but never used        @typescript-eslint/no-unused-vars
+  21:30  warning  'error' is assigned a value but never used          @typescript-eslint/no-unused-vars
+  21:37  warning  'saving' is assigned a value but never used         @typescript-eslint/no-unused-vars
+  21:45  warning  'updateSetting' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\(authenticated)\dashboard\sms\page.tsx
+  21:47  warning  'loading' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  21:56  warning  'error' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  21:63  warning  'sendSms' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\(authenticated)\dashboard\software\page.tsx
+  24:44  warning  'uploading' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  24:55  warning  'fetchSoftware' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\(authenticated)\dashboard\theme\page.tsx
+  39:54  warning  Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+  41:28  warning  'error' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\(authenticated)\dashboard\tickets\page.tsx
+  20:50  warning  'createTicket' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  80:14  warning  '_err' is defined but never used                   @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\(authenticated)\dashboard\users\page.tsx
+  22:3   warning  'Trash2' is defined but never used          @typescript-eslint/no-unused-vars
+  35:27  warning  'error' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\(authenticated)\dashboard\widgets\page.tsx
+  23:20  warning  'layouts' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  23:45  warning  'error' is assigned a value but never used    @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\(authenticated)\dashboard\workspaces\page.tsx
+  34:23  warning  'stats' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  34:39  warning  'error' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\(authenticated)\notifications\page.tsx
+  9:11  warning  'Notification' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\(authenticated)\profile\page.tsx
+  11:9    warning  'router' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  41:46   warning  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  43:116  warning  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  47:40   warning  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  49:116  warning  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+
+D:\irib-digital-workplace\app\(authenticated)\settings\page.tsx
+  127:83  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\irib-digital-workplace\app\(public)\login\page.tsx
+  199:19  warning  The href attribute requires a valid value to be accessible. Provide a valid, navigable address as the href value. If you cannot provide a valid href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+D:\irib-digital-workplace\app\(public)\news\page.tsx
+  13:10  warning  'Container' is defined but never used       @typescript-eslint/no-unused-vars
+  14:10  warning  'Section' is defined but never used         @typescript-eslint/no-unused-vars
+  22:26  warning  'error' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\(public)\polls\page.tsx
+   20:10  warning  'selectedPoll' is assigned a value but never used                                  @typescript-eslint/no-unused-vars
+   20:24  warning  'setSelectedPoll' is assigned a value but never used                               @typescript-eslint/no-unused-vars
+   20:52  warning  Unexpected any. Specify a different type                                           @typescript-eslint/no-explicit-any
+  143:5   warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+D:\irib-digital-workplace\app\(public)\requests\page.tsx
+   29:22  warning  'setMyRequests' is assigned a value but never used                                 @typescript-eslint/no-unused-vars
+  100:5   warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+D:\irib-digital-workplace\app\(public)\search\search-client.tsx
+  77:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+D:\irib-digital-workplace\app\api\admin\settings\export\route.ts
+  5:28  warning  'request' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\api\admin\settings\initialize\route.ts
+  5:28  warning  'request' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\api\wizard\[...path]\route.ts
+  10:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  20:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  33:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  45:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+D:\irib-digital-workplace\app\components\widgets\approval-workflow.tsx
+  190:56  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\irib-digital-workplace\app\components\widgets\notifications-center.tsx
+  74:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\irib-digital-workplace\app\components\widgets\task-management.tsx
+   14:29  warning  'Clock' is defined but never used         @typescript-eslint/no-unused-vars
+   14:54  warning  'MoreVertical' is defined but never used  @typescript-eslint/no-unused-vars
+  169:56  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\irib-digital-workplace\app\hooks\use-afish.ts
+  23:9   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  93:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\irib-digital-workplace\app\hooks\use-integrations.ts
+   21:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  101:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\irib-digital-workplace\app\hooks\use-pdf.ts
+   23:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  103:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  116:56  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\irib-digital-workplace\app\hooks\use-permissions.ts
+  28:33  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  73:32  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\irib-digital-workplace\app\hooks\use-settings.ts
+  18:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  20:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  64:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  66:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\irib-digital-workplace\app\hooks\use-sms.ts
+  98:13  warning  'status' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\hooks\use-software.ts
+  86:33  warning  'file' is defined but never used. Allowed unused args must match /^_/u      @typescript-eslint/no-unused-vars
+  86:45  warning  'metadata' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\hooks\use-user-dashboard.ts
+  57:19  warning  'setTraffic' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  61:17  warning  'setError' is assigned a value but never used    @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\hooks\use-user-settings.ts
+  43:63  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  44:34  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  58:50  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  64:56  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  66:50  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  80:68  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  85:42  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\irib-digital-workplace\app\hooks\use-widgets.ts
+   34:9   warning  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
+   55:40  warning  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
+   57:47  warning  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
+   83:40  warning  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
+   93:40  warning  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
+   97:46  warning  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
+   99:48  warning  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
+  112:31  warning  'data' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  114:11  warning  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
+  129:31  warning  'id' is defined but never used. Allowed unused args must match /^_/u    @typescript-eslint/no-unused-vars
+  129:43  warning  'data' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  139:31  warning  'id' is defined but never used. Allowed unused args must match /^_/u    @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\app\wizard\page.tsx
+   15:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   26:11  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  316:60  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  318:56  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  434:14  warning  'error' is defined but never used         @typescript-eslint/no-unused-vars
+  997:62  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\irib-digital-workplace\components\microsite\it-news.tsx
+  13:13  warning  The href attribute requires a valid value to be accessible. Provide a valid, navigable address as the href value. If you cannot provide a valid href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+D:\irib-digital-workplace\components\microsite\microsite-nav.tsx
+  16:17  warning  The href attribute requires a valid value to be accessible. Provide a valid, navigable address as the href value. If you cannot provide a valid href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+D:\irib-digital-workplace\components\molecules\rich-text-editor.tsx
+  81:10  warning  'DropdownButton' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\components\portal\login-card.tsx
+  42:9  warning  The href attribute requires a valid value to be accessible. Provide a valid, navigable address as the href value. If you cannot provide a valid href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+D:\irib-digital-workplace\components\widgets\calendar-prayer.tsx
+   7:7   warning  '_prayerTimeIds' is assigned a value but never used                         @typescript-eslint/no-unused-vars
+  17:40  warning  'instance' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  17:50  warning  'config' is defined but never used. Allowed unused args must match /^_/u    @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\components\widgets\dept-experts-directory.tsx
+  4:25  warning  'Mail' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\components\widgets\dept-forms-center.tsx
+  4:40  warning  'AlertCircle' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\components\widgets\manifest.tsx
+  194:43  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\irib-digital-workplace\components\widgets\types.ts
+  27:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\irib-digital-workplace\hooks\use-news.ts
+  63:14  warning  '_err' is defined but never used  @typescript-eslint/no-unused-vars
+  86:14  warning  '_err' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\hooks\use-organization.ts
+  44:14  warning  '_err' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\hooks\use-pages.ts
+  26:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  27:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  59:14  warning  '_err' is defined but never used          @typescript-eslint/no-unused-vars
+  72:14  warning  '_err' is defined but never used          @typescript-eslint/no-unused-vars
+  82:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  83:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\irib-digital-workplace\hooks\use-storage.ts
+  56:14  warning  '_err' is defined but never used  @typescript-eslint/no-unused-vars
+  69:14  warning  '_err' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\irib-digital-workplace\lib\api-client.ts
+  10:51  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  11:16  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\irib-digital-workplace\lib\services\dashboard.ts
+   46:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   47:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   77:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   80:31  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  131:46  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  133:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+Γ£û 196 problems (0 errors, 196 warnings)
+

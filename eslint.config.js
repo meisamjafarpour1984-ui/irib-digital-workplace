@@ -59,6 +59,7 @@ export default [
       'playwright.config.ts',
       'proxy.ts',
       '.storybook/',
+      'vscod/',
       '**/*.spec.ts',
       '**/*.test.ts',
       '**/*.spec.tsx',

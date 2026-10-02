@@ -2,14 +2,16 @@
 
 import { quickLinks } from '@/lib/portal-data'
 import type { WidgetProps } from './types'
+import { useTranslations } from 'next-intl'
 
 export function QuickAccessWidget({ config }: WidgetProps) {
+  const t = useTranslations('widgets.quickAccess')
   const maxItems = (config?.maxItems as number) ?? 10
   const displayLinks = quickLinks.slice(0, maxItems)
 
   return (
     <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-      <h2 className="mb-4 text-center text-heading-1 text-foreground">دسترسی سریع به سامانه‌ها</h2>
+      <h2 className="mb-4 text-center text-heading-1 text-foreground">{t('title')}</h2>
       <ul className="grid grid-cols-4 gap-2.5">
         {displayLinks.map(({ label, icon: Icon, href }) => (
           <li key={label}>

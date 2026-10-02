@@ -2,6 +2,7 @@
 
 import { FileText, Clock, Users, Tag, Link as LinkIcon, AlertCircle } from 'lucide-react'
 import { AccessibleButton } from '@/components/ui/AccessibleButton'
+import { useTranslations } from 'next-intl'
 
 interface EntityContext {
   type: string
@@ -34,6 +35,7 @@ export function InboxSidePanel({
   slaDeadline,
   relatedItems = [],
 }: InboxSidePanelProps) {
+  const t = useTranslations('inboxSidePanel')
   if (!entity) return null
 
   return (
@@ -42,26 +44,28 @@ export function InboxSidePanel({
       <div>
         <h3 className="mb-3 flex items-center gap-2 text-xs font-medium text-muted-foreground">
           <FileText className="size-3.5" aria-hidden />
-          اطلاعات موجودیت
+          {t('entityInfo')}
         </h3>
         <div className="space-y-2.5">
           <div>
-            <p className="text-[10px] text-muted-foreground">نوع</p>
-            <p className="text-sm font-medium text-foreground">{entity.type}</p>
+            <p className="text-[10px] text-muted-foreground">{t('type')}</p>
+            <p className="text-sm font-medium text-foreground">
+              {t(`types.${entity.type}`, { default: entity.type })}
+            </p>
           </div>
           <div>
-            <p className="text-[10px] text-muted-foreground">عنوان</p>
+            <p className="text-[10px] text-muted-foreground">{t('title')}</p>
             <p className="text-sm text-foreground">{entity.title}</p>
           </div>
           <div>
-            <p className="text-[10px] text-muted-foreground">وضعیت</p>
+            <p className="text-[10px] text-muted-foreground">{t('status')}</p>
             <span className="inline-flex rounded-full bg-brand/10 px-2 py-0.5 text-xs font-semibold text-brand">
-              {entity.status}
+              {t(`statuses.${entity.status}`, { default: entity.status })}
             </span>
           </div>
           {entity.priority && (
             <div>
-              <p className="text-[10px] text-muted-foreground">اولویت</p>
+              <p className="text-[10px] text-muted-foreground">{t('priority')}</p>
               <span
                 className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${
                   entity.priority === 'urgent'
@@ -71,16 +75,16 @@ export function InboxSidePanel({
                       : 'bg-muted text-muted-foreground'
                 }`}
               >
-                {entity.priority}
+                {t(`priorities.${entity.priority}`, { default: entity.priority })}
               </span>
             </div>
           )}
           <div>
-            <p className="text-[10px] text-muted-foreground">تاریخ ایجاد</p>
+            <p className="text-[10px] text-muted-foreground">{t('createdAt')}</p>
             <p className="text-xs text-foreground tabular-nums">{entity.createdAt}</p>
           </div>
           <div>
-            <p className="text-[10px] text-muted-foreground">آخرین به‌روزرسانی</p>
+            <p className="text-[10px] text-muted-foreground">{t('updatedAt')}</p>
             <p className="text-xs text-foreground tabular-nums">{entity.updatedAt}</p>
           </div>
         </div>
@@ -91,7 +95,7 @@ export function InboxSidePanel({
         <div className="rounded-xl border border-warning/30 bg-warning/5 p-3">
           <div className="flex items-center gap-2 text-warning">
             <Clock className="size-4" aria-hidden />
-            <span className="text-xs font-bold">مهلت پاسخ</span>
+            <span className="text-xs font-bold">{t('slaDeadline')}</span>
           </div>
           <p className="mt-1 text-sm font-bold text-foreground tabular-nums">{slaDeadline}</p>
         </div>
@@ -102,7 +106,7 @@ export function InboxSidePanel({
         <div>
           <h3 className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
             <Users className="size-3.5" aria-hidden />
-            مشارکت‌کنندگان ({participants.length})
+            {t('participants', { count: participants.length })}
           </h3>
           <ul className="space-y-2">
             {participants.map((p) => (
@@ -125,7 +129,7 @@ export function InboxSidePanel({
         <div>
           <h3 className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
             <Tag className="size-3.5" aria-hidden />
-            برچسب‌ها
+            {t('tags')}
           </h3>
           <div className="flex flex-wrap gap-1.5">
             {entity.tags.map((tag) => (
@@ -145,7 +149,7 @@ export function InboxSidePanel({
         <div>
           <h3 className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
             <LinkIcon className="size-3.5" aria-hidden />
-            موارد مرتبط
+            {t('relatedItems')}
           </h3>
           <ul className="space-y-1.5">
             {relatedItems.map((item) => (

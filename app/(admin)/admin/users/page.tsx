@@ -1,67 +1,54 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { Container } from '@/components/layout/container'
 import { Section } from '@/components/layout/section'
-import { Search, Plus, Edit, Trash2 } from 'lucide-react'
+import { Search, Plus, Edit, Trash2, Loader2 } from 'lucide-react'
+import { useUsers } from '@/hooks/use-users'
 
-const users = [
-  {
-    id: 1,
-    name: 'علی رضایی',
-    code: '۱۲۳۴۵',
-    department: 'فناوری اطلاعات',
-    role: 'کارشناس',
-    status: 'فعال',
-    lastLogin: '۱۰:۱۵',
-  },
-  {
-    id: 2,
-    name: 'محمد احمدی',
-    code: '۱۲۳۴۶',
-    department: 'روابط عمومی',
-    role: 'کارشناس',
-    status: 'فعال',
-    lastLogin: '۰۹:۴۲',
-  },
-  {
-    id: 3,
-    name: 'سارا موسوی',
-    code: '۱۲۳۴۷',
-    department: 'اداری و مالی',
-    role: 'کارشناس',
-    status: 'فعال',
-    lastLogin: '۰۹:۲۰',
-  },
-  {
-    id: 4,
-    name: 'رضا کریمی',
-    code: '۱۲۳۴۸',
-    department: 'فناوری اطلاعات',
-    role: 'مدیر IT',
-    status: 'فعال',
-    lastLogin: '۰۸:۵۵',
-  },
-  {
-    id: 5,
-    name: 'مریم حسنی',
-    code: '۱۲۳۴۹',
-    department: 'تولید',
-    role: 'برنامه‌ساز',
-    status: 'غیرفعال',
-    lastLogin: '۳ روز پیش',
-  },
-]
+// Force dynamic rendering to avoid SSR hydration issues
+export const dynamic = 'force-dynamic'
 
 export default function UsersPage() {
+  const { users, stats, loading, error, deleteUser, toggleUserStatus } = useUsers()
   const [searchTerm, setSearchTerm] = useState('')
-  const [roleFilter, setRoleFilter] = useState('all')
+  const [statusFilter, setStatusFilter] = useState('all')
 
   const filtered = users.filter((u) => {
-    const matchesSearch = u.name.includes(searchTerm) || u.code.includes(searchTerm)
-    const matchesRole = roleFilter === 'all' || u.role === roleFilter
-    return matchesSearch && matchesRole
+    const matchesSearch =
+      u.name.includes(searchTerm) ||
+      u.personnelCode.includes(searchTerm) ||
+      (u.email && u.email.includes(searchTerm))
+    const matchesStatus = statusFilter === 'all' || u.status === statusFilter
+    return matchesSearch && matchesStatus
   })
+
+  const handleDelete = async (id: string) => {
+    if (confirm('آیا از حذف این کاربر اطمینان دارید؟')) {
+      try {
+        await deleteUser(id)
+      } catch {
+        alert('خطا در حذف کاربر')
+      }
+    }
+  }
+
+  const handleToggleStatus = async (id: string, currentStatus: string) => {
+    const newStatus = currentStatus === 'ACTIVE' ? 'DISABLED' : 'ACTIVE'
+    try {
+      await toggleUserStatus(id, newStatus)
+    } catch {
+      alert('خطا در تغییر وضعیت کاربر')
+    }
+  }
+
+  if (loading && users.length === 0) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-brand" />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -71,7 +58,7 @@ export default function UsersPage() {
             <div>
               <h1 className="text-display-lg text-foreground">مدیریت کاربران</h1>
               <p className="mt-1 text-body-md text-muted-foreground">
-                {users.length} کاربر ثبت‌نام شده
+                {stats?.total || 0} کاربر ثبت‌نام شده ({stats?.active || 0} فعال)
               </p>
             </div>
             <button
@@ -82,6 +69,12 @@ export default function UsersPage() {
               کاربر جدید
             </button>
           </div>
+
+          {error && (
+            <div className="mb-4 rounded-lg bg-error/10 border border-error/20 p-3 text-sm text-error">
+              {error}
+            </div>
+          )}
 
           {/* Filters */}
           <div className="mb-6 flex flex-wrap items-center gap-3">
@@ -100,18 +93,18 @@ export default function UsersPage() {
               />
             </div>
             <div className="flex gap-1 rounded-xl border border-border bg-card p-1">
-              {['all', 'کارشناس', 'مدیر IT', 'برنامه‌ساز'].map((role) => (
+              {['all', 'ACTIVE', 'DISABLED'].map((status) => (
                 <button
-                  key={role}
+                  key={status}
                   type="button"
-                  onClick={() => setRoleFilter(role)}
+                  onClick={() => setStatusFilter(status)}
                   className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
-                    roleFilter === role
+                    statusFilter === status
                       ? 'bg-brand text-white'
                       : 'text-muted-foreground hover:bg-muted'
                   }`}
                 >
-                  {role === 'all' ? 'همه' : role}
+                  {status === 'all' ? 'همه' : status === 'ACTIVE' ? 'فعال' : 'غیرفعال'}
                 </button>
               ))}
             </div>
@@ -132,7 +125,7 @@ export default function UsersPage() {
                     وضعیت
                   </th>
                   <th className="p-3 text-right text-xs font-medium text-muted-foreground">
-                    آخرین ورود
+                    ایمیل
                   </th>
                   <th className="p-3 text-center text-xs font-medium text-muted-foreground">
                     عملیات
@@ -140,58 +133,81 @@ export default function UsersPage() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((user) => (
-                  <tr
-                    key={user.id}
-                    className="border-b border-border last:border-0 hover:bg-muted/30"
-                  >
-                    <td className="p-3">
-                      <div className="flex items-center gap-2">
-                        <div className="flex size-8 items-center justify-center rounded-full bg-accent text-xs font-bold text-brand">
-                          {user.name.slice(0, 1)}
-                        </div>
-                        <span className="font-medium text-foreground">{user.name}</span>
-                      </div>
-                    </td>
-                    <td className="p-3 text-xs text-muted-foreground">{user.code}</td>
-                    <td className="p-3 text-xs text-muted-foreground">{user.department}</td>
-                    <td className="p-3">
-                      <span className="rounded-full bg-brand/10 px-2 py-0.5 text-xs font-medium text-brand">
-                        {user.role}
-                      </span>
-                    </td>
-                    <td className="p-3">
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
-                          user.status === 'فعال'
-                            ? 'bg-success/10 text-success'
-                            : 'bg-muted text-muted-foreground'
-                        }`}
-                      >
-                        {user.status}
-                      </span>
-                    </td>
-                    <td className="p-3 text-xs text-muted-foreground">{user.lastLogin}</td>
-                    <td className="p-3">
-                      <div className="flex items-center justify-center gap-1">
-                        <button
-                          type="button"
-                          className="flex size-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
-                          aria-label="ویرایش"
-                        >
-                          <Edit className="size-3.5" />
-                        </button>
-                        <button
-                          type="button"
-                          className="flex size-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-error/10 hover:text-error"
-                          aria-label="حذف"
-                        >
-                          <Trash2 className="size-3.5" />
-                        </button>
-                      </div>
+                {loading ? (
+                  <tr>
+                    <td colSpan={7} className="p-8 text-center">
+                      <Loader2 className="mx-auto size-6 animate-spin text-brand" />
                     </td>
                   </tr>
-                ))}
+                ) : filtered.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="p-8 text-center text-muted-foreground">
+                      هیچ کاربری یافت نشد
+                    </td>
+                  </tr>
+                ) : (
+                  filtered.map((user) => (
+                    <tr
+                      key={user.id}
+                      className="border-b border-border last:border-0 hover:bg-muted/30"
+                    >
+                      <td className="p-3">
+                        <div className="flex items-center gap-2">
+                          <div className="flex size-8 items-center justify-center rounded-full bg-accent text-xs font-bold text-brand">
+                            {user.name.slice(0, 1)}
+                          </div>
+                          <span className="font-medium text-foreground">{user.name}</span>
+                        </div>
+                      </td>
+                      <td className="p-3 text-xs text-muted-foreground">{user.personnelCode}</td>
+                      <td className="p-3 text-xs text-muted-foreground">
+                        {user.departments?.[0]?.department.name || '-'}
+                      </td>
+                      <td className="p-3">
+                        {user.roles?.map((r) => (
+                          <span
+                            key={r.role.id}
+                            className="rounded-full bg-brand/10 px-2 py-0.5 text-xs font-medium text-brand ml-1"
+                          >
+                            {r.role.code}
+                          </span>
+                        ))}
+                      </td>
+                      <td className="p-3">
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-xs font-semibold cursor-pointer ${
+                            user.status === 'ACTIVE'
+                              ? 'bg-success/10 text-success'
+                              : 'bg-muted text-muted-foreground'
+                          }`}
+                          onClick={() => handleToggleStatus(user.id, user.status)}
+                        >
+                          {user.status === 'ACTIVE' ? 'فعال' : 'غیرفعال'}
+                        </span>
+                      </td>
+                      <td className="p-3 text-xs text-muted-foreground">{user.email || '-'}</td>
+                      <td className="p-3">
+                        <div className="flex items-center justify-center gap-1">
+                          <button
+                            type="button"
+                            className="flex size-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
+                            aria-label="ویرایش"
+                          >
+                            <Edit className="size-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(user.id)}
+                            className="flex size-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-error/10 hover:text-error"
+                            aria-label="حذف"
+                          >
+                            <Trash2 className="size-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

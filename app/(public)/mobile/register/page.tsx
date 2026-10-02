@@ -163,7 +163,7 @@ export default function MobileRegisterPage() {
                   <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-brand/10">
                     <Smartphone className="size-7 text-brand" aria-hidden />
                   </div>
-                  <h1 className="mt-3 text-heading-1 text-foreground">ثبت‌نام در پرتال</h1>
+                  <h1 className="mt-3 text-heading-1 text-foreground">ثبت‌نام در درگاه</h1>
                   <p className="mt-1 text-sm text-muted-foreground">اطلاعات خود را وارد کنید</p>
                 </div>
 

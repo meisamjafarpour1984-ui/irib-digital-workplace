@@ -1,274 +1,32 @@
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "declaration": true,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-    "target": "ES2021",
-    "sourceMap": true,
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "incremental": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "paths": {
-      "@/*": ["./src/*"],
-      "@common/*": ["./src/common/*"],
-      "@modules/*": ["./src/modules/*"],
-      "@packages/*": ["./packages/*"]
-    }
-  },
-  "include": [
-    "src/main.ts",
-    "src/app.module.ts",
-    "src/prisma/**/*.ts",
-    "src/modules/health/**/*.ts",
-    "src/modules/iam/**/*.ts",
-    "src/modules/content/**/*.ts",
-    "src/modules/forms/**/*.ts",
-    "src/modules/search/**/*.ts",
-    "src/modules/communication/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "src/modules/iam/user-management.controller.ts",
-    "src/modules/iam/user-management.service.ts"
-  ]
-}
-=======
-{
-  "compilerOptions": {
-    "module": "commonjs",
+    "module": "Node16",
+    "moduleResolution": "node16",
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "target": "ES2021",
+    "target": "ES2022",
     "sourceMap": true,
     "outDir": "./dist",
     "rootDir": "./src",
     "incremental": true,
     "skipLibCheck": true,
     "strict": true,
+    "isolatedModules": true,
+    "strictNullChecks": false,
+    "strictPropertyInitialization": false,
+    "noImplicitAny": false,
+    "useUnknownInCatchVariables": false,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "moduleResolution": "node",
+
     "paths": {
-      "@/*": ["./src/*"],
-      "@common/*": ["./src/common/*"],
-      "@modules/*": ["./src/modules/*"],
-      "@packages/*": ["./packages/*"]
+      "@/*": ["./src/*"]
     }
   },
-  "include": [
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-    "src/main.ts",
-    "src/app.module.ts",
-    "src/prisma/**/*.ts",
-    "src/modules/health/**/*.ts",
-    "src/modules/iam/**/*.ts",
-    "src/modules/content/**/*.ts",
-    "src/modules/forms/**/*.ts",
-    "src/modules/search/**/*.ts",
-    "src/modules/communication/**/*.ts",
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-    "src/modules/widget-engine/**/*.ts"
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-=======
-    "src/**/*.ts"
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
-    "src/modules/widget-engine/**/*.ts",
-    "src/common/**/*.ts"
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
-    "src/modules/widget-engine/**/*.ts"
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
-=======
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-    "src/modules/widget-engine/**/*.ts",
-    "src/common/cache/**/*.ts",
-    "src/common/decorators/**/*.ts",
-    "src/common/dto/**/*.ts",
-    "src/common/exceptions/**/*.ts",
-    "src/common/filters/**/*.ts",
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/tsconfig.json
-    "src/common/guards/**/*.ts",
-    "src/common/interceptors/**/*.ts",
-    "src/common/pipes/**/*.ts"
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
-    "src/common/interceptors/**/*.ts",
-    "src/common/pipes/**/*.ts"
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
-    "src/common/interceptors/**/*.ts",
-    "src/common/pipes/**/*.ts",
-    "src/prisma/prisma.middleware.ts"
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
-    "src/common/interceptors/**/*.ts",
-    "src/common/pipes/**/*.ts",
-    "src/prisma/prisma.middleware.ts"
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
-    "src/common/interceptors/**/*.ts",
-    "src/common/pipes/**/*.ts",
-    "src/prisma/prisma.middleware.ts"
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
-    "src/**/*.ts"
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
-    "src/common/interceptors/**/*.ts",
-    "src/common/pipes/**/*.ts"
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
-    "src/common/interceptors/**/*.ts",
-    "src/common/pipes/**/*.ts"
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
-    "src/common/interceptors/**/*.ts",
-    "src/common/pipes/**/*.ts",
-    "src/prisma/prisma.middleware.ts"
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
-    "src/common/interceptors/**/*.ts",
-    "src/common/pipes/**/*.ts",
-    "src/prisma/prisma.middleware.ts"
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "src/modules/iam/user-management.controller.ts",
-    "src/modules/iam/user-management.service.ts",
-    "src/common/guards/**/*.ts",
-    "src/common/repositories/**/*.ts"
-=======
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-=======
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "test", "**/*.spec.ts"]
 }
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/tsconfig.json

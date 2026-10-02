@@ -2,11 +2,13 @@ import { ChevronLeft } from 'lucide-react'
 import { PanelHeader } from '@/components/portal/panel-header'
 import { itAnnouncements } from '@/lib/microsite-data'
 import { AccessibleButton } from '@/components/ui/AccessibleButton'
+import { useTranslations } from 'next-intl'
 
 export function ItAnnouncements() {
+  const t = useTranslations('microsite.itAnnouncements')
   return (
     <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-      <PanelHeader title="مرکز و اطلاعیه‌های فناوری اطلاعات" moreLabel="مشاهده تازه‌ترین‌ها" />
+      <PanelHeader title={t('title')} moreLabel={t('moreLabel')} />
       <ul className="flex flex-col">
         {itAnnouncements.map((item, i) => {
           const Icon = item.icon

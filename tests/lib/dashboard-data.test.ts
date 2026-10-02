@@ -3,11 +3,12 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { getDashboardData } from '@/lib/dashboard-data'
+import { clearDashboardDataCache, getDashboardData } from '@/lib/dashboard-data'
 
 describe('Dashboard Data', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    clearDashboardDataCache()
   })
 
   describe('getDashboardData', () => {

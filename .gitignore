@@ -19,6 +19,14 @@ test-results/
 .env.development.local
 .env.test.local
 .env.production.local
+.env.development
+.env.staging
+.env.production
+backend/.env
+backend/.env.local
+backend/.env.development
+backend/.env.staging
+backend/.env.production
 
 # IDE
 .vscode/
@@ -38,6 +46,29 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Log files
+*.log
+frontend-start.stderr.log
+frontend-start.stdout.log
+backend-start.stderr.log
+backend-start.stdout.log
+
+# Temporary SQL files
+backend/*.sql
+backend/add_user_columns.sql
+backend/check_user.sql
+backend/clear_otp_challenges.sql
+backend/configure_sms_provider.sql
+backend/create_meysam_user.sql
+backend/create_otp_templates.sql
+backend/fix_password.sql
+backend/generate_hash.js
+backend/test_sms.js
+backend/test-db.js
+backend/userlist.txt
+backend/optimization_indexes.sql
+backend/update_password.sql
+
 # Vercel
 .vercel/
 
@@ -47,6 +78,7 @@ storybook-static/
 # Misc
 *.tsbuildinfo
 next-env.d.ts
+vscod/
 
 # Binary
 mimo.exe
@@ -58,3 +90,17 @@ backend/infra/security/cosign.key
 
 # Public verification keys may be committed when needed:
 # backend/infra/security/cosign.pub
+
+# === IRIB DWP P0 CRITICAL: Never commit secrets ===
+backend/secrets/
+*.password.txt
+*_password.txt
+*.secret
+*.crt
+*.pem
+*.p12
+*.pfx
+
+# Password backup files (windows)
+*.ps1.bak
+*.bak

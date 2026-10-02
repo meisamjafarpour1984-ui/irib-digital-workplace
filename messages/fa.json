@@ -48,7 +48,22 @@
     "visitChart": "نمودار بازدیدها",
     "trafficSources": "منابع ترافیک",
     "recentActivity": "آخرین فعالیت‌ها",
-    "recentTickets": "آخرین تیکت‌ها"
+    "recentTickets": "آخرین تیکت‌ها",
+    "viewAllTickets": "مشاهده همه",
+    "noTitle": "بدون عنوان",
+    "time": "ساعت {time}",
+    "totalVisits": "کل بازدید",
+    "uniqueVisits": "بازدید یکتا",
+    "totalTraffic": "کل ترافیک",
+    "kpi": {
+      "views": "بازدید (دوره)",
+      "content": "محتوای منتشرشده",
+      "active": "فعال",
+      "users": "کاربران فعال",
+      "tickets": "تیکت‌های باز",
+      "needsFollowup": "نیاز به پیگیری",
+      "noTickets": "بدون تیکت"
+    }
   },
   "inbox": {
     "title": "کارتابل ارتباطات",
@@ -200,5 +215,828 @@
     "passwordPlaceholder": "رمز عبور",
     "login": "ورود",
     "guide": "راهنمای اتصال"
+  },
+  "utilityBar": {
+    "greeting": "سلام، همکار گرامی",
+    "welcome": "خوش آمدید",
+    "searchPlaceholder": "جستجو در درگاه...",
+    "searchLabel": "جستجو در درگاه"
+  },
+  "microsite": {
+    "hero": {
+      "badge": "درگاه دیجیتال کارکنان",
+      "title": "معاونت فناوری اطلاعات",
+      "subtitle": "نوآوری، پشتیبانی، توسعه",
+      "description": "معاونت فناوری اطلاعات با هدف پشتیبانی از زیرساخت‌های فنی و ارائه خدمات نوین به کارکنان، همواره در مسیر تحول دیجیتال سازمان گام برمی‌دارد.",
+      "supportRequest": "ثبت درخواست پشتیبانی",
+      "viewSystems": "مشاهده سامانه‌ها",
+      "heroImageAlt": "زیرساخت فناوری اطلاعات مرکز",
+      "stats": {
+        "میانگین زمان پاسخ": "میانگین زمان پاسخ",
+        "تیکت‌های حل‌شده": "تیکت‌های حل‌شده",
+        "سامانه‌های فعال": "سامانه‌های فعال",
+        "آپ‌تایم شبکه": "آپ‌تایم شبکه"
+      }
+    },
+    "nav": {
+      "backToPortal": "بازگشت به درگاه",
+      "items": {
+        "home": "صفحه اصلی",
+        "software": "نرم‌افزارها",
+        "forms": "فرم‌ها",
+        "services": "رفع خدمات",
+        "inbox": "کارتابل",
+        "contact": "تماس با ما"
+      }
+    },
+    "itNews": {
+      "title": "آخرین اخبار فناوری اطلاعات"
+    },
+    "itAnnouncements": {
+      "title": "مرکز و اطلاعیه‌های فناوری اطلاعات",
+      "moreLabel": "مشاهده تازه‌ترین‌ها"
+    },
+    "softwareList": {
+      "title": "مرکز نرم‌افزارها",
+      "moreLabel": "مشاهده نرم‌افزارها",
+      "download": "دانلود"
+    }
+  },
+  "broadcastComposer": {
+    "title": "ارسال پیام هدفمند",
+    "close": "بستن",
+    "subject": "موضوع",
+    "subjectPlaceholder": "موضوع پیام...",
+    "body": "متن پیام",
+    "bodyPlaceholder": "متن پیام خود را بنویسید...",
+    "audience": "مخاطبان",
+    "search": "جستجو...",
+    "sendVia": "ارسال از طریق:",
+    "estimatedRecipients": "مخاطب تخمینی",
+    "cancel": "انصراف",
+    "send": "ارسال پیام",
+    "recipientTypes": {
+      "all": "همه کاربران",
+      "department": "معاونت‌ها",
+      "role": "نقش‌ها",
+      "custom": "سفارشی"
+    },
+    "sendOptions": {
+      "inApp": "درگاه",
+      "push": "Push",
+      "both": "هر دو"
+    },
+    "items": {
+      "it": "فناوری اطلاعات",
+      "production": "تولید",
+      "admin": "اداری و مالی",
+      "research": "پژوهش",
+      "pr": "روابط عمومی",
+      "edu": "آموزش",
+      "employee": "کارمند",
+      "expert": "کارشناس",
+      "manager": "مدیر معاونت",
+      "senior_manager": "مدیر ارشد",
+      "it_manager": "مدیر IT",
+      "official": "رسمی",
+      "contractor": "قراردادی",
+      "company": "شرکتی"
+    }
+  },
+  "inboxSidePanel": {
+    "entityInfo": "اطلاعات موجودیت",
+    "type": "نوع",
+    "title": "عنوان",
+    "status": "وضعیت",
+    "priority": "اولویت",
+    "createdAt": "تاریخ ایجاد",
+    "updatedAt": "آخرین به‌روزرسانی",
+    "slaDeadline": "مهلت پاسخ",
+    "participants": "مشارکت‌کنندگان ({count})",
+    "tags": "برچسب‌ها",
+    "relatedItems": "موارد مرتبط"
+  },
+  "chatThread": {
+    "placeholder": "پیام بنویسید... (@ برای اشاره)",
+    "messageLabel": "متن پیام",
+    "send": "ارسال",
+    "attach": "پیوست"
+  },
+  "searchBar": {
+    "placeholder": "جستجو...",
+    "clear": "پاک کردن",
+    "recentSearches": "جستجوهای اخیر"
+  },
+  "fileUploader": {
+    "dropzone": "فایل‌ها را اینجا رها کنید یا کلیک کنید",
+    "limits": "حداکثر {size} · حداکثر {max} فایل",
+    "maxFilesError": "حداکثر {max} فایل مجاز است",
+    "maxSizeError": "فایل \"{name}\" بیش از {size} است",
+    "removeFile": "حذف {name}"
+  },
+  "afishTable": {
+    "title": "آفیش تیم",
+    "rowCount": "{n} ردیف",
+    "print": "چاپ",
+    "actions": "عملیات",
+    "select": "انتخاب...",
+    "copyRow": "کپی ردیف",
+    "deleteRow": "حذف ردیف",
+    "addRow": "افزودن ردیف"
+  },
+  "richTextEditor": {
+    "placeholder": "متن خود را بنویسید...",
+    "words": "کلمه",
+    "characters": "کاراکتر",
+    "prompt": {
+      "linkUrl": "آدرس لینک:",
+      "imageUrl": "آدرس تصویر:"
+    },
+    "toolbar": {
+      "bold": "بولد (Ctrl+B)",
+      "italic": "ایتالیک (Ctrl+I)",
+      "underline": "زیرخط (Ctrl+U)",
+      "strike": "خط‌خورده",
+      "code": "کد",
+      "heading1": "عنوان ۱",
+      "heading2": "عنوان ۲",
+      "heading3": "عنوان ۳",
+      "bulletList": "لیست نقطه‌ای",
+      "orderedList": "لیست شماره‌دار",
+      "blockquote": "نقل قول",
+      "codeBlock": "بلوک کد",
+      "link": "لینک",
+      "image": "تصویر",
+      "horizontalRule": "خط افقی",
+      "undo": "بازگردانی (Ctrl+Z)",
+      "redo": "انجام مجدد (Ctrl+Y)",
+      "clearFormatting": "پاک کردن فرمت‌بندی",
+      "fullscreen": "تمام صفحه",
+      "exitFullscreen": "خروج از تمام صفحه"
+    }
+  },
+  "widgets": {
+    "deptAnnouncements": {
+      "title": "اطلاعیه‌های واحدها",
+      "departments": {
+        "admin": "اداری",
+        "it": "فناوری اطلاعات",
+        "edu": "آموزش",
+        "research": "پژوهش"
+      }
+    },
+    "deptServiceCards": {
+      "title": "سرویس‌های واحد",
+      "view": "مشاهده",
+      "items": {
+        "s1": { "title": "ثبت تیکت پشتیبانی", "desc": "مشکلات فنی خود را گزارش دهید" },
+        "s2": { "title": "دانلود نرم‌افزار", "desc": "نرم‌افزارهای مجاز سازمانی" },
+        "s3": { "title": "آموزش IT", "desc": "دوره‌های آنلاین فناوری اطلاعات" },
+        "s4": { "title": "وضعیت شبکه", "desc": "مانیتورینگ لحظه‌ای زیرساخت" }
+      }
+    },
+    "experts": {
+      "title": "کارشناسان واحد",
+      "count": "{n} نفر",
+      "sendMessage": "ارسال پیام"
+    },
+    "formsCenter": {
+      "title": "مرکز فرم‌ها",
+      "activeCount": "{n} فرم فعال",
+      "completeForm": "تکمیل فرم",
+      "submissions": "{n} ثبت‌نام",
+      "status": {
+        "open": "باز",
+        "closed": "بسته شده"
+      },
+      "items": {
+        "f1": { "title": "فرم درخواست نرم‌افزار" },
+        "f2": { "title": "نظرسنجی رضایت کارکنان" },
+        "f3": { "title": "فرم درخواست مرخصی" },
+        "f4": { "title": "فرم گزارش خرابی" }
+      }
+    },
+    "deptDocumentCenter": {
+      "title": "مرکز اسناد",
+      "count": "{n} سند",
+      "columnTitle": "عنوان",
+      "columnType": "نوع",
+      "columnSize": "حجم",
+      "columnDate": "تاریخ",
+      "columnActions": "عملیات",
+      "view": "مشاهده",
+      "download": "دانلود",
+      "items": {
+        "d1": { "title": "دستورالعمل امنیت اطلاعات" },
+        "d2": { "title": "راهنمای استفاده از سامانه تیکتینگ" },
+        "d3": { "title": "فهرست نرم‌افزارهای مجاز" },
+        "d4": { "title": "گزارش عملکرد فصل اول" },
+        "d5": { "title": "تصاویر نشست مدیران" }
+      }
+    },
+    "adminKpi": {
+      "title": "شاخص‌های کلیدی عملکرد",
+      "items": {
+        "k1": { "label": "بازدید امروز" },
+        "k2": { "label": "کاربران فعال" },
+        "k3": { "label": "محتوای منتشر شده" },
+        "k4": { "label": "پیام‌های جدید" }
+      }
+    },
+    "researchHighlights": {
+      "title": "برجسته‌های پژوهش",
+      "topExperts": "کارشناسان برتر",
+      "newIdeas": "ایده‌های نو",
+      "experts": {
+        "e1": "دکتر علی محمدی",
+        "e1Title": "پژوهشگر ارشد",
+        "e2": "دکتر سارا احمدی",
+        "e2Title": "کارشناس رسانه",
+        "e3": "مهندس رضا کریمی",
+        "e3Title": "مدیر فنی"
+      },
+      "ideas": {
+        "i1": "سیستم توصیه‌گر محتوا با AI",
+        "i1Author": "علی محمدی",
+        "i2": "تحلیل احساسات مخاطبان",
+        "i2Author": "سارا احمدی",
+        "i3": "بهینه‌سازی پخش زنده",
+        "i3Author": "رضا کریمی"
+      }
+    },
+    "calendarPrayer": {
+      "title": "اوقات نماز",
+      "currentDate": "تاریخ امروز شمسی",
+      "hijriDate": "تاریخ امروز قمری",
+      "prayerTimesTitle": "اوقات نماز",
+      "prayers": {
+        "fajr": "فجر",
+        "sunrise": "طلوع",
+        "dhuhr": "ظهر",
+        "asr": "عصر",
+        "maghrib": "مغرب",
+        "isha": "شب"
+      }
+    },
+    "weather": {
+      "title": "آب و هوای تبریز",
+      "condition": "آفتابی",
+      "location": "تبریز، آذربایجان شرقی",
+      "humidity": "رطوبت",
+      "wind": "باد km/h",
+      "cloud": "ابری"
+    },
+    "heroMedia": {
+      "goToSlide": "رفتن به اسلاید {n}",
+      "prevSlide": "اسلاید قبلی",
+      "nextSlide": "اسلاید بعدی"
+    },
+    "newsTimeline": {
+      "title": "آخرین اخبار",
+      "viewAll": "مشاهده همه"
+    },
+    "quickAccess": {
+      "title": "دسترسی سریع به سامانه‌ها"
+    }
+  },
+  "atoms": {
+    "pagination": {
+      "navLabel": "ناوبری صفحات",
+      "prev": "صفحه قبلی",
+      "next": "صفحه بعدی"
+    },
+    "breadcrumb": {
+      "navLabel": "مسیر ناوبری"
+    }
+  },
+  "portal": {
+    "services": {
+      "notFound": "هیچ سامانه‌ای یافت نشد",
+      "requestAccess": "درخواست دسترسی"
+    },
+    "logo": {
+      "orgName": "صدا و سیمای مرکز آذربایجان شرقی",
+      "tagline": "فرهنگ، اطلاعات، ارتباط"
+    },
+    "hero": {
+      "label": "اسلایدر اخبار",
+      "prev": "اسلاید قبلی",
+      "next": "اسلاید بعدی",
+      "gotoSlide": "رفتن به اسلاید {n}"
+    },
+    "occasion": {
+      "title": "مناسبت ویژه",
+      "cta": "مشاهده جزئیات"
+    },
+    "gallery": {
+      "title": "گالری تصاویر"
+    }
+  },
+  "mobileNav": {
+    "ariaLabel": "ناوبری موبایل",
+    "items": {
+      "home": "خانه",
+      "inbox": "کارتابل",
+      "create": "ایجاد",
+      "services": "سامانه‌ها",
+      "profile": "پروفایل"
+    }
+  },
+  "profile": {
+    "panelTitle": "پنل کارمند",
+    "user": "کاربر",
+    "department": "واحد",
+    "role": "کاربر",
+    "unit": "واحد سازمانی",
+    "joinDate": "عضویت از {date}",
+    "requests": "درخواست‌ها",
+    "announcements": "اطلاعیه‌ها",
+    "myUnit": "واحد من",
+    "settings": "تنظیمات",
+    "changePhoto": "تغییر عکس",
+    "editInfo": "ویرایش اطلاعات",
+    "fullName": "نام و نام خانوادگی",
+    "personnelCode": "کد پرسنلی",
+    "email": "ایمیل",
+    "mobile": "موبایل",
+    "aboutMe": "درباره من",
+    "savedSuccess": "ذخیره شد!",
+    "saving": "در حال ذخیره...",
+    "saveChanges": "ذخیره تغییرات",
+    "security": "امنیت حساب",
+    "changePassword": "تغییر رمز عبور",
+    "lastChange": "آخرین تغییر: {days} روز پیش",
+    "twoFactor": "احراز هویت دو مرحله‌ای",
+    "twoFactorVia": "از طریق SMS فعال است",
+    "active": "فعال",
+    "connectedDevices": "دستگاه‌های متصل",
+    "activeDevices": "{count} دستگاه فعال",
+    "view": "مشاهده",
+    "change": "تغییر"
+  },
+  "tickets": {
+    "title": "مدیریت تیکت‌ها",
+    "subtitle": "مدیریت تیکت‌های پشتیبانی و خدمات",
+    "newTicket": "تیکت جدید",
+    "allTickets": "همه تیکت‌ها",
+    "new": "جدید",
+    "inProgress": "در حال بررسی",
+    "resolved": "حل شده",
+    "closed": "بسته شده",
+    "totalTickets": "کل تیکت‌ها",
+    "searchPlaceholder": "جستجو در تیکت‌ها...",
+    "filter": "فیلتر",
+    "columnTitle": "عنوان",
+    "columnStatus": "وضعیت",
+    "columnPriority": "اولویت",
+    "columnCategory": "دسته‌بندی",
+    "columnAssignee": "مسئول",
+    "columnCreated": "تاریخ ایجاد",
+    "columnActions": "عملیات",
+    "noTickets": "هیچ تیکی یافت نشد",
+    "priorityHigh": "بالا",
+    "priorityNormal": "عادی",
+    "priorityLow": "پایین",
+    "statusChangeError": "خطا در تغییر وضعیت تیکت"
+  },
+  "notifications": {
+    "title": "اعلان‌ها",
+    "unreadCount": "{count} اعلان خوانده نشده",
+    "markAllRead": "همه خوانده شد",
+    "markAllAsRead": "همه خوانده شد",
+    "filterAll": "همه",
+    "all": "همه",
+    "filterUnread": "خوانده نشده",
+    "unread": "خوانده نشده",
+    "read": "خوانده شده",
+    "filterMessages": "پیام‌ها",
+    "filterTickets": "تیکت‌ها",
+    "filterContent": "محتوا",
+    "filterSystem": "سیستم",
+    "markRead": "خوانده شد",
+    "markAsRead": "خوانده شد",
+    "delete": "حذف",
+    "viewAll": "مشاهده همه",
+    "empty": "اعلانی وجود ندارد"
+  },
+  "analytics": {
+    "title": "تحلیل و آمار",
+    "subtitle": "گزارش‌ها و تحلیل‌های عملکرد سیستم",
+    "tabs": {
+      "overview": "نمای کلی",
+      "content": "محتوا",
+      "users": "کاربران",
+      "audit": "لاگ‌های ممیزی"
+    },
+    "periods": {
+      "1d": "روز گذشته",
+      "7d": "۷ روز",
+      "30d": "۳۰ روز",
+      "90d": "۹۰ روز"
+    },
+    "kpi": {
+      "visitors": "بازدیدکنندگان",
+      "pageViews": "بازدید صفحات",
+      "content": "محتوای منتشر شده",
+      "activeUsers": "کاربران فعال"
+    },
+    "charts": {
+      "pageViewsTitle": "بازدید صفحات (۷ روز اخیر)",
+      "activeUsersTitle": "کاربران فعال (۷ روز اخیر)",
+      "saturday": "شنبه",
+      "sunday": "یک‌شنبه",
+      "monday": "دوشنبه",
+      "tuesday": "سه‌شنبه",
+      "wednesday": "چهارشنبه",
+      "thursday": "پنج‌شنبه",
+      "friday": "جمعه"
+    },
+    "recentActivity": "فعالیت‌های اخیر",
+    "auditTitle": "لاگ‌های ممیزی",
+    "searchPlaceholder": "جستجو در لاگ‌ها...",
+    "filter": "فیلتر",
+    "table": {
+      "action": "عملیات",
+      "type": "نوع",
+      "title": "عنوان",
+      "user": "کاربر",
+      "time": "زمان"
+    },
+    "placeholder": {
+      "title": "تحلیل {type}",
+      "inDevelopment": "این بخش در حال توسعه است.",
+      "contentType": "محتوا",
+      "usersType": "کاربران"
+    }
+  },
+  "experts": {
+    "pageTitle": "مدیریت متخصصین",
+    "pageSubtitle": "مدیریت متخصصین و اسطوره‌های رسانه",
+    "addExpert": "افزودن متخصص",
+    "tabs": {
+      "experts": "متخصصین",
+      "legends": "اسطوره‌ها",
+      "skills": "مهارت‌ها"
+    },
+    "stats": {
+      "totalExperts": "کل متخصصین",
+      "legends": "اسطوره‌ها",
+      "skills": "مهارت‌ها",
+      "interviews": "مصاحبه‌ها"
+    },
+    "searchPlaceholder": "جستجو در متخصصین...",
+    "filter": "فیلتر",
+    "edit": "ویرایش",
+    "legendBadge": "اسطوره",
+    "honors": "افتخارات",
+    "keyWorks": "آثار برجسته",
+    "festivals": "جشنواره‌ها",
+    "viewInterview": "مشاهده مصاحبه",
+    "table": {
+      "skillName": "نام مهارت",
+      "category": "دسته",
+      "expertCount": "تعداد متخصصین",
+      "actions": "عملیات"
+    },
+    "titleEdit": "ویرایش",
+    "titleMore": "بیشتر"
+  },
+  "roles": {
+    "title": "نقش‌ها و دسترسی‌ها",
+    "subtitle": "مدیریت نقش‌ها و دسترسی‌های کاربران",
+    "addRole": "افزودن نقش",
+    "tabs": {
+      "roles": "نقش‌ها",
+      "permissions": "دسترسی‌ها",
+      "assignments": "تخصیص‌ها"
+    },
+    "stats": {
+      "totalRoles": "کل نقش‌ها",
+      "totalPermissions": "کل دسترسی‌ها",
+      "assignments": "تخصیص‌ها",
+      "systemRoles": "نقش‌های سیستمی"
+    },
+    "searchPlaceholder": "جستجو در نقش‌ها...",
+    "filter": "فیلتر",
+    "systemBadge": "سیستمی",
+    "userCount": "کاربر",
+    "permissionCount": "دسترسی",
+    "edit": "ویرایش",
+    "permissionsTable": {
+      "entity": "Entity",
+      "action": "Action",
+      "description": "توضیحات",
+      "actions": "عملیات"
+    },
+    "more": "بیشتر",
+    "assignmentsTitle": "تخصیص نقش‌ها به کاربران",
+    "assignmentsPlaceholder": "این بخش در حال توسعه است."
+  },
+  "announcements": {
+    "title": "مدیریت اطلاعیه‌ها",
+    "subtitle": "مدیریت اطلاعیه‌های سازمانی",
+    "create": "ایجاد اطلاعیه",
+    "searchPlaceholder": "جستجو در اطلاعیه‌ها...",
+    "filter": "فیلتر",
+    "tabs": {
+      "all": "همه اطلاعیه‌ها",
+      "published": "منتشر شده",
+      "draft": "پیش‌نویس",
+      "scheduled": "زمان‌بندی شده"
+    },
+    "stats": {
+      "total": "کل اطلاعیه‌ها",
+      "published": "منتشر شده",
+      "scheduled": "زمان‌بندی شده",
+      "totalViews": "کل بازدیدها"
+    },
+    "status": {
+      "published": "منتشر شده",
+      "draft": "پیش‌نویس",
+      "scheduled": "زمان‌بندی شده"
+    },
+    "priority": {
+      "high": "بالا",
+      "normal": "عادی",
+      "low": "پایین"
+    },
+    "labels": {
+      "publishedAt": "انتشار",
+      "scheduledAt": "زمان‌بندی",
+      "views": "بازدید"
+    },
+    "actions": {
+      "publish": "انتشار",
+      "edit": "ویرایش",
+      "more": "بیشتر"
+    },
+    "admin.settings": {
+      "title": "تنظیمات سیستم",
+      "subtitle": "مدیریت تنظیمات و سرویس‌های سیستم",
+      "initializing": "در حال مقداردهی...",
+      "initializingButton": "مقداردهی اولیه",
+      "exporting": "در حال خروجی...",
+      "exportButton": "خروجی",
+      "importing": "در حال ورودی...",
+      "importButton": "ورودی",
+      "securityNotes": "نکات امنیتی",
+      "categories": {
+        "authentication": "احراز هویت",
+        "sms": "پیامک",
+        "email": "ایمیل",
+        "notification": "اعلان‌ها",
+        "storage": "ذخیره‌سازی",
+        "integration": "یکپارچگی",
+        "general": "عمومی"
+      },
+      "saveAll": "ذخیره همه",
+      "environmentOverride": "⚠️ این مقدار از environment variable override شده است",
+      "locked": "قفل شده",
+      "noSettings": "هیچ تنظیمی در این دسته وجود ندارد",
+      "history": {
+        "title": "تاریخچه تغییرات",
+        "empty": "تاریخچه‌ای یافت نشد",
+        "by": "توسط: {name}",
+        "previousValue": "مقدار قبلی:",
+        "newValue": "مقدار جدید:"
+      },
+      "security": {
+        "title": "نکات امنیتی مهم",
+        "encryption": {
+          "title": "رمزنگاری تنظیمات حساس",
+          "item1": "تنظیمات با نوع encrypted با AES-256-GCM رمزنگاری می‌شوند",
+          "item2": "کلید رمزنگاری باید در environment variable SETTINGS_ENCRYPTION_KEY تنظیم شود",
+          "item3": "در production، از یک کلید رمزنگاری قوی و محیط امن استفاده کنید",
+          "item4": "کلید رمزنگاری نباید در کد commit شود"
+        },
+        "override": {
+          "item1": "تنظیمات می‌توانند با environment variables override شوند",
+          "item2": "فرمت: SETTING_KEY=value (نقطه به underline تبدیل می‌شود)",
+          "item3": "مثال: AUTH_KEYCLOAK_URL=http://keycloak:8080",
+          "item4": "Environment variables اولویت دارند روی database settings"
+        },
+        "audit": {
+          "title": "اعتبار سنجی و Audit",
+          "item1": "تمام تغییرات تنظیمات در audit log ثبت می‌شوند",
+          "item2": "تنظیمات حساس (رمز، توکن‌ها) باید با دقت وارد شوند",
+          "item3": "برای production، permission checks فعال شود",
+          "item4": "فقط کاربران admin دسترسی به این صفحه دارند"
+        },
+        "backup": {
+          "title": "Backup و Restore",
+          "item1": "قبل از تغییرات مهم، از تنظیمات خروجی بگیرید",
+          "item2": "فایل backup حاوی رمزهای رمزنگاری شده است",
+          "item3": "فایل backup را در محیط امن نگهداری کنید",
+          "item4": "برای restore، از دکمه ورودی استفاده کنید"
+        }
+      }
+    },
+    "pages": {
+      "title": "مدیریت صفحات",
+      "subtitle": "مدیریت صفحات استاتیک و داینامیک سیستم",
+      "newPage": "صفحه جدید",
+      "searchPlaceholder": "جستجو در صفحات...",
+      "filter": "فیلتر",
+      "tabs": {
+        "all": "همه صفحات",
+        "published": "منتشر شده",
+        "draft": "پیش‌نویس",
+        "archived": "بایگانی شده"
+      },
+      "status": {
+        "published": "منتشر شده",
+        "draft": "پیش‌نویس",
+        "archived": "بایگانی شده"
+      },
+      "table": {
+        "title": "عنوان",
+        "slug": "Slug",
+        "status": "وضعیت",
+        "author": "نویسنده",
+        "views": "بازدید",
+        "updatedAt": "آخرین بروزرسانی",
+        "actions": "عملیات"
+      },
+      "actions": {
+        "view": "مشاهده",
+        "edit": "ویرایش",
+        "delete": "حذف",
+        "more": "بیشتر"
+      },
+      "pagination": {
+        "showing": "نمایش ۱ تا ۶ از ۱۲ صفحه",
+        "previous": "قبلی",
+        "next": "بعدی"
+      }
+    },
+    "workspaces": {
+      "title": "مدیریت کارتابل‌ها",
+      "subtitle": "مدیریت کارتابل‌ها و فضاهای کاری سازمانی",
+      "newWorkspace": "کارتابل جدید",
+      "tabs": {
+        "all": "همه کارتابل‌ها",
+        "active": "فعال",
+        "archived": "بایگانی شده"
+      },
+      "stats": {
+        "total": "کل کارتابل‌ها",
+        "active": "فعال",
+        "users": "کل کاربران",
+        "weeklyActivity": "فعالیت این هفته"
+      },
+      "status": {
+        "active": "فعال",
+        "archived": "بایگانی شده"
+      },
+      "card": {
+        "members": "اعضا:",
+        "membersCount": "{count} کاربر",
+        "widgets": "ویجت‌ها:",
+        "widgetsCount": "{count} مورد",
+        "lastActivity": "آخرین فعالیت:",
+        "view": "مشاهده"
+      },
+      "quickActions": {
+        "title": "عملیات سریع",
+        "createWorkspace": "ایجاد کارتابل جدید",
+        "createWorkspaceDesc": "ایجاد فضای کاری جدید",
+        "manageUsers": "مدیریت کاربران",
+        "manageUsersDesc": "اضافه/حذف کاربران",
+        "settings": "تنظیمات کارتابل",
+        "settingsDesc": "پیکربندی پیشرفته"
+      }
+    },
+    "users": {
+      "title": "مدیریت کاربران",
+      "subtitle": "مدیریت کاربران و دسترسی‌ها",
+      "addUser": "افزودن کاربر",
+      "totalUsers": "کل کاربران",
+      "active": "فعال",
+      "pending": "در انتظار",
+      "disabled": "غیرفعال",
+      "searchPlaceholder": "جستجو در کاربران...",
+      "filter": "فیلتر",
+      "tabs": {
+        "all": "همه کاربران",
+        "active": "فعال",
+        "pending": "در انتظار",
+        "disabled": "غیرفعال"
+      },
+      "table": {
+        "personnelCode": "کد پرسنلی",
+        "name": "نام",
+        "email": "ایمیل",
+        "mobile": "موبایل",
+        "department": "واحد",
+        "roles": "نقش‌ها",
+        "status": "وضعیت",
+        "lastLogin": "آخرین ورود",
+        "actions": "عملیات"
+      },
+      "edit": "ویرایش",
+      "more": "بیشتر"
+    },
+    "pages": {
+      "title": "مدیریت صفحات",
+      "subtitle": "مدیریت صفحات استاتیک و داینامیک سیستم",
+      "newPage": "صفحه جدید",
+      "searchPlaceholder": "جستجو در صفحات...",
+      "filter": "فیلتر",
+      "tabs": {
+        "all": "همه صفحات",
+        "published": "منتشر شده",
+        "draft": "پیش‌نویس",
+        "archived": "بایگانی شده"
+      },
+      "status": { "published": "منتشر شده", "draft": "پیش‌نویس", "archived": "بایگانی شده" },
+      "table": {
+        "title": "عنوان",
+        "slug": "Slug",
+        "status": "وضعیت",
+        "author": "نویسنده",
+        "views": "بازدید",
+        "updatedAt": "آخرین بروزرسانی",
+        "actions": "عملیات"
+      },
+      "actions": { "view": "مشاهده", "edit": "ویرایش", "delete": "حذف", "more": "بیشتر" },
+      "pagination": { "showing": "نمایش صفحات", "previous": "قبلی", "next": "بعدی" }
+    },
+    "workspaces": {
+      "title": "مدیریت کارتابل‌ها",
+      "subtitle": "مدیریت کارتابل‌ها و فضاهای کاری سازمانی",
+      "newWorkspace": "کارتابل جدید",
+      "tabs": { "all": "همه کارتابل‌ها", "active": "فعال", "archived": "بایگانی شده" },
+      "stats": {
+        "total": "کل کارتابل‌ها",
+        "active": "فعال",
+        "users": "کل کاربران",
+        "weeklyActivity": "فعالیت این هفته"
+      },
+      "status": { "active": "فعال", "archived": "بایگانی شده" },
+      "card": {
+        "members": "اعضا:",
+        "membersCount": "{count} کاربر",
+        "widgets": "ویجت‌ها:",
+        "widgetsCount": "{count} مورد",
+        "lastActivity": "آخرین فعالیت:",
+        "view": "مشاهده"
+      },
+      "quickActions": {
+        "title": "عملیات سریع",
+        "createWorkspace": "ایجاد کارتابل جدید",
+        "createWorkspaceDesc": "ایجاد فضای کاری جدید",
+        "manageUsers": "مدیریت کاربران",
+        "manageUsersDesc": "اضافه/حذف کاربران",
+        "settings": "تنظیمات کارتابل",
+        "settingsDesc": "پیکربندی پیشرفته"
+      }
+    },
+    "admin": {
+      "settings": {
+        "title": "تنظیمات سیستم",
+        "subtitle": "مدیریت تنظیمات و پیکربندی سیستم",
+        "saveAll": "ذخیره همه",
+        "environmentOverride": "این مقدار از environment variable override شده است",
+        "locked": "قفل شده",
+        "noSettings": "هیچ تنظیمی در این دسته وجود ندارد",
+        "history": {
+          "title": "تاریخچه تغییرات",
+          "empty": "تاریخچه‌ای یافت نشد",
+          "by": "توسط: {name}",
+          "previousValue": "مقدار قبلی:",
+          "newValue": "مقدار جدید:"
+        },
+        "security": {
+          "title": "نکات امنیتی مهم",
+          "encryption": {
+            "title": "رمزنگاری تنظیمات حساس",
+            "item1": "تنظیمات حساس رمزنگاری می‌شوند",
+            "item2": "کلید رمزنگاری را امن نگه دارید",
+            "item3": "از کلید قوی استفاده کنید",
+            "item4": "کلید را commit نکنید"
+          },
+          "override": {
+            "item1": "تنظیمات قابل override هستند",
+            "item2": "فرمت environment variable",
+            "item3": "نمونه تنظیمات محیطی",
+            "item4": "environment اولویت دارد"
+          },
+          "audit": {
+            "title": "اعتبارسنجی و Audit",
+            "item1": "تغییرات ثبت می‌شوند",
+            "item2": "تنظیمات حساس را با دقت وارد کنید",
+            "item3": "permission checks فعال باشد",
+            "item4": "دسترسی فقط برای admin است"
+          },
+          "backup": {
+            "title": "Backup و Restore",
+            "item1": "پیش از تغییرات backup بگیرید",
+            "item2": "backup رمزنگاری می‌شود",
+            "item3": "backup را امن نگه دارید",
+            "item4": "برای restore از ورودی استفاده کنید"
+          }
+        }
+      }
+    }
   }
 }

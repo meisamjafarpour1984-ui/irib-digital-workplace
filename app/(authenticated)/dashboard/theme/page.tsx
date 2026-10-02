@@ -1,4 +1,4 @@
-/**
+﻿/**
  * IRIB Digital Workplace Platform - Theme Builder Dashboard
  *
  * Designer & Developer: میثم جعفرپور آلانق
@@ -18,7 +18,6 @@ import {
   Filter,
   MoreVertical,
   Eye,
-  Trash2,
   Copy,
   CheckCircle,
   Clock,
@@ -37,9 +36,13 @@ export default function ThemeBuilderPage() {
   const [activeTab, setActiveTab] = useState('tokens')
   const [searchQuery, setSearchQuery] = useState('')
   const [showColorPicker, setShowColorPicker] = useState(false)
-  const [selectedToken, setSelectedToken] = useState<any>(null)
+  const [selectedToken, setSelectedToken] = useState<{
+    name: string
+    value: string
+    category: string
+  } | null>(null)
 
-  const { themes, loading, error } = useTheme()
+  const { themes, loading } = useTheme()
 
   const [previewTheme, setPreviewTheme] = useState<{
     primary: string

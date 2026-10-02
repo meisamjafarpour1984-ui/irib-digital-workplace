@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useQuery } from '@tanstack/react-query'
 import {
   Activity,
@@ -26,16 +27,14 @@ function formatCount(value: number) {
   return new Intl.NumberFormat('fa-IR').format(value)
 }
 
-function buildKpisFromApi(data: {
-  activeUsers: number
-  publishedContent: number
-  openTickets: number
-  views?: number
-}): KpiCard[] {
+function buildKpisFromApi(
+  data: { activeUsers: number; publishedContent: number; openTickets: number; views?: number },
+  t: (key: string) => string
+): KpiCard[] {
   return [
     {
       id: 'views',
-      label: 'بازدید (دوره)',
+      label: t('kpi.views'),
       value: formatCount(data.views ?? 0),
       delta: '—',
       trend: 'up',
@@ -43,15 +42,15 @@ function buildKpisFromApi(data: {
     },
     {
       id: 'content',
-      label: 'محتوای منتشرشده',
+      label: t('kpi.content'),
       value: formatCount(data.publishedContent),
-      delta: 'فعال',
+      delta: t('kpi.active'),
       trend: 'up',
       icon: FileText,
     },
     {
       id: 'users',
-      label: 'کاربران فعال',
+      label: t('kpi.users'),
       value: formatCount(data.activeUsers),
       delta: '—',
       trend: 'up',
@@ -59,9 +58,9 @@ function buildKpisFromApi(data: {
     },
     {
       id: 'tickets',
-      label: 'تیکت‌های باز',
+      label: t('kpi.tickets'),
       value: formatCount(data.openTickets),
-      delta: data.openTickets > 0 ? 'نیاز به پیگیری' : 'بدون تیکت',
+      delta: data.openTickets > 0 ? t('kpi.needsFollowup') : t('kpi.noTickets'),
       trend: data.openTickets > 0 ? 'down' : 'up',
       icon: Ticket,
     },
@@ -69,6 +68,7 @@ function buildKpisFromApi(data: {
 }
 
 export function KpiCards() {
+  const t = useTranslations('dashboard')
   const { data: cards } = useQuery({
     queryKey: ['dashboard-kpis'],
     queryFn: async () => {
@@ -76,7 +76,7 @@ export function KpiCards() {
         analyticsApi.getKpis(),
         analyticsApi.getContentStats('day'),
       ])
-      return buildKpisFromApi({ ...kpi, views: stats.views })
+      return buildKpisFromApi({ ...kpi, views: stats.views }, t)
     },
     staleTime: 60_000,
     retry: 1,

@@ -6,6 +6,9 @@ import { Section } from '@/components/layout/section'
 import { widgetRegistry } from '@/components/widgets/manifest'
 import { Monitor, Tablet, Smartphone, Save, Eye, Undo2, Redo2 } from 'lucide-react'
 
+// Force dynamic rendering to avoid SSR hydration issues
+export const dynamic = 'force-dynamic'
+
 type DevicePreview = 'desktop' | 'tablet' | 'mobile'
 
 export default function PageBuilderPage() {

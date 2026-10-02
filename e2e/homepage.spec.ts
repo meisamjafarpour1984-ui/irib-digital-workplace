@@ -37,11 +37,11 @@ test.describe('Homepage', () => {
   })
 
   test('should display portal footer', async ({ page }) => {
-    await expect(page.getByText('کلیه حقوق این پرتال')).toBeVisible()
+    await expect(page.getByText('کلیه حقوق این درگاه')).toBeVisible()
   })
 
   test('should have working search input', async ({ page }) => {
-    const searchInput = page.getByPlaceholder('جستجو در پورتال...')
+    const searchInput = page.getByPlaceholder('جستجو در درگاه...')
     await expect(searchInput).toBeVisible()
     await searchInput.fill('اخبار')
     await expect(searchInput).toHaveValue('اخبار')

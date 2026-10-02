@@ -1,5 +1,8 @@
+'use client'
+
 import { Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useTranslations } from 'next-intl'
 
 interface SpinnerProps {
   size?: 'sm' | 'md' | 'lg'
@@ -13,10 +16,11 @@ const sizeClasses = {
 }
 
 export function Spinner({ size = 'md', className }: SpinnerProps) {
+  const t = useTranslations('common')
   return (
     <Loader2
       className={cn('animate-spin text-brand', sizeClasses[size], className)}
-      aria-label="در حال بارگذاری"
+      aria-label={t('loading')}
     />
   )
 }

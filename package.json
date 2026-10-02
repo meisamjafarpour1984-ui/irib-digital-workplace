@@ -30,6 +30,7 @@
     "setup-local": "node scripts/setup-local.js",
     "deploy-production": "node scripts/deploy-production.js",
     "deploy-staging": "bash scripts/deploy-staging.sh",
+    "validate-staging": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/validate-staging.ps1",
     "wizard": "docker-compose -f docker-compose.wizard.yml up"
   },
   "dependencies": {
@@ -40,10 +41,12 @@
     "@hookform/resolvers": "^5.4.3",
     "@tanstack/react-query": "^5.101.4",
     "@tanstack/react-table": "^8.21.3",
+    "@tiptap/core": "3.29.0",
     "@tiptap/extension-image": "^3.29.0",
     "@tiptap/extension-link": "^3.29.0",
     "@tiptap/extension-mention": "^3.29.0",
     "@tiptap/extension-placeholder": "^3.29.0",
+    "@tiptap/extension-underline": "^3.29.0",
     "@tiptap/pm": "^3.29.0",
     "@tiptap/react": "^3.29.0",
     "@tiptap/starter-kit": "^3.29.0",

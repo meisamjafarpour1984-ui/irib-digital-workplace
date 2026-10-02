@@ -4,6 +4,16 @@
 
 set -e
 
+required_commands=(git docker helm kubectl)
+for command in "${required_commands[@]}"; do
+  command -v "$command" >/dev/null 2>&1 || { echo "Missing required command: $command" >&2; exit 1; }
+done
+
+if [[ -z "${GITHUB_TOKEN:-}" || -z "${GITHUB_USERNAME:-}" ]]; then
+  echo "GITHUB_USERNAME and GITHUB_TOKEN are required" >&2
+  exit 1
+fi
+
 echo "🚀 Starting staging deployment..."
 
 # Configuration
@@ -11,6 +21,10 @@ FRONTEND_IMAGE="ghcr.io/irib-digital-workplace/irib-digital-workplace-frontend"
 BACKEND_IMAGE="ghcr.io/irib-digital-workplace/irib-digital-workplace-backend"
 COMMIT_SHA=$(git rev-parse --short HEAD)
 NAMESPACE="dwp-staging"
+
+kubectl get namespace "$NAMESPACE" >/dev/null
+helm lint infra/helm/dwp-frontend --values infra/helm/dwp-frontend/values-staging.yaml
+helm lint backend/infra/helm/dwp-backend --values backend/infra/helm/dwp-backend/values-staging.yaml
 
 echo "📦 Commit SHA: $COMMIT_SHA"
 
@@ -63,5 +77,7 @@ kubectl rollout status deployment/dwp-backend -n "$NAMESPACE"
 # 7. Run smoke tests
 echo "🧪 Running smoke tests..."
 kubectl exec -n "$NAMESPACE" deployment/dwp-backend -- curl -f http://localhost:3001/api/v1/health/live || exit 1
+kubectl exec -n "$NAMESPACE" deployment/dwp-backend -- curl -f http://localhost:3001/api/v1/health/ready || exit 1
+kubectl exec -n "$NAMESPACE" deployment/dwp-frontend -- curl -f http://localhost:3000 || exit 1
 
 echo "✅ Staging deployment completed successfully!"

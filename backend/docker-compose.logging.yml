@@ -1,0 +1,42 @@
+# Logging Stack - Loki + Promtail
+version: '3.8'
+
+services:
+  loki:
+    image: grafana/loki:latest
+    container_name: irib-loki
+    restart: unless-stopped
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./monitoring/loki/loki-config.yml:/etc/loki/local-config.yaml
+      - loki_data:/loki
+    ports:
+      - "3100:3100"
+    networks:
+      - logging_network
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: irib-promtail
+    restart: unless-stopped
+    command: -config.file=/etc/promtail/config.yml
+    volumes:
+      - ./monitoring/promtail/promtail-config.yml:/etc/promtail/config.yml
+      - /var/log:/var/log:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    ports:
+      - "9080:9080"
+    networks:
+      - logging_network
+      - backend_network
+    depends_on:
+      - loki
+
+networks:
+  logging_network:
+    driver: bridge
+  backend_network:
+    external: true
+
+volumes:
+  loki_data:

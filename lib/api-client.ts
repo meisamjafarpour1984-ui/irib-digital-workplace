@@ -6,14 +6,65 @@
 function handleApiError(error: unknown, context: string = 'API'): Error {
   console.error(`[${context}] Error:`, error)
 
-  // TODO: Implement error reporting to monitoring system
-  // TODO: Implement user-friendly error messages
+  // Error reporting to monitoring system (placeholder for Sentry/LogRocket integration)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if (typeof window !== 'undefined' && (window as any).Sentry) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(window as any).Sentry.captureException(error, {
+      tags: { context },
+      extra: { type: context },
+    })
+  }
 
   if (error instanceof Error) {
     return error
   }
 
   return new Error(`Unknown ${context} error`)
+}
+
+/**
+ * Returns user-friendly error message in Persian/English
+ * @param error The error to translate
+ * @returns User-friendly error message
+ */
+function getUserFriendlyErrorMessage(error: Error): string {
+  const errorMessages: Record<string, { fa: string; en: string }> = {
+    'Network Error': {
+      fa: 'خطای اتصال به سرور. لطفاً اتصال اینترنت خود را بررسی کنید.',
+      en: 'Network error. Please check your internet connection.',
+    },
+    'Request failed': {
+      fa: 'خطا در درخواست به سرور. لطفاً دوباره تلاش کنید.',
+      en: 'Failed to communicate with server. Please try again.',
+    },
+    Unauthorized: {
+      fa: 'لطفاً وارد شوید.',
+      en: 'Please log in.',
+    },
+    Forbidden: {
+      fa: 'شما دسترسی به این بخش را ندارید.',
+      en: 'You do not have permission to access this section.',
+    },
+    'Not Found': {
+      fa: 'منبع مورد نظر یافت نشد.',
+      en: 'The requested resource was not found.',
+    },
+    'Internal Server Error': {
+      fa: 'خطای سرور. لطفاً بعداً تلاش کنید.',
+      en: 'Server error. Please try again later.',
+    },
+  }
+
+  // Try to match error message
+  for (const [key, messages] of Object.entries(errorMessages)) {
+    if (error.message.includes(key)) {
+      return messages.fa // Default to Persian
+    }
+  }
+
+  // Default fallback
+  return error.message
 }
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1'
@@ -23,6 +74,9 @@ interface RequestOptions extends Omit<RequestInit, 'method' | 'body'> {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
   body?: unknown
   params?: Record<string, string | number | boolean | undefined>
+  timeout?: number
+  responseType?: 'json' | 'blob'
+  suppress404Error?: boolean // Suppress error throwing for 404 responses
 }
 
 class ApiError extends Error {
@@ -48,6 +102,8 @@ class ApiClient {
 
   setToken(token: string | null) {
     this.token = token
+    // Access tokens are intentionally memory-only; refresh uses an HttpOnly cookie.
+    if (typeof window !== 'undefined') localStorage.removeItem('accessToken')
   }
 
   private async request<T>(
@@ -55,7 +111,15 @@ class ApiClient {
     options: RequestOptions = {},
     retryAfterRefresh = true
   ): Promise<T> {
-    const { method = 'GET', body, params, headers: customHeaders, ...rest } = options
+    const {
+      method = 'GET',
+      body,
+      params,
+      timeout = 10000,
+      responseType = 'json',
+      headers: customHeaders,
+      ...rest
+    } = options
 
     // Build URL with params
     let url = `${this.baseUrl}${endpoint}`
@@ -69,22 +133,39 @@ class ApiClient {
     }
 
     // Build headers
+    const isFormData = typeof FormData !== 'undefined' && body instanceof FormData
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...(customHeaders as Record<string, string>),
     }
     if (this.token) {
       headers['Authorization'] = `Bearer ${this.token}`
     }
 
-    // Make request
-    const response = await fetch(url, {
-      method,
-      headers,
-      body: body ? JSON.stringify(body) : undefined,
-      credentials: 'include',
-      ...rest,
-    })
+    let response: Response | undefined
+    let lastError: unknown
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      try {
+        response = await Promise.race([
+          fetch(url, {
+            method,
+            headers,
+            body: isFormData ? body : body ? JSON.stringify(body) : undefined,
+            credentials: 'include',
+            ...rest,
+          }),
+          new Promise<Response>((_, reject) => {
+            setTimeout(() => reject(new Error('Request timeout')), timeout)
+          }),
+        ])
+        break
+      } catch (error) {
+        lastError = error
+        if (attempt === 2) throw handleApiError(error, 'API request')
+      }
+    }
+
+    if (!response) throw handleApiError(lastError, 'API request')
 
     // Handle errors
     if (response.status === 401 && retryAfterRefresh && endpoint !== '/auth/refresh') {
@@ -95,16 +176,24 @@ class ApiClient {
     }
 
     if (!response.ok) {
+      // Suppress error for 404 if requested (for optional features not yet implemented)
+      if (response.status === 404 && options?.suppress404Error) {
+        return undefined as T
+      }
+
       let message = `Request failed: ${response.statusText}`
       let errors: Record<string, string[]> | undefined
       try {
         const data = await response.json()
-        message = Array.isArray(data.message) ? data.message.join('، ') : data.message || message
+        message = Array.isArray(data.message)
+          ? data.message.join('، ')
+          : data.message || data.error || message
         errors = data.errors
       } catch {
         // Response is not JSON
       }
-      throw new ApiError(response.status, message, errors)
+      const userFriendlyMessage = getUserFriendlyErrorMessage(new Error(message))
+      throw new ApiError(response.status, `${message}: ${userFriendlyMessage}`, errors)
     }
 
     // Handle 204 No Content
@@ -112,7 +201,7 @@ class ApiClient {
       return undefined as T
     }
 
-    return response.json()
+    return (responseType === 'blob' ? response.blob() : response.json()) as Promise<T>
   }
 
   private refreshAccessToken() {
@@ -157,7 +246,8 @@ class ApiClient {
 }
 
 export const apiClient = new ApiClient(API_BASE)
-export type { ApiError, RequestOptions }
+export { ApiClient, ApiClient as APIClient, ApiError, getUserFriendlyErrorMessage }
+export type { RequestOptions }
 
 // WebSocket Client for Real-time Updates
 export interface WSMessage {

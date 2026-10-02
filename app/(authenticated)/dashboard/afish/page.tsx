@@ -1,4 +1,4 @@
-/**
+﻿/**
  * IRIB Digital Workplace Platform - Afish System Dashboard
  *
  * Designer & Developer: میثم جعفرپور آلانق
@@ -45,11 +45,11 @@ export default function AfishPage() {
   const [selectedCell, setSelectedCell] = useState({ row: 0, col: 0 })
 
   // Sample spreadsheet data
-  const [spreadsheetData, setSpreadsheetData] = useState<any[][]>(
+  const [spreadsheetData, setSpreadsheetData] = useState<string[][]>(
     Array.from({ length: 20 }, () => Array.from({ length: 10 }, () => ''))
   )
 
-  const { records, templates, stats, loading, error } = useAfish()
+  const { records, templates, stats, loading } = useAfish()
 
   const tabs = [
     { id: 'records', label: 'Afichها', count: stats?.totalRecords || 0 },

@@ -1,96 +1,56 @@
-<<<<<<< C:/Users/meisam_jaf/Downloads/irib-digital-workplace/backend/src/common/repositories/base.repository.ts
 import { PrismaService } from '../../prisma/prisma.service'
-import { Prisma } from '@prisma/client'
 
-export abstract class BaseRepository<T, CreateInput, UpdateInput> {
-  constructor(protected readonly prisma: PrismaService) {}
-
-  protected abstract getModelName(): string
-
-  async findById(id: string): Promise<T | null> {
-    return this.prisma[this.getModelName()].findUnique({
-      where: { id },
-    })
-  }
-
-  async findMany(params?: {
-    where?: Prisma.Args<T>['where']
-    orderBy?: Prisma.Args<T>['orderBy']
-    take?: number
-    skip?: number
-    include?: Prisma.Args<T>['include']
-    select?: Prisma.Args<T>['select']
-  }): Promise<T[]> {
-    return this.prisma[this.getModelName()].findMany(params)
-  }
-
-  async create(data: CreateInput): Promise<T> {
-    return this.prisma[this.getModelName()].create({
-      data,
-    })
-  }
-
-  async update(id: string, data: UpdateInput): Promise<T> {
-    return this.prisma[this.getModelName()].update({
-      where: { id },
-      data,
-    })
-  }
-
-  async delete(id: string): Promise<T> {
-    return this.prisma[this.getModelName()].delete({
-      where: { id },
-    })
-  }
-
-  async count(where?: Prisma.Args<T>['where']): Promise<number> {
-    return this.prisma[this.getModelName()].count({ where })
-  }
-
-  async exists(id: string): Promise<boolean> {
-    const count = await this.count({ id } as any)
-    return count > 0
-  }
+type RepositoryModel<T, CreateInput, UpdateInput> = {
+  findUnique(args: { where: { id: string } }): Promise<T | null>
+  findMany(params?: unknown): Promise<T[]>
+  create(args: { data: CreateInput }): Promise<T>
+  update(args: { where: { id: string }; data: UpdateInput }): Promise<T>
+  delete(args: { where: { id: string } }): Promise<T>
+  count(args: { where?: unknown }): Promise<number>
 }
-=======
-import { PrismaService } from '../../prisma/prisma.service'
 
 export abstract class BaseRepository<T, CreateInput, UpdateInput> {
   constructor(protected readonly prisma: PrismaService) {}
 
   protected abstract getModelName(): string
 
+  private getModel(): RepositoryModel<T, CreateInput, UpdateInput> {
+    return (this.prisma as unknown as Record<string, RepositoryModel<T, CreateInput, UpdateInput>>)[
+      this.getModelName()
+    ]
+  }
+
   async findById(id: string): Promise<T | null> {
-    return (this.prisma as any)[this.getModelName()].findUnique({
+    return this.getModel().findUnique({
       where: { id },
     })
   }
 
-  async findMany(params?: any): Promise<T[]> {
-    return (this.prisma as any)[this.getModelName()].findMany(params)
+  async findMany(params?: unknown): Promise<T[]> {
+    return this.getModel().findMany(params)
   }
 
   async create(data: CreateInput): Promise<T> {
-    return (this.prisma as any)[this.getModelName()].create({
+    return this.getModel().create({
       data,
     })
   }
 
   async update(id: string, data: UpdateInput): Promise<T> {
-    return (this.prisma as any)[this.getModelName()].update({
+    return this.getModel().update({
       where: { id },
       data,
     })
   }
 
   async delete(id: string): Promise<T> {
-    return (this.prisma as any)[this.getModelName()].delete({
+    return this.getModel().delete({
       where: { id },
     })
   }
 
-  async count(where?: any): Promise<number> {
-    return (this.prisma as any)[this.getModelName()].count({ where })
+  async count(where?: unknown): Promise<number> {
+    return this.getModel().count({ where })
   }
 
   async exists(id: string): Promise<boolean> {
@@ -98,4 +58,3 @@ export abstract class BaseRepository<T, CreateInput, UpdateInput> {
     return count > 0
   }
 }
->>>>>>> C:/Users/meisam_jaf/.windsurf/worktrees/irib-digital-workplace/irib-digital-workplace-oak-flywheel/backend/src/common/repositories/base.repository.ts

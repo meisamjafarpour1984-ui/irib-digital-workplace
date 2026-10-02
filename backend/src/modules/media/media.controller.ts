@@ -42,4 +42,10 @@ export class MediaController {
   async remove(@Param('id') id: string) {
     return this.mediaService.delete(id)
   }
+
+  @Get('stats/upload')
+  @ApiOperation({ summary: 'Get upload statistics' })
+  async getStats() {
+    return this.mediaService.getUploadStats()
+  }
 }

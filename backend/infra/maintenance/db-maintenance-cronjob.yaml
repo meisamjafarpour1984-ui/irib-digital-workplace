@@ -1,0 +1,179 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: db-vacuum-analyze
+  namespace: dwp
+spec:
+  schedule: "0 2 * * 0" # Weekly on Sunday at 2 AM
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: db-maintenance
+              image: postgres:16-alpine
+              command:
+                - sh
+                - -c
+                - |
+                  # Run VACUUM ANALYZE script
+                  apk add --no-cache bash
+                  chmod +x /scripts/db-maintenance-vacuum.sh
+                  /scripts/db-maintenance-vacuum.sh
+              env:
+                - name: DB_HOST
+                  value: postgres
+                - name: DB_PORT
+                  value: "5432"
+                - name: DB_NAME
+                  value: irib_dwp
+                - name: DB_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-secret
+                      key: username
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-secret
+                      key: password
+              volumeMounts:
+                - name: scripts
+                  mountPath: /scripts
+                  readOnly: true
+                - name: logs
+                  mountPath: /logs
+          volumes:
+            - name: scripts
+              configMap:
+                name: db-maintenance-scripts
+            - name: logs
+              emptyDir: {}
+          restartPolicy: OnFailure
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: db-reindex
+  namespace: dwp
+spec:
+  schedule: "0 3 1 * *" # Monthly on first day at 3 AM
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: db-maintenance
+              image: postgres:16-alpine
+              command:
+                - sh
+                - -c
+                - |
+                  # Run REINDEX script
+                  apk add --no-cache bash
+                  chmod +x /scripts/db-maintenance-reindex.sh
+                  /scripts/db-maintenance-reindex.sh
+              env:
+                - name: DB_HOST
+                  value: postgres
+                - name: DB_PORT
+                  value: "5432"
+                - name: DB_NAME
+                  value: irib_dwp
+                - name: DB_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-secret
+                      key: username
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-secret
+                      key: password
+              volumeMounts:
+                - name: scripts
+                  mountPath: /scripts
+                  readOnly: true
+                - name: logs
+                  mountPath: /logs
+          volumes:
+            - name: scripts
+              configMap:
+                name: db-maintenance-scripts
+            - name: logs
+              emptyDir: {}
+          restartPolicy: OnFailure
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-maintenance-scripts
+  namespace: dwp
+data:
+  db-maintenance-vacuum.sh: |
+    #!/bin/bash
+    # Database Maintenance Script - VACUUM and ANALYZE
+    # Schedule: Weekly on Sunday at 2 AM
+
+    set -e
+
+    DB_HOST="${DB_HOST:-postgres}"
+    DB_PORT="${DB_PORT:-5432}"
+    DB_NAME="${DB_NAME:-irib_dwp}"
+    DB_USER="${DB_USER:-irib_admin}"
+    DB_PASSWORD="${DB_PASSWORD}"
+    LOG_FILE="/logs/db-vacuum-$(date +%Y%m%d_%H%M%S).log"
+
+    echo "=== Database VACUUM ANALYZE Started at $(date) ===" | tee -a "${LOG_FILE}"
+    echo "Database: ${DB_NAME}" | tee -a "${LOG_FILE}"
+
+    # VACUUM ANALYZE for all tables
+    PGPASSWORD="${DB_PASSWORD}" psql -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_USER}" -d "${DB_NAME}" \
+      -c "VACUUM (VERBOSE, ANALYZE);" \
+      2>&1 | tee -a "${LOG_FILE}"
+
+    echo "=== Database VACUUM ANALYZE Completed at $(date) ===" | tee -a "${LOG_FILE}"
+
+  db-maintenance-reindex.sh: |
+    #!/bin/bash
+    # Database Maintenance Script - REINDEX
+    # Schedule: Monthly on first day at 3 AM
+
+    set -e
+
+    DB_HOST="${DB_HOST:-postgres}"
+    DB_PORT="${DB_PORT:-5432}"
+    DB_NAME="${DB_NAME:-irib_dwp}"
+    DB_USER="${DB_USER:-irib_admin}"
+    DB_PASSWORD="${DB_PASSWORD}"
+    LOG_FILE="/logs/db-reindex-$(date +%Y%m%d_%H%M%S).log"
+
+    echo "=== Database REINDEX Started at $(date) ===" | tee -a "${LOG_FILE}"
+    echo "Database: ${DB_NAME}" | tee -a "${LOG_FILE}"
+
+    # REINDEX CONCURRENTLY for all indexes
+    PGPASSWORD="${DB_PASSWORD}" psql -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_USER}" -d "${DB_NAME}" \
+      -c "
+        DO \$\$
+        DECLARE
+          idx RECORD;
+        BEGIN
+          FOR idx IN 
+            SELECT indexname 
+            FROM pg_indexes 
+            WHERE schemaname = 'public'
+          LOOP
+            EXECUTE 'REINDEX INDEX CONCURRENTLY IF EXISTS ' || quote_ident(idx.indexname);
+            RAISE NOTICE 'Reindexed: %', idx.indexname;
+          END LOOP;
+        END \$\$;
+      " \
+      2>&1 | tee -a "${LOG_FILE}"
+
+    echo "=== Database REINDEX Completed at $(date) ===" | tee -a "${LOG_FILE}"

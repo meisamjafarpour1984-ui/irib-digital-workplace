@@ -49,7 +49,7 @@ test.describe('Authentication Flow', () => {
     test('should display registration form', async ({ page }) => {
       await page.goto('/mobile/register')
 
-      await expect(page.getByText('ثبت‌نام در پرتال')).toBeVisible()
+      await expect(page.getByText('ثبت‌نام در درگاه')).toBeVisible()
       await expect(page.getByText('کد پرسنلی')).toBeVisible()
     })
 
@@ -77,7 +77,7 @@ test.describe('Navigation', () => {
 
     // Login
     await page.goto('/login')
-    await expect(page.getByText('ورود به پرتال')).toBeVisible()
+    await expect(page.getByText('ورود به درگاه')).toBeVisible()
 
     // Search
     await page.goto('/search')
@@ -85,7 +85,7 @@ test.describe('Navigation', () => {
 
     // Mobile Welcome
     await page.goto('/mobile/welcome')
-    await expect(page.getByText('پرتال IRIB در موبایل')).toBeVisible()
+    await expect(page.getByText('درگاه IRIB در موبایل')).toBeVisible()
   })
 
   test('should navigate department microsites', async ({ page }) => {

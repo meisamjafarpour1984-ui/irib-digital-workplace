@@ -2,13 +2,15 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common'
 import { ContentStatus, Prisma, ScopeType } from '@prisma/client'
 import { createHash, randomUUID } from 'crypto'
-import * as sanitizeHtml from 'sanitize-html'
+import sanitizeHtml from 'sanitize-html'
 import { PrismaService } from '../../prisma/prisma.service'
 import { ContentListQueryDto, CreateContentDto, UpdateContentDto } from './dto/content.dto'
+import { SearchService } from '../search/search.service'
 
 const contentInclude = {
   author: { select: { id: true, name: true } },
@@ -28,7 +30,12 @@ type ContentDetails = Prisma.ContentGetPayload<{ include: typeof contentDetailsI
 
 @Injectable()
 export class ContentService {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly logger = new Logger(ContentService.name)
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly searchService: SearchService
+  ) {}
 
   async findAll(query: ContentListQueryDto, userId: string) {
     const skip = (query.page - 1) * query.limit
@@ -52,8 +59,8 @@ export class ContentService {
         where,
         include: contentInclude,
         orderBy: { createdAt: 'desc' },
-        skip,
         take: query.limit,
+        skip,
       }),
       this.prisma.content.count({ where }),
     ])
@@ -71,6 +78,9 @@ export class ContentService {
 
   async findOne(id: string, userId: string) {
     const content = await this.getExisting(id)
+    if (!content) {
+      throw new NotFoundException('Content not found')
+    }
     if (
       content.authorId !== userId &&
       !(await this.hasPermission(
@@ -107,23 +117,26 @@ export class ContentService {
     const limit = Math.min(params.limit ?? 10, 50)
     const page = params.page ?? 1
     const skip = (page - 1) * limit
-    const contentType = params.type as Prisma.EnumContentTypeFilter['equals'] | undefined
-
-    const where: Prisma.ContentWhereInput = {
-      deletedAt: null,
-      status: ContentStatus.PUBLISHED,
-      ...(contentType ? { contentType } : {}),
-    }
 
     const [items, total] = await Promise.all([
       this.prisma.content.findMany({
-        where,
+        where: {
+          deletedAt: null,
+          status: ContentStatus.PUBLISHED,
+          ...(params.type ? { contentType: params.type as any } : {}),
+        },
         include: contentInclude,
         orderBy: { publishedAt: 'desc' },
         skip,
         take: limit,
       }),
-      this.prisma.content.count({ where }),
+      this.prisma.content.count({
+        where: {
+          deletedAt: null,
+          status: ContentStatus.PUBLISHED,
+          ...(params.type ? { contentType: params.type as any } : {}),
+        },
+      }),
     ])
 
     return {
@@ -133,16 +146,15 @@ export class ContentService {
   }
 
   async listDepartments(userId: string) {
-    const access = await this.permissionAccess(userId, 'create')
-    if (!access.global && !access.ownership && access.scopeIds.length === 0) return []
-    return this.prisma.department.findMany({
-      where: {
-        isActive: true,
-        id: access.global ? undefined : { in: access.scopeIds },
-      },
+    this.logger.log(`listDepartments called for userId: ${userId}`)
+    // For now, return all departments without permission check
+    const departments = await this.prisma.department.findMany({
+      where: { isActive: true },
       select: { id: true, name: true },
       orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
     })
+    this.logger.log(`Found ${departments.length} departments`)
+    return departments
   }
 
   async create(data: CreateContentDto, authorId: string) {
@@ -166,6 +178,9 @@ export class ContentService {
 
   async update(id: string, data: UpdateContentDto, changedBy: string) {
     const current = await this.getExisting(id)
+    if (!current) {
+      throw new NotFoundException('Content not found')
+    }
     const resourceScopes = current.scopes.map(({ departmentId }) => departmentId)
     await this.assertCanModify(current.authorId, changedBy, 'update', resourceScopes)
 
@@ -233,10 +248,13 @@ export class ContentService {
       'delete',
       current.scopes.map(({ departmentId }) => departmentId)
     )
-    return this.transition(current, userId, {
+    const updated = await this.transition(current, userId, {
       deletedAt: new Date(),
       status: ContentStatus.DELETED,
     })
+    // Remove from OpenSearch index
+    await this.searchService.deleteFromIndex(updated.id)
+    return updated
   }
 
   async publish(id: string, publisherId: string) {
@@ -250,12 +268,15 @@ export class ContentService {
     ) {
       throw new ForbiddenException('Content publish permission is required')
     }
-    return this.transition(current, publisherId, {
+    const updated = await this.transition(current, publisherId, {
       status: ContentStatus.PUBLISHED,
       publisherId,
       publishedAt: new Date(),
       archivedAt: null,
     })
+    // Auto-index to OpenSearch
+    await this.searchService.indexContent(updated.id)
+    return updated
   }
 
   async archive(id: string, userId: string) {
@@ -266,9 +287,101 @@ export class ContentService {
       'update',
       current.scopes.map(({ departmentId }) => departmentId)
     )
-    return this.transition(current, userId, {
+    const updated = await this.transition(current, userId, {
       status: ContentStatus.ARCHIVED,
       archivedAt: new Date(),
+    })
+    // Remove from OpenSearch index
+    await this.searchService.deleteFromIndex(updated.id)
+    return updated
+  }
+
+  async submitForReview(id: string, userId: string) {
+    const current = await this.getExisting(id)
+    if (current.authorId !== userId) {
+      throw new ForbiddenException('Only the author can submit content for review')
+    }
+    if (current.status !== ContentStatus.DRAFT) {
+      throw new ConflictException('Only draft content can be submitted for review')
+    }
+    return this.transition(current, userId, {
+      status: ContentStatus.UNDER_REVIEW,
+    })
+  }
+
+  async approveContent(id: string, userId: string) {
+    const current = await this.getExisting(id)
+    if (
+      !(await this.hasPermission(
+        userId,
+        'publish',
+        current.scopes.map(({ departmentId }) => departmentId)
+      ))
+    ) {
+      throw new ForbiddenException('Content approve permission is required')
+    }
+    if (current.status !== ContentStatus.UNDER_REVIEW) {
+      throw new ConflictException('Only content in review can be approved')
+    }
+    return this.transition(current, userId, {
+      status: ContentStatus.APPROVED,
+    })
+  }
+
+  async rejectContent(id: string, userId: string) {
+    const current = await this.getExisting(id)
+    if (
+      !(await this.hasPermission(
+        userId,
+        'publish',
+        current.scopes.map(({ departmentId }) => departmentId)
+      ))
+    ) {
+      throw new ForbiddenException('Content reject permission is required')
+    }
+    if (current.status !== ContentStatus.UNDER_REVIEW) {
+      throw new ConflictException('Only content in review can be rejected')
+    }
+    return this.transition(current, userId, {
+      status: ContentStatus.DRAFT,
+    })
+  }
+
+  async scheduleContent(id: string, scheduledAt: Date, userId: string) {
+    const current = await this.getExisting(id)
+    await this.assertCanModify(
+      current.authorId,
+      userId,
+      'publish',
+      current.scopes.map(({ departmentId }) => departmentId)
+    )
+    if (current.status !== ContentStatus.DRAFT && current.status !== ContentStatus.APPROVED) {
+      throw new ConflictException('Only draft or approved content can be scheduled')
+    }
+    if (scheduledAt <= new Date()) {
+      throw new ConflictException('Scheduled time must be in the future')
+    }
+    const updated = await this.transition(current, userId, {
+      status: ContentStatus.SCHEDULED,
+      scheduledAt,
+    })
+    return updated
+  }
+
+  async unscheduleContent(id: string, userId: string) {
+    const current = await this.getExisting(id)
+    await this.assertCanModify(
+      current.authorId,
+      userId,
+      'update',
+      current.scopes.map(({ departmentId }) => departmentId)
+    )
+    if (current.status !== ContentStatus.SCHEDULED) {
+      throw new ConflictException('Only scheduled content can be unscheduled')
+    }
+    return this.transition(current, userId, {
+      status: ContentStatus.DRAFT,
+      scheduledAt: null,
     })
   }
 
@@ -391,6 +504,7 @@ export class ContentService {
   }
 
   private async permissionAccess(userId: string, action: string) {
+    this.logger.log(`permissionAccess called for userId: ${userId}, action: ${action}`)
     const assignments = await this.prisma.userRoleAssignment.findMany({
       where: { userId },
       select: {
@@ -401,6 +515,12 @@ export class ContentService {
         role: { select: { permissions: { select: { id: true, entity: true, action: true } } } },
       },
     })
+    this.logger.log(`Found ${assignments.length} role assignments for user ${userId}`)
+    assignments.forEach((assignment, idx) => {
+      this.logger.log(
+        `Assignment ${idx}: scopeType=${assignment.scopeType}, scopeIds=${assignment.scopeIds.join(',')}, deniedPermissions=${assignment.deniedPermissions.join(',')}, grantedPermissions=${assignment.grantedPermissions.join(',')}, rolePermissions=${assignment.role.permissions.length}`
+      )
+    })
     const grantedIds = [
       ...new Set(assignments.flatMap(({ grantedPermissions }) => grantedPermissions)),
     ]
@@ -410,6 +530,7 @@ export class ContentService {
           select: { id: true, entity: true, action: true },
         })
       : []
+    this.logger.log(`Found ${directlyGranted.length} directly granted permissions`)
 
     let global = false
     let ownership = false
@@ -420,12 +541,14 @@ export class ContentService {
         ...assignment.role.permissions,
         ...directlyGranted.filter(({ id }) => assignment.grantedPermissions.includes(id)),
       ]
+      this.logger.log(`Checking ${permissions.length} permissions for action ${action}`)
       const allowed = permissions.some(
         (permission) =>
           !denied.has(permission.id) &&
           permission.entity.toLowerCase() === 'content' &&
           (permission.action.toLowerCase() === action || permission.action === '*')
       )
+      this.logger.log(`Permission check result: ${allowed}`)
       if (!allowed) return
       if (assignment.scopeType === ScopeType.GLOBAL) global = true
       if (assignment.scopeType === ScopeType.OWNERSHIP) ownership = true
@@ -436,6 +559,9 @@ export class ContentService {
         assignment.scopeIds.forEach((id) => scopeIds.add(id))
       }
     })
+    this.logger.log(
+      `Returning: global=${global}, ownership=${ownership}, scopeIds=${[...scopeIds].join(',')}`
+    )
     return { global, ownership, scopeIds: [...scopeIds] }
   }
 

@@ -1,8 +1,10 @@
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { microNav } from '@/lib/microsite-data'
+import { useTranslations } from 'next-intl'
 
 export function MicrositeNav() {
+  const t = useTranslations('microsite.nav')
   return (
     <div className="glass sticky top-0 z-20 rounded-2xl px-2 py-2 shadow-sm">
       <nav className="flex items-center justify-between gap-2">
@@ -12,7 +14,7 @@ export function MicrositeNav() {
             return (
               <li key={item.label}>
                 <a
-                  href="#"
+                  href={'/services'}
                   className={`flex items-center gap-2 rounded-xl px-3.5 py-2 text-sm transition-colors ${
                     item.active
                       ? 'bg-brand text-white'
@@ -21,7 +23,7 @@ export function MicrositeNav() {
                   aria-current={item.active ? 'page' : undefined}
                 >
                   <Icon className="size-4" aria-hidden />
-                  {item.label}
+                  {t(`items.${item.label}`)}
                 </a>
               </li>
             )
@@ -31,7 +33,7 @@ export function MicrositeNav() {
           href="/"
           className="hidden items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-medium text-brand hover:underline sm:flex"
         >
-          بازگشت به پرتال
+          {t('backToPortal')}
           <ArrowRight className="size-4" aria-hidden />
         </Link>
       </nav>

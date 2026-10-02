@@ -1,4 +1,7 @@
+'use client'
+
 import { cn } from '@/lib/utils'
+import { useTranslations } from 'next-intl'
 
 interface SkipLinkProps {
   href?: string
@@ -6,6 +9,7 @@ interface SkipLinkProps {
 }
 
 export function SkipLink({ href = '#main-content', className }: SkipLinkProps) {
+  const t = useTranslations('accessibility')
   return (
     <a
       href={href}
@@ -14,7 +18,7 @@ export function SkipLink({ href = '#main-content', className }: SkipLinkProps) {
         className
       )}
     >
-      رفتن به محتوای اصلی
+      {t('skipToContent')}
     </a>
   )
 }

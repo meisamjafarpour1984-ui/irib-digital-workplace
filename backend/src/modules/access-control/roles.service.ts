@@ -1,8 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { Injectable, NotFoundException, Logger } from '@nestjs/common'
 import { PrismaService } from '../../prisma/prisma.service'
 
 @Injectable()
 export class RolesService {
+  private readonly logger = new Logger(RolesService.name)
+
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll() {
@@ -26,7 +28,24 @@ export class RolesService {
     return role
   }
 
+  async findByCode(code: string) {
+    return this.prisma.role.findUnique({
+      where: { code },
+      include: {
+        permissions: true,
+      },
+    })
+  }
+
   async create(data: { code: string; name: any; description?: string }) {
+    // Check if role code already exists
+    const existing = await this.prisma.role.findUnique({
+      where: { code: data.code },
+    })
+    if (existing) {
+      throw new Error(`Role with code ${data.code} already exists`)
+    }
+
     return this.prisma.role.create({
       data: {
         code: data.code,
@@ -74,5 +93,48 @@ export class RolesService {
       },
       orderBy: { code: 'asc' },
     })
+  }
+
+  async assignPermissionToMany(roleId: string, permissionIds: string[]) {
+    await this.findOne(roleId)
+    return this.prisma.role.update({
+      where: { id: roleId },
+      data: {
+        permissions: {
+          connect: permissionIds.map((id) => ({ id })),
+        },
+      },
+    })
+  }
+
+  async getRolePermissionsMatrix() {
+    const roles = await this.prisma.role.findMany({
+      include: {
+        permissions: true,
+      },
+      orderBy: { code: 'asc' },
+    })
+
+    const permissions = await this.prisma.atomicPermission.findMany({
+      orderBy: [{ entity: 'asc' }, { action: 'asc' }],
+    })
+
+    // Create matrix: { roleId: { permissionId: boolean } }
+    const matrix: Record<string, Record<string, boolean>> = {}
+
+    for (const role of roles) {
+      matrix[role.id] = {}
+      const rolePermissionIds = role.permissions.map((p) => p.id)
+
+      for (const permission of permissions) {
+        matrix[role.id][permission.id] = rolePermissionIds.includes(permission.id)
+      }
+    }
+
+    return {
+      roles,
+      permissions,
+      matrix,
+    }
   }
 }

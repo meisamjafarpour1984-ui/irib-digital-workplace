@@ -1,5 +1,8 @@
+'use client'
+
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useTranslations } from 'next-intl'
 
 interface PaginationProps {
   currentPage: number
@@ -9,6 +12,7 @@ interface PaginationProps {
 }
 
 export function Pagination({ currentPage, totalPages, onPageChange, className }: PaginationProps) {
+  const t = useTranslations('atoms.pagination')
   const getPages = () => {
     const pages: (number | '...')[] = []
     const delta = 2
@@ -26,13 +30,13 @@ export function Pagination({ currentPage, totalPages, onPageChange, className }:
   if (totalPages <= 1) return null
 
   return (
-    <nav aria-label="ناوبری صفحات" className={cn('flex items-center gap-1', className)}>
+    <nav aria-label={t('navLabel')} className={cn('flex items-center gap-1', className)}>
       <button
         type="button"
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
         className="flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed"
-        aria-label="صفحه قبل"
+        aria-label={t('prev')}
       >
         <ChevronRight className="size-4" />
       </button>
@@ -65,7 +69,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, className }:
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
         className="flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed"
-        aria-label="صفحه بعد"
+        aria-label={t('next')}
       >
         <ChevronLeft className="size-4" />
       </button>
